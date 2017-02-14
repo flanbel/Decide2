@@ -1,0 +1,171 @@
+#include "stdafx.h"
+#include "Particle.h"
+#include "Camera.h"
+#include "Effect.h"
+#include "EffectManager.h"
+
+LPDIRECT3DVERTEXBUFFER9 Particle::vertexBuff = nullptr;
+
+void Particle::Awake()
+{
+	//共有板ポリ生成
+	if (vertexBuff == nullptr)
+	{
+		//単位ポリゴン(すごく小さい)
+		Particle_Vertex vertices[] = {
+			{ -0.5f, 0.5f, 0.0f, 1.0f,		0.0f, 0.0f, },//左上
+			{ 0.5f, 0.5f, 0.0f, 1.0f,		1.0f, 0.0f, },//右上
+			{ -0.5f, -0.5f, 0.0f, 1.0f,		0.0f, 1.0f, },//左下
+			{ 0.5f, -0.5f, 0.0f, 1.0f,		1.0f, 1.0f, },//右下
+		};
+
+		//頂点生成
+		(*graphicsDevice()).CreateVertexBuffer(
+			sizeof(Particle_Vertex)*4,
+			0,
+			D3DFVF_PARTICLEVERTEX,
+			D3DPOOL_DEFAULT,
+			&vertexBuff,
+			NULL);
+
+		VOID* pVertices;
+		vertexBuff->Lock(0,
+			sizeof(Particle_Vertex)*4,
+			(void**)&pVertices,
+			0);
+		memcpy(pVertices, vertices, sizeof(Particle_Vertex)*4);
+		vertexBuff->Unlock();
+	}
+	applyForce = Vector3::zero;
+	texture = nullptr;
+	isDead = false;
+}
+
+void Particle::Update()
+{
+	float deltaTime = Time::DeltaTime();
+	Vector3 addGrafity = gravity;
+	addGrafity.Scale(deltaTime);
+	velocity.Add(addGrafity);
+	Vector3 force = applyForce;
+	force.x += (((float)Random::RandDouble() - 0.5f) * 2.0f) * addVelocityRandomMargih.x;
+	force.y += (((float)Random::RandDouble() - 0.5f) * 2.0f) * addVelocityRandomMargih.y;
+	force.z += (((float)Random::RandDouble() - 0.5f) * 2.0f) * addVelocityRandomMargih.z;
+	force.Scale(deltaTime);
+	velocity.Add(force);
+	Vector3 addPos = velocity;
+	addPos.Scale(deltaTime);
+	applyForce = Vector3::zero;
+
+	transform->localPosition.Add(addPos);
+	
+	if (isBillboard) {
+		//ビルボード処理を行う。
+		
+	}
+	transform->Update();
+
+	timer += deltaTime;
+	switch (state) {
+	case eStateRun:
+		if (timer >= life) {
+			if (isFade) {
+				state = eStateFadeOut;
+				timer = 0.0f;
+			}
+			else {
+				state = eStateDead;
+			}
+		}
+		break;
+	case eStateFadeOut: {
+		float t = timer / fadeTIme;
+		timer += deltaTime;
+		alpha = initAlpha + (-initAlpha)*t;
+		if (alpha <= 0.0f) {
+			alpha = 0.0f;
+			state = eStateDead;	//死亡。
+		}
+	}break;
+	case eStateDead:
+		isDead = true;
+		break;
+	}
+}
+
+void Particle::Render()
+{
+	D3DXMATRIX wvp;
+	
+	wvp = transform->WorldMatrix() * camera->View() * camera->Projection();
+
+	//シェーダー適用開始。
+	//αブレンド許可
+	(*graphicsDevice()).SetRenderState(D3DRS_ALPHABLENDENABLE, TRUE);
+	switch (alphaBlendMode)
+	{
+	case 0:
+		(*graphicsDevice()).SetRenderState(D3DRS_SRCBLEND, D3DBLEND_SRCALPHA);
+		(*graphicsDevice()).SetRenderState(D3DRS_DESTBLEND, D3DBLEND_INVSRCALPHA);
+		shaderEffect->SetTechnique("ColorTexPrimTrans");
+		break;
+	case 1:
+		(*graphicsDevice()).SetRenderState(D3DRS_SRCBLEND, D3DBLEND_ONE);
+		(*graphicsDevice()).SetRenderState(D3DRS_DESTBLEND, D3DBLEND_ONE);
+		shaderEffect->SetTechnique("ColorTexPrimAdd");
+		break;
+	}
+
+	shaderEffect->Begin(NULL, D3DXFX_DONOTSAVESHADERSTATE);
+	shaderEffect->BeginPass(0);
+	//Zバッファ
+	(*graphicsDevice()).SetRenderState(D3DRS_ZWRITEENABLE, FALSE);
+
+	shaderEffect->SetMatrix("g_mWVP", &wvp);
+	shaderEffect->SetTexture("g_texture", texture->pTexture);
+	shaderEffect->SetFloat("g_alpha", alpha);
+	shaderEffect->SetValue("g_mulColor", mulColor, sizeof(Vector4));
+
+	(*graphicsDevice()).SetStreamSource(0, vertexBuff, 0, sizeof(Particle_Vertex));
+	(*graphicsDevice()).SetFVF(D3DFVF_PARTICLEVERTEX);
+	(*graphicsDevice()).DrawPrimitive(D3DPT_TRIANGLESTRIP, 0, 2);
+
+	shaderEffect->EndPass();
+	shaderEffect->End();
+
+	//変更したステートを元に戻す
+	(*graphicsDevice()).SetRenderState(D3DRS_ALPHABLENDENABLE, FALSE);
+	(*graphicsDevice()).SetRenderState(D3DRS_SRCBLEND, D3DBLEND_ONE);
+	(*graphicsDevice()).SetRenderState(D3DRS_DESTBLEND, D3DBLEND_ZERO);
+	(*graphicsDevice()).SetRenderState(D3DRS_ZWRITEENABLE, TRUE);
+}
+
+void Particle::Init(const ParicleParameter & param,Vector3 & emitPosition)
+{
+	texture = TextureManager::LoadTexture((char*)param.texturePath);
+	shaderEffect = EffectManager::LoadEffect("Particle.fx");
+	this->camera = GameObjectManager::mainCamera;
+	transform->localScale = Vector3(param.size.x, param.size.y, 1.0f);
+	life = param.life;
+	velocity = param.initVelocity;
+	//初速度に乱数を加える。
+	velocity.x += (((float)Random::RandDouble() - 0.5f) * 2.0f) * param.initVelocityVelocityRandomMargin.x;
+	velocity.y += (((float)Random::RandDouble() - 0.5f) * 2.0f) * param.initVelocityVelocityRandomMargin.y;
+	velocity.z += (((float)Random::RandDouble() - 0.5f) * 2.0f) * param.initVelocityVelocityRandomMargin.z;
+	transform->localPosition = emitPosition;
+	transform->localPosition.x += (((float)Random::RandDouble() - 0.5f) * 2.0f) * param.initPositionRandomMargin.x;
+	transform->localPosition.y += (((float)Random::RandDouble() - 0.5f) * 2.0f) * param.initPositionRandomMargin.y;
+	transform->localPosition.z += (((float)Random::RandDouble() - 0.5f) * 2.0f) * param.initPositionRandomMargin.z;
+	addVelocityRandomMargih = param.addVelocityRandomMargih;
+	gravity = param.gravity;
+	isFade = param.isFade;
+	state = eStateRun;
+	initAlpha = param.initAlpha;
+	alpha = initAlpha;
+	fadeTIme = param.fadeTime;
+	isBillboard = param.isBillboard;
+	brightness = param.brightness;
+	alphaBlendMode = param.alphaBlendMode;
+	mulColor = param.mulColor;
+	rotateZ = 3.1415 * 2.0f * (float)Random::RandDouble();
+}

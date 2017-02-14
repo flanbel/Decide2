@@ -1,0 +1,53 @@
+#include "TitleScene.h"
+#include "fbEngine/ImageObject.h"
+#include "fbEngine/TextObject.h"
+#include "fbEngine/Movie.h"
+#include "fbEngine/SoundSource.h"
+void TitleScene::Start()
+{
+	//GameObjectManager::AddNew<Movie>("movie", 1);
+	//ReadCSV("");
+
+	//背景追加
+	ImageObject* titleback = GameObjectManager::AddNew<ImageObject>("TitleBack", 0);
+	titleback->SetTexture(TextureManager::LoadTexture("TitleBack.png"));
+	//プリーズエンター
+	TextObject* text = GameObjectManager::AddNew<TextObject>("PleaseEnter", 1);
+	text->SetString(L"<PleaseEnter>");
+	text->SetFontSize(80.0f);
+	text->SetBlendColor(Color::black);
+	text->transform->localPosition = Vector3(WindowW/2, WindowH/2, 0);
+
+	SoundSource *source = GameObjectManager::AddNew<SoundSource>("test", 1);
+	source->Init("Asset/Sound/teikoku.wav");
+	source->Play(true);
+
+	enter = GameObjectManager::AddNew<SoundSource>("EnterSE", 1);
+	enter->Init("Asset/Sound/TitleEnter.wav");
+
+	PushEnter = false;
+}
+
+void TitleScene::Update()
+{
+	bool flag = false;
+	FOR(PLAYER_NUM)
+	{
+		if (XboxInput(i)->isPushButton(XINPUT_GAMEPAD_START))
+		{
+			flag = true;
+			break;
+		}
+	}
+
+	if((flag ||KeyBoardInput->isPush(DIK_RETURN)) && !PushEnter)
+	{
+		PushEnter = true;
+		enter->Play(false);
+	}
+
+	if(PushEnter && !enter->IsPlaying())
+	{
+		INSTANCE(SceneManager)->ChangeScene("CharaSelectScene");
+	}
+}

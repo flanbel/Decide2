@@ -1,0 +1,429 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <ClInclude Include="Object.h">
+      <Filter>Object</Filter>
+    </ClInclude>
+    <ClInclude Include="GraphicsDevice.h">
+      <Filter>System</Filter>
+    </ClInclude>
+    <ClInclude Include="Game.h">
+      <Filter>System</Filter>
+    </ClInclude>
+    <ClInclude Include="stdafx.h">
+      <Filter>System</Filter>
+    </ClInclude>
+    <ClInclude Include="targetver.h">
+      <Filter>System</Filter>
+    </ClInclude>
+    <ClInclude Include="Scene.h">
+      <Filter>Scene</Filter>
+    </ClInclude>
+    <ClInclude Include="Component.h">
+      <Filter>Object\Component</Filter>
+    </ClInclude>
+    <ClInclude Include="Transform.h">
+      <Filter>Object\Component</Filter>
+    </ClInclude>
+    <ClInclude Include="Vector.h">
+      <Filter>Variable</Filter>
+    </ClInclude>
+    <ClInclude Include="Color.h">
+      <Filter>Variable</Filter>
+    </ClInclude>
+    <ClInclude Include="Noncopyable.h">
+      <Filter>System</Filter>
+    </ClInclude>
+    <ClInclude Include="GameObject.h">
+      <Filter>Object\GameObject</Filter>
+    </ClInclude>
+    <ClInclude Include="System.h">
+      <Filter>System</Filter>
+    </ClInclude>
+    <ClInclude Include="Time.h">
+      <Filter>System</Filter>
+    </ClInclude>
+    <ClInclude Include="Random.h">
+      <Filter>System</Filter>
+    </ClInclude>
+    <ClInclude Include="BoxCollider.h">
+      <Filter>Object\Component\3D\Physics</Filter>
+    </ClInclude>
+    <ClInclude Include="CapsuleCollider.h">
+      <Filter>Object\Component\3D\Physics</Filter>
+    </ClInclude>
+    <ClInclude Include="CharacterController.h">
+      <Filter>Object\Component\3D\Physics</Filter>
+    </ClInclude>
+    <ClInclude Include="Physics.h">
+      <Filter>Object\Component\3D\Physics</Filter>
+    </ClInclude>
+    <ClInclude Include="SphereCollider.h">
+      <Filter>Object\Component\3D\Physics</Filter>
+    </ClInclude>
+    <ClInclude Include="MeshCollider.h">
+      <Filter>Object\Component\3D\Physics</Filter>
+    </ClInclude>
+    <ClInclude Include="Collider.h">
+      <Filter>Object\Component\3D\Physics</Filter>
+    </ClInclude>
+    <ClInclude Include="CollisionAttr.h">
+      <Filter>Object\Component\3D\Physics</Filter>
+    </ClInclude>
+    <ClInclude Include="Animation.h">
+      <Filter>Object\Component\3D</Filter>
+    </ClInclude>
+    <ClInclude Include="Camera.h">
+      <Filter>Object\Component\3D</Filter>
+    </ClInclude>
+    <ClInclude Include="SkinModel.h">
+      <Filter>Object\Component\3D</Filter>
+    </ClInclude>
+    <ClInclude Include="SkinModelData.h">
+      <Filter>Object\Component\3D</Filter>
+    </ClInclude>
+    <ClInclude Include="Light.h">
+      <Filter>Object\Component\3D</Filter>
+    </ClInclude>
+    <ClInclude Include="EffectManager.h">
+      <Filter>Manager</Filter>
+    </ClInclude>
+    <ClInclude Include="FontManager.h">
+      <Filter>Manager</Filter>
+    </ClInclude>
+    <ClInclude Include="TextureManager.h">
+      <Filter>Manager</Filter>
+    </ClInclude>
+    <ClInclude Include="GameObjectManager.h">
+      <Filter>Manager</Filter>
+    </ClInclude>
+    <ClInclude Include="ComponentManager.h">
+      <Filter>Manager</Filter>
+    </ClInclude>
+    <ClInclude Include="SkinModelManager.h">
+      <Filter>Manager</Filter>
+    </ClInclude>
+    <ClInclude Include="SceneManager.h">
+      <Filter>Manager</Filter>
+    </ClInclude>
+    <ClInclude Include="Effect.h">
+      <Filter>Variable</Filter>
+    </ClInclude>
+    <ClInclude Include="Support.h">
+      <Filter>System</Filter>
+    </ClInclude>
+    <ClInclude Include="Sprite.h">
+      <Filter>Object\Component\2D</Filter>
+    </ClInclude>
+    <ClInclude Include="Text.h">
+      <Filter>Object\Component\2D</Filter>
+    </ClInclude>
+    <ClInclude Include="FPS.h">
+      <Filter>Object\GameObject</Filter>
+    </ClInclude>
+    <ClInclude Include="CollisionObject.h">
+      <Filter>Object\GameObject</Filter>
+    </ClInclude>
+    <ClInclude Include="TextObject.h">
+      <Filter>Object\GameObject</Filter>
+    </ClInclude>
+    <ClInclude Include="ImageObject.h">
+      <Filter>Object\GameObject</Filter>
+    </ClInclude>
+    <ClInclude Include="RenderTargetManager.h">
+      <Filter>Manager</Filter>
+    </ClInclude>
+    <ClInclude Include="PIXPerfTag.h">
+      <Filter>System</Filter>
+    </ClInclude>
+    <ClInclude Include="Collisiont2D.h">
+      <Filter>Object\Component\2D</Filter>
+    </ClInclude>
+    <ClInclude Include="SquareCollision.h">
+      <Filter>Object\Component\2D</Filter>
+    </ClInclude>
+    <ClInclude Include="CircleCollision.h">
+      <Filter>Object\Component\2D</Filter>
+    </ClInclude>
+    <ClInclude Include="ModelOject.h">
+      <Filter>Object\GameObject</Filter>
+    </ClInclude>
+    <ClInclude Include="Particle.h">
+      <Filter>Object\GameObject</Filter>
+    </ClInclude>
+    <ClInclude Include="ParticleEmitter.h">
+      <Filter>Object\GameObject</Filter>
+    </ClInclude>
+    <ClInclude Include="NameKey.h">
+      <Filter>Variable</Filter>
+    </ClInclude>
+    <ClInclude Include="SoundEngine.h">
+      <Filter>Object\Component\Sound</Filter>
+    </ClInclude>
+    <ClInclude Include="SoundSource.h">
+      <Filter>Object\Component\Sound</Filter>
+    </ClInclude>
+    <ClInclude Include="WaveFile.h">
+      <Filter>Object\Component\Sound</Filter>
+    </ClInclude>
+    <ClInclude Include="WaveFileBank.h">
+      <Filter>Object\Component\Sound</Filter>
+    </ClInclude>
+    <ClInclude Include="Movie.h">
+      <Filter>Object</Filter>
+    </ClInclude>
+    <ClInclude Include="PlatePrimitive.h">
+      <Filter>Object\GameObject</Filter>
+    </ClInclude>
+    <ClInclude Include="VertexDefinition.h">
+      <Filter>System</Filter>
+    </ClInclude>
+    <ClInclude Include="XInput.h">
+      <Filter>Input</Filter>
+    </ClInclude>
+    <ClInclude Include="KeyBoard .h">
+      <Filter>Input</Filter>
+    </ClInclude>
+    <ClInclude Include="Mouse.h">
+      <Filter>Input</Filter>
+    </ClInclude>
+    <ClInclude Include="InputManager.h">
+      <Filter>Input</Filter>
+    </ClInclude>
+    <ClInclude Include="ShadowCamera.h">
+      <Filter>Object\Component\3D</Filter>
+    </ClInclude>
+    <ClInclude Include="Bloom.h">
+      <Filter>PostEffect</Filter>
+    </ClInclude>
+    <ClInclude Include="Collision.h">
+      <Filter>Object\Component\3D\Physics\Collision</Filter>
+    </ClInclude>
+    <ClInclude Include="RigidBody.h">
+      <Filter>Object\Component\3D\Physics\Collision</Filter>
+    </ClInclude>
+    <ClInclude Include="GostCollision.h">
+      <Filter>Object\Component\3D\Physics\Collision</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="Object.cpp">
+      <Filter>Object</Filter>
+    </ClCompile>
+    <ClCompile Include="GraphicsDevice.cpp">
+      <Filter>System</Filter>
+    </ClCompile>
+    <ClCompile Include="Game.cpp">
+      <Filter>System</Filter>
+    </ClCompile>
+    <ClCompile Include="stdafx.cpp">
+      <Filter>System</Filter>
+    </ClCompile>
+    <ClCompile Include="Scene.cpp">
+      <Filter>Scene</Filter>
+    </ClCompile>
+    <ClCompile Include="Component.cpp">
+      <Filter>Object\Component</Filter>
+    </ClCompile>
+    <ClCompile Include="Transform.cpp">
+      <Filter>Object\Component</Filter>
+    </ClCompile>
+    <ClCompile Include="Vector.cpp">
+      <Filter>Variable</Filter>
+    </ClCompile>
+    <ClCompile Include="Color.cpp">
+      <Filter>Variable</Filter>
+    </ClCompile>
+    <ClCompile Include="GameObject.cpp">
+      <Filter>Object\GameObject</Filter>
+    </ClCompile>
+    <ClCompile Include="Time.cpp">
+      <Filter>System</Filter>
+    </ClCompile>
+    <ClCompile Include="Random.cpp">
+      <Filter>System</Filter>
+    </ClCompile>
+    <ClCompile Include="BoxCollider.cpp">
+      <Filter>Object\Component\3D\Physics</Filter>
+    </ClCompile>
+    <ClCompile Include="CapsuleCollider.cpp">
+      <Filter>Object\Component\3D\Physics</Filter>
+    </ClCompile>
+    <ClCompile Include="CharacterController.cpp">
+      <Filter>Object\Component\3D\Physics</Filter>
+    </ClCompile>
+    <ClCompile Include="Physics.cpp">
+      <Filter>Object\Component\3D\Physics</Filter>
+    </ClCompile>
+    <ClCompile Include="SphereCollider.cpp">
+      <Filter>Object\Component\3D\Physics</Filter>
+    </ClCompile>
+    <ClCompile Include="MeshCollider.cpp">
+      <Filter>Object\Component\3D\Physics</Filter>
+    </ClCompile>
+    <ClCompile Include="Animation.cpp">
+      <Filter>Object\Component\3D</Filter>
+    </ClCompile>
+    <ClCompile Include="Camera.cpp">
+      <Filter>Object\Component\3D</Filter>
+    </ClCompile>
+    <ClCompile Include="SkinModel.cpp">
+      <Filter>Object\Component\3D</Filter>
+    </ClCompile>
+    <ClCompile Include="SkinModelData.cpp">
+      <Filter>Object\Component\3D</Filter>
+    </ClCompile>
+    <ClCompile Include="Light.cpp">
+      <Filter>Object\Component\3D</Filter>
+    </ClCompile>
+    <ClCompile Include="EffectManager.cpp">
+      <Filter>Manager</Filter>
+    </ClCompile>
+    <ClCompile Include="FontManager.cpp">
+      <Filter>Manager</Filter>
+    </ClCompile>
+    <ClCompile Include="TextureManager.cpp">
+      <Filter>Manager</Filter>
+    </ClCompile>
+    <ClCompile Include="GameObjectManager.cpp">
+      <Filter>Manager</Filter>
+    </ClCompile>
+    <ClCompile Include="ComponentManager.cpp">
+      <Filter>Manager</Filter>
+    </ClCompile>
+    <ClCompile Include="SkinModelManager.cpp">
+      <Filter>Manager</Filter>
+    </ClCompile>
+    <ClCompile Include="SceneManager.cpp">
+      <Filter>Manager</Filter>
+    </ClCompile>
+    <ClCompile Include="Support.cpp">
+      <Filter>System</Filter>
+    </ClCompile>
+    <ClCompile Include="Sprite.cpp">
+      <Filter>Object\Component\2D</Filter>
+    </ClCompile>
+    <ClCompile Include="Text.cpp">
+      <Filter>Object\Component\2D</Filter>
+    </ClCompile>
+    <ClCompile Include="FPS.cpp">
+      <Filter>Object\GameObject</Filter>
+    </ClCompile>
+    <ClCompile Include="CollisionObject.cpp">
+      <Filter>Object\GameObject</Filter>
+    </ClCompile>
+    <ClCompile Include="TextObject.cpp">
+      <Filter>Object\GameObject</Filter>
+    </ClCompile>
+    <ClCompile Include="ImageObject.cpp">
+      <Filter>Object\GameObject</Filter>
+    </ClCompile>
+    <ClCompile Include="RenderTargetManager.cpp">
+      <Filter>Manager</Filter>
+    </ClCompile>
+    <ClCompile Include="SquareCollision.cpp">
+      <Filter>Object\Component\2D</Filter>
+    </ClCompile>
+    <ClCompile Include="CircleCollision.cpp">
+      <Filter>Object\Component\2D</Filter>
+    </ClCompile>
+    <ClCompile Include="ModelOject.cpp">
+      <Filter>Object\GameObject</Filter>
+    </ClCompile>
+    <ClCompile Include="Particle.cpp">
+      <Filter>Object\GameObject</Filter>
+    </ClCompile>
+    <ClCompile Include="ParticleEmitter.cpp">
+      <Filter>Object\GameObject</Filter>
+    </ClCompile>
+    <ClCompile Include="SoundEngine.cpp">
+      <Filter>Object\Component\Sound</Filter>
+    </ClCompile>
+    <ClCompile Include="SoundSource.cpp">
+      <Filter>Object\Component\Sound</Filter>
+    </ClCompile>
+    <ClCompile Include="WaveFile.cpp">
+      <Filter>Object\Component\Sound</Filter>
+    </ClCompile>
+    <ClCompile Include="WaveFileBank.cpp">
+      <Filter>Object\Component\Sound</Filter>
+    </ClCompile>
+    <ClCompile Include="Movie.cpp">
+      <Filter>Object</Filter>
+    </ClCompile>
+    <ClCompile Include="PlatePrimitive.cpp">
+      <Filter>Object\GameObject</Filter>
+    </ClCompile>
+    <ClCompile Include="XInput.cpp">
+      <Filter>Input</Filter>
+    </ClCompile>
+    <ClCompile Include="KeyBoard .cpp">
+      <Filter>Input</Filter>
+    </ClCompile>
+    <ClCompile Include="InputManager.cpp">
+      <Filter>Input</Filter>
+    </ClCompile>
+    <ClCompile Include="Mouse.cpp">
+      <Filter>Input</Filter>
+    </ClCompile>
+    <ClCompile Include="ShadowCamera.cpp">
+      <Filter>Object\Component\3D</Filter>
+    </ClCompile>
+    <ClCompile Include="Bloom.cpp">
+      <Filter>PostEffect</Filter>
+    </ClCompile>
+    <ClCompile Include="Collision.cpp">
+      <Filter>Object\Component\3D\Physics\Collision</Filter>
+    </ClCompile>
+    <ClCompile Include="RigidBody.cpp">
+      <Filter>Object\Component\3D\Physics\Collision</Filter>
+    </ClCompile>
+    <ClCompile Include="GostCollision.cpp">
+      <Filter>Object\Component\3D\Physics\Collision</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="Object">
+      <UniqueIdentifier>{f011a7c2-8755-41cd-8b3d-1d2f3678a62d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="System">
+      <UniqueIdentifier>{e77eb00e-d0c8-4317-a719-0f2c868f860f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Scene">
+      <UniqueIdentifier>{c010c3bc-2538-44b9-b556-b43d48044574}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Object\Component">
+      <UniqueIdentifier>{258f99e1-87ca-4ddf-b8e1-f39009daf804}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Variable">
+      <UniqueIdentifier>{95a056a6-a2ed-4d28-b115-178c9cc2af5d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Object\GameObject">
+      <UniqueIdentifier>{39d9e796-857a-4291-baa0-fbc8fdce3861}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Manager">
+      <UniqueIdentifier>{c8e9861d-bdbb-4b06-89a8-8aaaca91ca45}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Object\Component\2D">
+      <UniqueIdentifier>{d402660b-4197-4d42-813f-488113bf26fd}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Object\Component\Sound">
+      <UniqueIdentifier>{b6c81463-e4bc-4400-8949-78f85e5b7fe8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Object\Component\3D">
+      <UniqueIdentifier>{b2c91a53-30e2-49fe-8326-11cf4202b0c7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Object\Component\3D\Physics">
+      <UniqueIdentifier>{9f2817bc-6c6a-4511-9f8b-79939e4bdc58}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Input">
+      <UniqueIdentifier>{07e73377-7cd4-4e8c-b867-2faba1172668}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="PostEffect">
+      <UniqueIdentifier>{6bbaaa73-c54f-4a29-b78f-ac4a34631e7d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Object\Component\3D\Physics\Collision">
+      <UniqueIdentifier>{e7b0c37d-5fe3-4e3b-afbd-85c351e0c680}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+</Project>

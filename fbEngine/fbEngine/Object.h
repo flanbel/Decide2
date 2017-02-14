@@ -1,0 +1,71 @@
+#pragma once
+//オブジェクトの基底クラス
+class Object : Noncopyable
+{
+public:
+	Object()
+	{
+		name = (char*)typeid(this).name();
+		active = true;
+		discard = true;
+	}
+	virtual ~Object() {};
+
+	//Objectが作成された時に実行される
+	//純粋仮想関数ではないので絶対オーバーライドしなくてもいい
+	virtual void Awake(){};
+
+	//シーンの初期化中に実行される。
+	//初期化を行う純粋仮想関数
+	virtual void Start(){};
+
+	//更新を行う純粋仮想関数
+	virtual void Update(){};
+
+	//更新の後に呼び出される関数
+	//純粋仮想関数ではないので絶対オーバーライドしなくてもいい
+	virtual void LateUpdate(){};
+
+	//描画の前に呼び出されます
+	virtual void PreRender(){};
+	//描画を行う
+	virtual void Render(){};
+	//ポストエフェクト描画
+	virtual void PostRender(){};
+	//イメージ(2D)描画
+	virtual void ImageRender(){};
+
+	//オブジェクトのアクティブフラグを設定する　セッター
+	virtual void Active(bool act)
+	{
+		active = act;
+	}
+
+	//アクティブかどうか取得　ゲッター
+	bool GetActive()
+	{
+		return active;
+	}
+
+	void Discard(bool b)
+	{
+		discard = b;
+	}
+
+	bool Discard()
+	{
+		return discard;
+	}
+
+	char* Name()
+	{
+		return name;
+	}
+protected:
+	//オブジェクトの名前
+	char* name;
+	//アクティブでないオブジェクトは描画もアップデートもされない
+	bool active;
+	//オブジェクトを破棄する
+	bool discard;
+};
