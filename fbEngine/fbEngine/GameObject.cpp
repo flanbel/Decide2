@@ -1,9 +1,9 @@
 #include "GameObject.h"
 
-GameObject::GameObject()
+GameObject::GameObject():
+	active(true),
+	discard(true)
 {
-	//Ž©•ª‚ð“o˜^
-	active = true;
 	name = "Empty";
 
 	transform = AddComponent<Transform>();
@@ -11,11 +11,9 @@ GameObject::GameObject()
 
 GameObject::GameObject(char* Name)
 {
-	//Ž©•ª‚ð“o˜^
-	active = true;
+	//ˆø”‚È‚µ‚Ì•û‚ðŒÄ‚Ô
+	this->GameObject::GameObject();
 	name = Name;
-
-	transform = AddComponent<Transform>();
 }
 
 GameObject::~GameObject()

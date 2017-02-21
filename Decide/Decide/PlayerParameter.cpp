@@ -9,18 +9,21 @@ void PlayerParameter::Awake()
 	frame = GameObjectManager::AddNew<ImageObject>("Frame", 0);
 	damageT = GameObjectManager::AddNew<TextObject>("Damage", 0);
 	stockT = GameObjectManager::AddNew<TextObject>("Stock", 0);
+	killT = GameObjectManager::AddNew<TextObject>("Kill", 0);
 	nameT = GameObjectManager::AddNew<TextObject>("Name", 0);
 	//親に登録
 	emblem->transform->SetParent(transform);
 	frame->transform->SetParent(transform);
 	damageT->transform->SetParent(transform);
 	stockT->transform->SetParent(transform);
+	killT->transform->SetParent(transform);
 	nameT->transform->SetParent(transform);
 	//消されないように
 	emblem->Discard(false);
 	frame->Discard(false);
 	damageT->Discard(false);
 	stockT->Discard(false);
+	killT->Discard(false);
 	nameT->Discard(false);
 
 	emblem->SetTexture(TextureManager::LoadTexture("nico2.png"));
@@ -31,6 +34,11 @@ void PlayerParameter::Awake()
 	stockT->SetString(L"3");
 	stockT->SetFontSize(40.0f);
 	stockT->transform->localPosition = Vector3(10, 10, 0);
+
+	killT->SetFontStyle("HGS明朝E");
+	killT->SetString(L"KILL:0");
+	killT->SetFontSize(40.0f);
+	killT->transform->localPosition = Vector3(40, 10, 0);
 
 	damageT->SetFontStyle("HGS明朝E");
 	damageT->SetString(L"0%");
@@ -51,8 +59,8 @@ void PlayerParameter::Update()
 void PlayerParameter::SetDamage(int damage)
 {
 	//ダメージ
-	wchar_t s[10];
-	InttoString(damage, s);
+	wchar_t display[10];
+	InttoString(damage, display);
 	//ダメージによって位置を変えるよ～(ほんとはテキストで設定したいよ)
 	if(damage < 10)
 	{
@@ -64,9 +72,8 @@ void PlayerParameter::SetDamage(int damage)
 	{
 		damageT->transform->localPosition = Vector3(0, 40, 0);
 	}
-	
-	wcscat_s(s, wcslen(s) + wcslen(L"%") + 1, L"%");
-	damageT->SetString(s);
+	wcscat_s(display, wcslen(display) + wcslen(L"%") + 1, L"%");
+	damageT->SetString(display);
 	if(damage < 300)
 	{
 		damageT->SetBlendColor(Color(1.0f, 1.0f - ((float)damage / 300.0f), 1.0f - ((float)damage / 200.0f), 1.0f));
@@ -78,17 +85,27 @@ void PlayerParameter::SetDamage(int damage)
 
 void PlayerParameter::SetStock(int stock)
 {
-	wchar_t s[10];
+	wchar_t display[10];
 	if (stock >= 0)
 	{
-		InttoString(stock, s);
-		stockT->SetString(s);
+		InttoString(stock, display);
+		stockT->SetString(display);
 	}
 	else
 	{
 		stockT->SetString(L"∞");
 	}
-	
+}
+
+void PlayerParameter::SetKill(int kill)
+{
+	wchar_t display[20],K[5];
+	//コピー
+	wcscpy_s(display, wcslen(L"KILL:") + 1, L"KILL:");
+	InttoString(kill, K);
+	//付け足し
+	wcscat_s(display, 20, K);
+	killT->SetString(display);
 }
 
 void PlayerParameter::SetName(wchar_t * name)

@@ -1,5 +1,6 @@
 #include "CharaSelectScene.h"
 #include "fbEngine/ImageObject.h"
+#include "fbEngine/TextObject.h"
 #include "CharaSelect.h"
 #include "CharaRingFrame.h"
 #include "Character.h"
@@ -22,6 +23,12 @@ void CharaSelectScene::Start()
 
 	gameRule = GameObjectManager::AddNew<GameRule>("GameRule", 0);
 	gameRule->Discard(false);
+	displayGameRule = GameObjectManager::AddNew<TextObject>("DisplayGameRule", 1);
+	displayGameRule->SetFontStyle("HGS明朝E");
+	displayGameRule->SetString(L"GameRule:Stock　 3");
+	displayGameRule->SetFontSize(40.0f);
+	displayGameRule->SetBlendColor(Color::white);
+	displayGameRule->transform->localPosition = Vector3(50, 100, 0);
 
 	ImageObject* backGround = GameObjectManager::AddNew<ImageObject>("Back",0);
 	backGround->SetTexture(TextureManager::LoadTexture("SelectBack.png"));
@@ -102,6 +109,64 @@ void CharaSelectScene::Update()
 			selectArray[i]->SetInfo(nullptr);
 		}
 	}
+	//現在のルール取得
+	GameRule::GAMERULE rule = gameRule->GetGameRule();
+	int value = gameRule->GetValue();
+	bool change = false;
+	//ゲームルール選択
+	if(KeyBoardInput->isPush(DIK_UP))
+	{
+		rule = (GameRule::GAMERULE)((rule + 1) % GameRule::GAMERULE::NUM);
+		value = 3;
+		change = true;
+	}
+	if (KeyBoardInput->isPush(DIK_DOWN))
+	{
+		rule = (GameRule::GAMERULE)((rule - 1) < 0 ? (GameRule::GAMERULE::NUM -1) : (rule - 1));
+		value = 3;
+		change = true;
+	}
+	if (KeyBoardInput->isPush(DIK_RIGHT))
+	{
+		value = min(value + 1, 99);
+		change = true;
+	}
+	if (KeyBoardInput->isPush(DIK_LEFT))
+	{
+		value = max(value - 1, 1);
+		change = true;
+	}
+	//変更されているなら
+	if (change)
+	{
+		gameRule->SetGameRule(rule, value);
+		
+		wchar_t display[128];
+		wchar_t *ruleW,valueW[5];
+		switch (rule)
+		{
+		case GameRule::STOCK:
+			ruleW = L"Stock_";
+			break;
+		case GameRule::TIMELIMIT:
+			ruleW = L"TimeLimit_";
+			break;
+		case GameRule::KNOCKOUT:
+			ruleW = L"KnockOut_";
+			break;
+		default:
+			break;
+		}
+		InttoString(value, valueW);
+		//文字列コピー
+		wcscpy_s(display, wcslen(L"GameRule:")+1, L"GameRule:");
+		//文字列追加
+		wcscat_s(display, wcslen(display) + wcslen(ruleW)+1, ruleW);
+		wcscat_s(display, wcslen(display) + wcslen(valueW)+1, valueW);
+		//表示更新
+		displayGameRule->SetString(display);
+	}
+	
 
 	//決定しているプレイヤー数カウント
 	int count = 0;
@@ -110,8 +175,8 @@ void CharaSelectScene::Update()
 		if (selectArray[i]->GetDecision())
 			count++;
 	}
-	//一人以上選択されている
-	if (count > 1)
+	//二人以上選択されている
+	if (count >= 2)
 	{
 		bool flag = false;
 		FOR(PLAYER_NUM)
@@ -152,8 +217,7 @@ void CharaSelectScene::Update()
 				selectArray[i]->Release();
 			}
 			//切り替え
-			BattleScene* battle = (BattleScene*)INSTANCE(SceneManager)->ChangeScene("BattleScene");
-			battle->SetPlayer(Array);
+			INSTANCE(SceneManager)->ChangeScene("BattleScene");
 			return;
 		}
 	}else

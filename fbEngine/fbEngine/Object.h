@@ -6,7 +6,6 @@ public:
 	Object()
 	{
 		name = (char*)typeid(this).name();
-		discard = true;
 	}
 	virtual ~Object() {};
 
@@ -34,16 +33,6 @@ public:
 	//イメージ(2D)描画
 	virtual void ImageRender(){};
 
-	void Discard(bool b)
-	{
-		discard = b;
-	}
-
-	bool Discard()
-	{
-		return discard;
-	}
-
 	char* Name()
 	{
 		return name;
@@ -51,6 +40,4 @@ public:
 protected:
 	//オブジェクトの名前
 	char* name;
-	//オブジェクトを破棄する
-	bool discard;
 };

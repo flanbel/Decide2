@@ -60,9 +60,21 @@ public:
 	{
 		return active;
 	}
+
+	void Discard(bool b)
+	{
+		discard = b;
+	}
+
+	bool Discard()
+	{
+		return discard;
+	}
 protected:
 	//コンポーネントたち
 	ComponentManager components;
 	//アクティブでないオブジェクトは描画もアップデートもされない
 	bool active;
+	//オブジェクトを破棄する
+	bool discard;
 };

@@ -9,7 +9,7 @@ bool SquareCollision::Judgment(Vector2 point)
 	return (rect.top > point.y || rect.bottom < point.y ||
 		rect.left > point.x || rect.right < point.x);
 }
-
+//‰~“¯Žm‚Íì‚Á‚Ä‚È‚¢‚æ
 bool SquareCollision::Judgment(SquareCollision * Square)
 {
 	return false;

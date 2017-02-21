@@ -416,6 +416,12 @@ void Player::SetInfo(CharacterInfo * info)
 void Player::AddKillCount()
 {
 	killCount++;
+	Pparameter->SetKill(killCount);
+}
+
+int Player::GetKillCount()
+{
+	return killCount;
 }
 
 void Player::Blown()
@@ -648,6 +654,7 @@ void Player::Death()
 	//とりあえずポジションだけで判定する
 	if (transform->localPosition.y < -200)
 	{
+		//ストックを減らす？
 		if (stock > 0)
 		{
 			stock--;
@@ -655,12 +662,16 @@ void Player::Death()
 			Pparameter->SetStock(stock);
 		}
 
+		//最後に攻撃してきたやつのキル数増加
+		if (lastAttack >= 0)
+			gameRule->AddKillCount(lastAttack);
+
+		lastAttack = -1;
 		damage = 0;
 		Pparameter->SetDamage(damage);
 		blown = Vector3::zero;
 		rigor = 0;
-		//最後に攻撃してきたやつのキル数増加
-		gameRule->AddKillCount(lastAttack);
+		
 		//残機が0じゃないなら(負数なら残機無限)
 		if (stock != 0)
 		{
@@ -671,10 +682,10 @@ void Player::Death()
 		else
 		{
 			//死
+			//死を伝える
 			gameRule->PlayerDeath(playeridx);
 			this->SetActive(false);
 			idxPlate->SetActive(false);
-			rankList->push_front(this);
 		}
 	}
 }

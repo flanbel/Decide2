@@ -13,11 +13,12 @@ public:
 	void Update()override;
 	void SetDamage(int damage);
 	void SetStock(int stock);
+	void SetKill(int kill);
 	void SetName(wchar_t* name);
 	void SetColor(Color C);
 private:
 	//ƒGƒ“ƒuƒŒƒ€
 	ImageObject* emblem,*frame;
-	TextObject *damageT,*stockT,*nameT;
+	TextObject *damageT,*stockT,*killT,*nameT;
 	Color color;
 };

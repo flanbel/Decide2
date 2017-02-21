@@ -4,6 +4,7 @@ class CharaSelect;
 class CharaRingFrame;
 class ImageObject;
 class GameRule;
+class TextObject;
 
 class CharaSelectScene : public Scene
 {
@@ -17,4 +18,5 @@ private:
 
 	ImageObject* readyFight;
 	GameRule* gameRule;
+	TextObject* displayGameRule;
 };

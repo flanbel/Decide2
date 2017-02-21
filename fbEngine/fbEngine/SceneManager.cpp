@@ -44,7 +44,6 @@ void SceneManager::UpdateScene()
 	scenes[nowScene]->Update();
 	GameObjectManager::UpdateObject();
 	PhysicsWorld::Instance()->Update();
-	scenes[nowScene]->LateUpdate();
 	GameObjectManager::LateUpdateObject();
 }
 
@@ -55,7 +54,6 @@ void SceneManager::DrawScene()
 	//影とかのやつ
 	GameObjectManager::PreRenderObject();
 
-	scenes[nowScene]->Render();
 	//0番目に設定(オフスクリーンレンダリング用)
 	INSTANCE(RenderTargetManager)->ReSetRenderTarget(0, rt);
 	GameObjectManager::RenderObject();

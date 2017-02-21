@@ -1,6 +1,7 @@
 #pragma once
 #include "fbEngine/Scene.h"
 class ImageObject;
+class TextObject;
 class Player;
 class SoundSource;
 class GameRule;
@@ -10,14 +11,9 @@ public:
 	BattleScene() {};
 	void Start()override;
 	void Update()override;
-	void LateUpdate()override;
-	void Render()override;
-
-	void SetPlayer(vector<Player*> players);
 private:
 	ImageObject* test;
-	Player* playerArray[PLAYER_NUM];
-	list<Player*> rankList;
+	TextObject *Timer;
 	int playerNum;
 	SoundSource *gong,*BGM;
 	GameRule *gamerule;

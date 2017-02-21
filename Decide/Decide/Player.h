@@ -51,10 +51,6 @@ public:
 	{
 		return playeridx;
 	}
-	void SetRankList(list<Player*>* list)
-	{
-		rankList = list;
-	}
 	void SetColor(Color c)
 	{
 		playerColor = c;
@@ -62,6 +58,7 @@ public:
 	//キャラクターの情報受け取り
 	void SetInfo(CharacterInfo* info);
 	void AddKillCount();
+	int GetKillCount();
 private:
 	SkinModel* model;
 	Animation* anim;
@@ -113,8 +110,6 @@ private:
 	//加算用
 	float time;
 
-	//苦肉
-	list<Player*>* rankList;
 	//各効果音　
 	SoundSource *PunchSound;
 };

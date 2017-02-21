@@ -7,6 +7,7 @@
 #include "Stage.h"
 #include "Sky.h"
 #include "fbEngine/ImageObject.h"
+#include "fbEngine/TextObject.h"
 #include "fbEngine/Sprite.h"
 #include "fbEngine/SoundSource.h"
 #include "Item.h"
@@ -29,6 +30,18 @@ void BattleScene::Start()
 
 	gamerule = (GameRule*)GameObjectManager::FindObject("GameRule");
 	gamerule->Discard(false);
+	if(gamerule->GetGameRule() == GameRule::GAMERULE::TIMELIMIT)
+	{
+		//制限時間表示用のアレ
+		Timer = GameObjectManager::AddNew<TextObject>("Timer", 1);
+		Timer->SetFontStyle("HGS明朝E");
+		Timer->SetBlendColor(Color::white);
+		Timer->SetFontSize(80.0f);
+		Timer->transform->localPosition = Vector3(WindowW/2, 40, 0);
+		wchar_t time[10];
+		InttoString(gamerule->GetRemainingTime(), time);
+		Timer->SetString(time);
+	}
 
 	//深度の画像を書く
 	test = GameObjectManager::AddNew<ImageObject>("test", 4);
@@ -47,19 +60,15 @@ void BattleScene::Update()
 		//test->SetActive(!test->GetActive());
 	}
 
-	//試合終了判定
-	Player* first = nullptr;
-	int count = 0;
-	FOR(playerNum)
+	if(Timer)
 	{
-		if(playerArray[i]->GetActive())
-		{
-			count++;
-			first = playerArray[i];
-		}
+		wchar_t time[10];
+		InttoString(gamerule->GetRemainingTime(), time);
+		Timer->SetString(time);
 	}
-	//最後に残ったのが一人なら
-	if ((count <= 1 && !Change))
+
+	//試合が終了したなら。
+	if (gamerule->IsGameSet() && !Change)
 	{
 		//音再生
 		gong->Play(false);
@@ -68,39 +77,8 @@ void BattleScene::Update()
 	//切り替え
 	if(!gong->IsPlaying() && Change)
 	{
-		vector<int> rank;
-		if (first != nullptr)
-			rank.push_back(first->GetIdx());
-		list<Player*>::iterator it = rankList.begin();
-		while (it != rankList.end())
-		{
-			rank.push_back((*it)->GetIdx());
-			it++;
-		}
-		rankList.clear();
-		ResultScene* result = (ResultScene*)INSTANCE(SceneManager)->ChangeScene("ResultScene");
-		result->Setrank(rank);
+		gamerule->CreateScore();
+		INSTANCE(SceneManager)->ChangeScene("ResultScene");
 		return;
-	}
-}
-
-void BattleScene::LateUpdate()
-{
-
-}
-
-void BattleScene::Render()
-{
-	
-}
-
-void BattleScene::SetPlayer(vector<Player*> players)
-{
-	playerNum = players.size();
-	FOR(playerNum)
-	{
-		//アドレスを渡す
-		playerArray[i] = players[i];
-		playerArray[i]->SetRankList(&rankList);
 	}
 }

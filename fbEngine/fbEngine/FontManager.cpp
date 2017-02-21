@@ -57,6 +57,7 @@ void FontManager::Createfont(wchar_t* string, char* Style)
 	short i = 0;
 	for (short i = 0; string[i] != '\0'; i++)
 	{
+		
 		//文字を文字コードに変換？
 		int code = (int)string[i];
 		//mapないに文字が登録されているか
@@ -69,8 +70,13 @@ void FontManager::Createfont(wchar_t* string, char* Style)
 			CONST MAT2 mat = { { 0, 1 }, { 0, 0 }, { 0, 0 }, { 0, 1 } };
 			DWORD size = GetGlyphOutlineW(hdc, code, gradFlag, &gm, 0, NULL, &mat);
 			BYTE *pMono = new BYTE[size];
+			//取得
 			GetGlyphOutlineW(hdc, code, gradFlag, &gm, size, pMono, &mat);
-
+			//半角スペースだけ特殊に(全角は知らん。)
+			if (string[i] == ' ')
+			{
+				gm.gmBlackBoxX = gm.gmCellIncX;
+			}
 			// テクスチャ作成
 			TEXTURE* Tex = new TEXTURE();
 			int fontWidth = (gm.gmBlackBoxX + 3) / 4 * 4;

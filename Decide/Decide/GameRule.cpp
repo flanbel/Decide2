@@ -1,12 +1,14 @@
 #include "GameRule.h"
 #include "Player.h"
+#include <algorithm>
 
 GameRule::GameRule(char * name) :
 	GameObject(name),
-	GameSet(false),
 	gamerule(GAMERULE::STOCK),
 	CheckGameSet(&GameRule::StockGameSet),
-	playerCount(0)
+	playerCount(0),
+	value(3),
+	time(0.0f)
 {
 
 }
@@ -18,15 +20,36 @@ void GameRule::Awake()
 
 void GameRule::Update()
 {
-	//ゲームが終了しているか？
-	//何故か this じゃないとエラーが・・・。
-	GameSet = (this->*CheckGameSet)();
+	
+}
+
+void GameRule::CreateScore()
+{
+	//一位の人の順位が入っているか？
+	if (rank.size() < playerCount)
+	{
+		FOR(PLAYER_NUM)
+		{
+			//死んだ奴はnullptrにしてあるので。
+			if (Players[i] != nullptr)
+			{
+				PlayerDeath(i);
+			}
+		}	
+	}
+
+	if (gamerule == GameRule::TIMELIMIT ||
+		gamerule == GameRule::KNOCKOUT)
+	{
+		rank.sort();
+		//倒した数をキーに昇順でソート
+		/*sort(rank.begin(), rank.end(),
+			[](const Ranking& x, const Ranking& y) { return x.Kill < y.Kill; });*/
+	}
 }
 
 void GameRule::SetGameRule(GAMERULE rule, int v)
 {
-	//設定
-	this->value = v;
 	//対応した関数ポインタ設定
 	switch (rule)
 	{
@@ -46,6 +69,17 @@ void GameRule::SetGameRule(GAMERULE rule, int v)
 	}
 	//設定
 	gamerule = rule;
+	this->value = v;
+}
+
+GameRule::GAMERULE GameRule::GetGameRule()
+{
+	return gamerule;
+}
+
+int GameRule::GetValue()
+{
+	return value;
 }
 
 int GameRule::GetStock()
@@ -56,6 +90,18 @@ int GameRule::GetStock()
 		return -1;
 }
 
+int GameRule::GetRemainingTime()
+{
+	return (value * 60) - time;
+}
+
+bool GameRule::IsGameSet()
+{
+	//ゲームが終了しているか？
+	//何故か this じゃないとエラーが・・・。
+	return	GameSet = (this->*CheckGameSet)();
+}
+
 void GameRule::SetPlayer(Player * p, int index)
 {
 	Players[index] = p;
@@ -64,12 +110,22 @@ void GameRule::SetPlayer(Player * p, int index)
 
 void GameRule::AddKillCount(int index)
 {
-	Players[index]->AddKillCount();
+	//死んだ相手には殺されない、ゲームセットなら加算しない。
+	if (!GameSet && Players[index])
+		Players[index]->AddKillCount();
 }
 
 void GameRule::PlayerDeath(int index)
 {
-	rank.push_front(index);
+	Ranking r = { index,Players[index]->GetKillCount() };
+	rank.push_front(r);
+	//ポインタを捨てる
+	Players[index] = nullptr;
+}
+
+list<GameRule::Ranking>& GameRule::GetRank()
+{
+	return rank;
 }
 
 bool GameRule::StockGameSet()
@@ -81,11 +137,21 @@ bool GameRule::StockGameSet()
 bool GameRule::TimeLimitGameSet()
 {
 	//制限時間が過ぎたかどうか？
-	return false;
+	time += Time::DeltaTime();
+	return ((value * 60) <= time);
 }
 
 bool GameRule::KnockOutGameSet()
 {
 	//特定のプレイヤーの倒した数を見る
+	FOR(PLAYER_NUM)
+	{
+		if (Players[i] == nullptr)
+			continue;
+		if(Players[i]->GetKillCount() >= value)
+		{
+			return true;
+		}
+	}
 	return false;
 }

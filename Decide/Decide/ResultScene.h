@@ -1,5 +1,6 @@
 #pragma once
 #include "fbEngine/Scene.h"
+#include "GameRule.h"
 class Player;
 class ResultScene : public Scene
 {
@@ -7,9 +8,8 @@ public:
 	ResultScene() {};
 	void Start()override;
 	void Update()override;
-	void SetList();
-	void Setrank(vector<int> r);
+
+	void CreateRanking(list<GameRule::Ranking> ranking);
 private:
-	list<Player*>* rankList;
-	vector<int> rank;
+	GameRule *gamerule;
 };
