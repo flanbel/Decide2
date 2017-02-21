@@ -10,6 +10,7 @@
 #include "fbEngine/Sprite.h"
 #include "fbEngine/SoundSource.h"
 #include "Item.h"
+#include "GameRule.h"
 void BattleScene::Start()
 {
 	GameObjectManager::AddNew<GameCamera>("GameCamera", 0);
@@ -26,10 +27,13 @@ void BattleScene::Start()
 	//シーン切り替えフラグ
 	Change = false;
 
+	gamerule = (GameRule*)GameObjectManager::FindObject("GameRule");
+	gamerule->Discard(false);
+
 	//深度の画像を書く
 	test = GameObjectManager::AddNew<ImageObject>("test", 4);
 	test->SetTexture(INSTANCE(RenderTargetManager)->GetRenderTargetTexture(0));
-	test->Active(false);
+	test->SetActive(false);
 }
 
 #include "ResultScene.h"
@@ -40,7 +44,7 @@ void BattleScene::Update()
 	{
 		Item* i = GameObjectManager::AddNew<Item>("item", 1);
 		i->transform->localPosition = Vector3(0, 200, 0);
-		test->Active(!test->GetActive());
+		//test->SetActive(!test->GetActive());
 	}
 
 	//試合終了判定
@@ -76,8 +80,6 @@ void BattleScene::Update()
 		rankList.clear();
 		ResultScene* result = (ResultScene*)INSTANCE(SceneManager)->ChangeScene("ResultScene");
 		result->Setrank(rank);
-		playerArray[0] = nullptr;
-		playerArray[1] = nullptr;
 		return;
 	}
 }

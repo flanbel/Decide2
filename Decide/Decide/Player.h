@@ -10,6 +10,7 @@ class PlatePrimitive;
 class ParticleEmitter;
 struct D3DXFRAME_DERIVED;
 class Item;
+class GameRule;
 //プレイヤークラス
 class Player:public GameObject
 {
@@ -24,12 +25,11 @@ public:
 		Kick_Charge,	//蹴りため
 		Kick_Shot,		//蹴り
 		Damage,			//ダメージ
-		Blow			//吹き飛び
+		Blow,			//吹き飛び
+		USESWORD,		//剣振り
+		ISJUMP,			//ジャンプ中
 	};
-	Player(char* name):GameObject(name)
-	{
-		
-	}
+	Player(char* name);
 	void Awake()override;
 	void Start()override;
 	void Update()override;
@@ -40,6 +40,8 @@ public:
 	void Attack();
 	void Blown();
 	void ItemAction();
+	//落ちた時の処理
+	void Death();
 
 	void SetIdx(int idx)
 	{
@@ -59,6 +61,7 @@ public:
 	}
 	//キャラクターの情報受け取り
 	void SetInfo(CharacterInfo* info);
+	void AddKillCount();
 private:
 	SkinModel* model;
 	Animation* anim;
@@ -68,29 +71,43 @@ private:
 	CharacterParam Cparameter;
 	D3DXFRAME_DERIVED* handFrame;
 	Item* haveItem;
+	GameRule* gameRule;
 	//蓄積しているダメージ
 	int damage;
 	//残機
 	int stock;
+	//倒した数
+	int killCount;
+	//(死んだとき)最期に攻撃を与えてきたPlayerの添え字
+	int lastAttack;
 	//プレイヤーの添え字0~3
 	int playeridx;
 	//ジャンプ中か否か
 	bool jump;
+	int jumpCount;
 	//アクション(攻撃や防御)中か否か
 	bool isAction;
+	//攻撃が当たった時に止まる
+	bool hitStop;
+	//止まる時間
+	int stopTime;
+	//カウント
+	int hitStopCount;
 	//チャージ率
 	double CharagePower;
 	//ステート
 	PlayerState state, old;
 	//表示用プレート
 	PlatePrimitive* idxPlate;
-	//色
+	//プレイヤーの色
 	Color playerColor;
 	//パーティクル
 	ParticleEmitter *smoke;
 	
 	//吹き飛び
 	Vector3 blown;
+	//重力
+	float gravity;
 	//硬直
 	float rigor;
 	//加算用
@@ -98,6 +115,6 @@ private:
 
 	//苦肉
 	list<Player*>* rankList;
-	//各効果音
+	//各効果音　
 	SoundSource *PunchSound;
 };

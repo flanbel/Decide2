@@ -4,13 +4,14 @@
 class DamageCollision:public GostCollision
 {
 public:
-	//î•ñ
+	//UŒ‚”»’è‚Ìî•ñ
 	struct DamageCollisonInfo
 	{
 	public:
-		Vector3 blown;		//‚«”ò‚Ñ
+		Vector3 blown;		//‚«”ò‚Ñ—Í
 		int damage;			//ˆĞ—Í
-		float rigor;		//d’¼ŠÔ
+		int stoptime;		//d’¼ŠÔ
+		float rigor;		//‚«”ò‚ÑŠÔ
 	};
 
 	DamageCollision(GameObject* g, Transform* t) :GostCollision(g, t)

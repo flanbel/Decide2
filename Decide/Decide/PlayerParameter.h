@@ -14,8 +14,10 @@ public:
 	void SetDamage(int damage);
 	void SetStock(int stock);
 	void SetName(wchar_t* name);
+	void SetColor(Color C);
 private:
 	//ƒGƒ“ƒuƒŒƒ€
-	ImageObject* emblem;
+	ImageObject* emblem,*frame;
 	TextObject *damageT,*stockT,*nameT;
+	Color color;
 };

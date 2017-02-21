@@ -10,7 +10,6 @@ Collision::~Collision()
 
 void Collision::Create(btCollisionObject * coll, Collider * s, int id)
 {
-	Active(true);
 	shape = s;
 	isHit = false;
 	//コリジョンオブジェクト設定
@@ -19,10 +18,13 @@ void Collision::Create(btCollisionObject * coll, Collider * s, int id)
 	collisionObject->setUserPointer(this);
 	collisionObject->setUserIndex(id);
 
-	//ポジションの設定
+	//トランスフォーム設定
 	btTransform worldTrans;
 	worldTrans.setIdentity();
+	//ポジション
 	worldTrans.setOrigin(btVector3(transform->position.x, transform->position.y, transform->position.z));
+	//回転
+	worldTrans.setRotation(btQuaternion(transform->rotation.x, transform->rotation.y, transform->rotation.z, transform->rotation.w));
 
 	collisionObject->setWorldTransform(worldTrans);
 }
@@ -35,11 +37,11 @@ void Collision::Create(btCollisionObject * coll, Collider * s, int id)
 void Collision::Awake()
 {
 #ifdef _DEBUG
-	//四角いモデル描画
-	SkinModel* model = gameObject->AddComponent<SkinModel>();
-	SkinModelData* data = new SkinModelData();
-	data->CloneModelData(SkinModelManager::LoadModel("BoxCollision.X"));
-	model->SetModelData(data);
-	model->blendcolor = Color(1.0f, 0, 0, 1.0f);
+	////四角いモデル描画
+	//SkinModel* model = gameObject->AddComponent<SkinModel>();
+	//SkinModelData* data = new SkinModelData();
+	//data->CloneModelData(SkinModelManager::LoadModel("BoxCollision.X"));
+	//model->SetModelData(data);
+	//model->blendcolor = Color(1.0f, 0, 0, 0.7f);
 #endif // _DEBUG
 }

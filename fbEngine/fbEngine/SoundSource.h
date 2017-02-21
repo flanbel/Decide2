@@ -40,7 +40,7 @@
  	
  *@endcode
  */
-
+//コンポーネントにすればよかった・・・
 class SoundSource:public GameObject {
 public:
 	/*!

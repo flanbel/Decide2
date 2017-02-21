@@ -74,6 +74,7 @@ using namespace std;
 #include "Color.h"
 #include "Support.h"
 #include "Transform.h"
+#include "GameObject.h"
 
 #include "SoundEngine.h"
 #include "GraphicsDevice.h"		//Direct3D管理ヘッダインクルード

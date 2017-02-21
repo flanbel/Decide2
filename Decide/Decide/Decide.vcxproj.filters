@@ -82,6 +82,9 @@
     <ClInclude Include="Sky.h">
       <Filter>Object\GameObject</Filter>
     </ClInclude>
+    <ClInclude Include="GameRule.h">
+      <Filter>Object\GameObject</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="Decide.rc">
@@ -153,6 +156,9 @@
       <Filter>Object\GameObject</Filter>
     </ClCompile>
     <ClCompile Include="Sky.cpp">
+      <Filter>Object\GameObject</Filter>
+    </ClCompile>
+    <ClCompile Include="GameRule.cpp">
       <Filter>Object\GameObject</Filter>
     </ClCompile>
   </ItemGroup>

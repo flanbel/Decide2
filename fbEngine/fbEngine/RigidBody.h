@@ -13,12 +13,9 @@ public:
 	void Release();
 	//void Create(RigidBodyInfo& rbInfo);
 	void Create(float mass,Collider* coll, int id, Vector3 inertia = Vector3::zero,Vector3 off = Vector3::zero);
-	bool IsGround()
-	{
-		return isGround;
-	}
-	//地面についているかどうか
-	bool isGround;
+	void SetGravity(Vector3 set);
+	void SetGravity(btVector3& set);
+	void SetGravity(float x, float y, float z);
 private:
 	Vector3 offset;
 	btDefaultMotionState*	myMotionState;	//モーションステート。

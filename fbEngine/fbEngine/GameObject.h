@@ -8,6 +8,7 @@ class Component;
 class GameObject : public Object
 {
 public:
+	GameObject();
 	GameObject(char* name);
 	virtual ~GameObject();
 
@@ -47,7 +48,21 @@ public:
 
 	//トランスフォーム
 	Transform* transform;
+
+	//オブジェクトのアクティブフラグを設定する　セッター
+	virtual void SetActive(bool act)
+	{
+		active = act;
+	}
+
+	//アクティブかどうか取得　ゲッター
+	bool GetActive()
+	{
+		return active;
+	}
 protected:
 	//コンポーネントたち
 	ComponentManager components;
+	//アクティブでないオブジェクトは描画もアップデートもされない
+	bool active;
 };

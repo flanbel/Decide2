@@ -2,7 +2,8 @@
 #include "fbEngine/Scene.h"
 class ImageObject;
 class Player;
-class SoundSource;;
+class SoundSource;
+class GameRule;
 class BattleScene : public Scene
 {
 public:
@@ -19,5 +20,6 @@ private:
 	list<Player*> rankList;
 	int playerNum;
 	SoundSource *gong,*BGM;
+	GameRule *gamerule;
 	bool Change;
 };

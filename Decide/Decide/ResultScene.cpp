@@ -27,6 +27,7 @@ void ResultScene::Update()
 	bool flag = false;
 	FOR(PLAYER_NUM)
 	{
+		//誰かがスタートボタンを押したら
 		if (XboxInput(i)->isPushButton(XINPUT_GAMEPAD_START))
 		{
 			flag = true;
@@ -35,6 +36,7 @@ void ResultScene::Update()
 	}
 	if(KeyBoardInput->isPush(DIK_RETURN) || flag)
 	{
+		//シーン切り替え
 		INSTANCE(SceneManager)->ChangeScene("CharaSelectScene");
 		return;
 	}
@@ -54,7 +56,7 @@ void ResultScene::Setrank(vector<int> r)
 			rt->transform->localPosition = Vector3(300, 150 * i + 150, 0);
 			rt->SetFontStyle("HGS明朝E");
 			wchar_t s[128];
-			wchar_t junni[2] = {48+(i+1),0};
+			wchar_t junni[2] = {48+(i+1),' '};
 			wcscpy_s(s, 2,junni);
 			wcscat_s(s, 128, L"位Player");
 			wchar_t idx[2] = { 48 + rank[i]+1,0 };

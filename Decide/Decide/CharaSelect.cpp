@@ -34,7 +34,7 @@ void CharaSelect::Awake()
 	show->SetTexture(render->texture);
 	show->transform->SetParent(transform);
 	show->transform->localPosition = Vector3(-20, 40, 0);
-	show->Active(true);
+	show->SetActive(true);
 
 	TEXTURE* c = TextureManager::LoadTexture("cursor.png");
 	c->pivot = Vector2(0.5, 0.5);
@@ -102,7 +102,7 @@ void CharaSelect::Update()
 			if (info != old)
 			{
 				//モデル表示
-				show->Active(true);
+				show->SetActive(true);
 				showmodel->GetModel()->SetModelData(info->data);
 				showmodel->SetAnim(info->anim);
 				showmodel->GetAnim()->PlayAnimation(0, 1.0f);
@@ -137,8 +137,9 @@ void CharaSelect::Update()
 		}
 		else
 		{
+			//カーソルが外れた
 			name->SetString(L"notSelect");
-			show->Active(false);
+			show->SetActive(false);
 			decision = false;
 			old = false;
 		}
@@ -146,7 +147,7 @@ void CharaSelect::Update()
 	else
 	{
 		name->SetString(L"notSelect");
-		show->Active(false);
+		show->SetActive(false);
 		decision = false;
 		old = false;
 	}

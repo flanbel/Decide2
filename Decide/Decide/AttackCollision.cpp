@@ -16,7 +16,7 @@ void AttackCollision::Awake()
 
 void AttackCollision::Update()
 {
-	if(coll->GetHit() || !coll->GetActive())
+	if(coll->GetHit() || !coll->enable)
 	{
 		GameObjectManager::AddRemoveList(this);
 	}

@@ -107,6 +107,7 @@ void PhysicsWorld::RemoveRigidBody(RigidBody* rb)
 
 void PhysicsWorld::AddCollision(Collision * coll)
 {
+	//コリジョンのタイプを確認
 	int type = coll->GetCollisonObj()->getInternalType();
 	dynamicWorld->addCollisionObject(coll->GetCollisonObj());
 }

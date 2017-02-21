@@ -1,7 +1,7 @@
 #pragma once
 #include "Collision.h"
 class Collider;
-//‚ ‚½‚è”»’è‚Ì‚Ý
+//‚ ‚½‚è”»’è‚Ì‚Ý‚ÌƒRƒŠƒWƒ‡ƒ“
 class GostCollision :public Collision
 {
 public:

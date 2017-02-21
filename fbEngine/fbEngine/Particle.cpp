@@ -105,11 +105,13 @@ void Particle::Render()
 	switch (alphaBlendMode)
 	{
 	case 0:
+		//æŽZ
 		(*graphicsDevice()).SetRenderState(D3DRS_SRCBLEND, D3DBLEND_SRCALPHA);
 		(*graphicsDevice()).SetRenderState(D3DRS_DESTBLEND, D3DBLEND_INVSRCALPHA);
 		shaderEffect->SetTechnique("ColorTexPrimTrans");
 		break;
 	case 1:
+		//‰ÁŽZ‡¬
 		(*graphicsDevice()).SetRenderState(D3DRS_SRCBLEND, D3DBLEND_ONE);
 		(*graphicsDevice()).SetRenderState(D3DRS_DESTBLEND, D3DBLEND_ONE);
 		shaderEffect->SetTechnique("ColorTexPrimAdd");

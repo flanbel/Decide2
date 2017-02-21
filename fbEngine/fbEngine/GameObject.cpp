@@ -1,5 +1,14 @@
 #include "GameObject.h"
 
+GameObject::GameObject()
+{
+	//Ž©•ª‚ð“o˜^
+	active = true;
+	name = "Empty";
+
+	transform = AddComponent<Transform>();
+}
+
 GameObject::GameObject(char* Name)
 {
 	//Ž©•ª‚ð“o˜^

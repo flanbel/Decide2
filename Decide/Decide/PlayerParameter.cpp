@@ -6,36 +6,42 @@
 void PlayerParameter::Awake()
 {
 	emblem = GameObjectManager::AddNew<ImageObject>("Emblem", 0);
+	frame = GameObjectManager::AddNew<ImageObject>("Frame", 0);
 	damageT = GameObjectManager::AddNew<TextObject>("Damage", 0);
 	stockT = GameObjectManager::AddNew<TextObject>("Stock", 0);
 	nameT = GameObjectManager::AddNew<TextObject>("Name", 0);
 	//親に登録
 	emblem->transform->SetParent(transform);
+	frame->transform->SetParent(transform);
 	damageT->transform->SetParent(transform);
 	stockT->transform->SetParent(transform);
 	nameT->transform->SetParent(transform);
 	//消されないように
 	emblem->Discard(false);
+	frame->Discard(false);
 	damageT->Discard(false);
 	stockT->Discard(false);
 	nameT->Discard(false);
 
-	emblem->SetTexture(TextureManager::LoadTexture("test.png"));
+	emblem->SetTexture(TextureManager::LoadTexture("nico2.png"));
+	emblem->transform->localPosition = Vector3(90, 0, 0);
+	//frame->SetTexture(TextureManager::LoadTexture("Frame.png"));
 
 	stockT->SetFontStyle("HGS明朝E");
 	stockT->SetString(L"3");
 	stockT->SetFontSize(40.0f);
+	stockT->transform->localPosition = Vector3(10, 10, 0);
 
 	damageT->SetFontStyle("HGS明朝E");
 	damageT->SetString(L"0%");
 	damageT->SetBlendColor(Color::white);
 	damageT->SetFontSize(80.0f);
-	damageT->transform->localPosition = Vector3(40, 20, 0);
+	damageT->transform->localPosition = Vector3(0, 40, 0);
 
 	nameT->SetFontStyle("HGS明朝E");
 	nameT->SetString(L"name");
 	nameT->SetFontSize(30.0f);
-	nameT->transform->localPosition = Vector3(0, 70, 0);
+	nameT->transform->localPosition = Vector3(0, 100, 0);
 }
 
 void PlayerParameter::Update()
@@ -47,6 +53,17 @@ void PlayerParameter::SetDamage(int damage)
 	//ダメージ
 	wchar_t s[10];
 	InttoString(damage, s);
+	//ダメージによって位置を変えるよ～(ほんとはテキストで設定したいよ)
+	if(damage < 10)
+	{
+		damageT->transform->localPosition = Vector3(50, 40, 0);
+	}else if(damage < 100)
+	{
+		damageT->transform->localPosition = Vector3(30, 40, 0);
+	}else
+	{
+		damageT->transform->localPosition = Vector3(0, 40, 0);
+	}
 	
 	wcscat_s(s, wcslen(s) + wcslen(L"%") + 1, L"%");
 	damageT->SetString(s);
@@ -62,11 +79,25 @@ void PlayerParameter::SetDamage(int damage)
 void PlayerParameter::SetStock(int stock)
 {
 	wchar_t s[10];
-	InttoString(stock, s);
-	stockT->SetString(s);
+	if (stock >= 0)
+	{
+		InttoString(stock, s);
+		stockT->SetString(s);
+	}
+	else
+	{
+		stockT->SetString(L"∞");
+	}
+	
 }
 
 void PlayerParameter::SetName(wchar_t * name)
 {
 	nameT->SetString(name);
+}
+
+void PlayerParameter::SetColor(Color C)
+{
+	color = C;
+	emblem->SetBlendColor(Color(color.r, color.g, color.b, 0.7f));
 }

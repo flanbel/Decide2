@@ -6,12 +6,11 @@ public:
 	Object()
 	{
 		name = (char*)typeid(this).name();
-		active = true;
 		discard = true;
 	}
 	virtual ~Object() {};
 
-	//Objectが作成された時に実行される
+	//インスタンスが作成された時に実行される
 	//純粋仮想関数ではないので絶対オーバーライドしなくてもいい
 	virtual void Awake(){};
 
@@ -35,18 +34,6 @@ public:
 	//イメージ(2D)描画
 	virtual void ImageRender(){};
 
-	//オブジェクトのアクティブフラグを設定する　セッター
-	virtual void Active(bool act)
-	{
-		active = act;
-	}
-
-	//アクティブかどうか取得　ゲッター
-	bool GetActive()
-	{
-		return active;
-	}
-
 	void Discard(bool b)
 	{
 		discard = b;
@@ -64,8 +51,6 @@ public:
 protected:
 	//オブジェクトの名前
 	char* name;
-	//アクティブでないオブジェクトは描画もアップデートもされない
-	bool active;
 	//オブジェクトを破棄する
 	bool discard;
 };

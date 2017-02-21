@@ -38,13 +38,15 @@ public:
 	{
 		name = (char*)typeid(*this).name();
 	}
+	Light::~Light();
 	void Awake()override;
-
-	void AddLight(DirectionalLight l);
-	const vector<DirectionalLight>& GetLight();
+	//ライトの追加
+	void AddLight(DirectionalLight* l);
+	//ベクター取得
+	const vector<DirectionalLight*> GetLight();
+	//ライトの数取得
 	int GetNum();
-
-	Color color;		//ライトの色。
 private:
-	vector<DirectionalLight> lightVec;
+	//ライトのポインタ達
+	vector<DirectionalLight*> lightVec;
 };

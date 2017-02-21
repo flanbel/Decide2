@@ -10,6 +10,7 @@
 #include "GameShadowCamera.h"
 #include "Player.h"
 #include "BattleScene.h"
+#include "GameRule.h"
 
 #include "fbEngine/CircleCollision.h"
 #include "fbEngine/Sprite.h"
@@ -19,13 +20,16 @@ void CharaSelectScene::Start()
 	GameObjectManager::AddNew<GameLight>("GameLight", 0);
 	GameObjectManager::AddNew<GameShadowCamera>("GameShadowCamera", 0);
 
+	gameRule = GameObjectManager::AddNew<GameRule>("GameRule", 0);
+	gameRule->Discard(false);
+
 	ImageObject* backGround = GameObjectManager::AddNew<ImageObject>("Back",0);
 	backGround->SetTexture(TextureManager::LoadTexture("SelectBack.png"));
 
 	readyFight = GameObjectManager::AddNew<ImageObject>("ReadyToFight", 1);
 	readyFight->SetTexture(TextureManager::LoadTexture("ReadyToStart.png"));
 	readyFight->transform->localPosition = Vector3(0, 250, 0);
-	readyFight->Active(false);
+	readyFight->SetActive(false);
 	wchar_t* name[] = {
 		L"TV",
 		L"" 
@@ -88,11 +92,12 @@ void CharaSelectScene::Update()
 			{
 				//リングの情報セット
 				selectArray[i]->SetInfo(ringArray[j]->GetInfo(i));
+				
 				break;
 			}
 		}
 		//何もセットしない
-		if(j == CHARACTER_NUM)
+		if(j == CHARACTER_NUM && selectArray[i]->GetDecision() == false)
 		{
 			selectArray[i]->SetInfo(nullptr);
 		}
@@ -119,7 +124,7 @@ void CharaSelectScene::Update()
 		}
 
 		//ReadyToFight表示
-		readyFight->Active(true);
+		readyFight->SetActive(true);
 		//戦闘シーンへ移行
 		if (KeyBoardInput->isPush(DIK_RETURN) || flag)
 		{
@@ -132,11 +137,13 @@ void CharaSelectScene::Update()
 					//プレイヤー生成
 					Player* p = GameObjectManager::AddNew<Player>("Player", 1);
 					p->SetIdx(i);
-					//シーン切り替えしても破棄しないように設定
-					p->Discard(false);
 					p->SetInfo(selectArray[i]->GetInfo());
 					p->SetColor(selectArray[i]->GetColor());
+					//シーン切り替えしても破棄しないように設定
+					p->Discard(false);
 					Array.push_back(p);
+					//ゲームルールの方にプレイヤーの情報をセット
+					gameRule->SetPlayer(p, i);
 				}
 			}
 			//選択のやつ解放
@@ -151,6 +158,6 @@ void CharaSelectScene::Update()
 		}
 	}else
 	{
-		readyFight->Active(false);
+		readyFight->SetActive(false);
 	}
 }

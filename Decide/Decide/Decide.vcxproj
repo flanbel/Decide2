@@ -155,6 +155,7 @@
     <ClInclude Include="Decide.h" />
     <ClInclude Include="GameCamera.h" />
     <ClInclude Include="GameLight.h" />
+    <ClInclude Include="GameRule.h" />
     <ClInclude Include="GameShadowCamera.h" />
     <ClInclude Include="GameSystem.h" />
     <ClInclude Include="Item.h" />
@@ -180,6 +181,7 @@
     <ClCompile Include="Decide.cpp" />
     <ClCompile Include="GameCamera.cpp" />
     <ClCompile Include="GameLight.cpp" />
+    <ClCompile Include="GameRule.cpp" />
     <ClCompile Include="GameShadowCamera.cpp" />
     <ClCompile Include="Item.cpp" />
     <ClCompile Include="PlayerParameter.cpp" />

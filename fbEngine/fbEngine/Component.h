@@ -12,6 +12,7 @@ class Component : public Object
 public:
 	Component(GameObject* g, Transform* t):Object()
 	{
+		enable = true;
 		gameObject = g;
 		transform = t;
 		name = (char*)typeid(this).name();
@@ -26,6 +27,8 @@ public:
 	virtual void PreRender() {};
 	virtual void Render() {};*/
 
+	//コンポーネントを有効にする
+	bool enable;
 	//自分がアタッチしているゲームオブジェクトのアドレス
 	GameObject* gameObject;
 	//gameObjectのトランスフォームのアドレス

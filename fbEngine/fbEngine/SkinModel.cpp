@@ -131,11 +131,11 @@ void SkinModel::DrawMeshContainer(
 		Vector4 dir[MAX_LIGHTNUM];
 		Color color[MAX_LIGHTNUM];
 		ZeroMemory(dir, sizeof(Vector4)*MAX_LIGHTNUM);
-		const vector<DirectionalLight>& vec = light->GetLight();
+		const vector<DirectionalLight*> vec = light->GetLight();
 		FOR(num)
 		{
-			dir[i] = vec[i].Direction();
-			color[i] = vec[i].color;
+			dir[i] = vec[i]->Direction();
+			color[i] = vec[i]->color;
 		}
 		
 		//ライトの向きを転送。
@@ -175,6 +175,10 @@ void SkinModel::DrawMeshContainer(
 		effect->SetBool("SkyBox", SkyBox);
 
 		effect->SetVector("g_blendcolor", (D3DXVECTOR4*)&blendcolor);
+
+		(*graphicsDevice()).SetRenderState(D3DRS_ALPHABLENDENABLE, TRUE);
+		(*graphicsDevice()).SetRenderState(D3DRS_SRCBLEND, D3DBLEND_SRCALPHA);
+		(*graphicsDevice()).SetRenderState(D3DRS_DESTBLEND, D3DBLEND_INVSRCALPHA);
 
 		//アニメーションの有無で分岐
 		if (pMeshContainer->pSkinInfo != NULL)
@@ -282,6 +286,10 @@ void SkinModel::DrawMeshContainer(
 
 		effect->EndPass();
 		effect->End();
+
+		(*graphicsDevice()).SetRenderState(D3DRS_ALPHABLENDENABLE, FALSE);
+		(*graphicsDevice()).SetRenderState(D3DRS_SRCBLEND, D3DBLEND_ONE);
+		(*graphicsDevice()).SetRenderState(D3DRS_DESTBLEND, D3DBLEND_ZERO);
 	}
 }
 

@@ -10,7 +10,7 @@ void ComponentManager::Start()
 	vector<Component*>::iterator it = components.begin();
 	while (it != components.end())
 	{
-		if ((*it)->GetActive())
+		if ((*it)->enable)
 		{
 			(*it)->Start();
 		}
@@ -25,7 +25,7 @@ void ComponentManager::Update()
 	vector<Component*>::iterator it = components.begin();
 	while (it != components.end())
 	{
-		if ((*it)->GetActive())
+		if ((*it)->enable)
 		{
 			(*it)->Update();
 		}
@@ -38,7 +38,7 @@ void ComponentManager::LateUpdate()
 	vector<Component*>::iterator it = components.begin();
 	while (it != components.end())
 	{
-		if ((*it)->GetActive())
+		if ((*it)->enable)
 		{
 			(*it)->LateUpdate();
 		}
@@ -51,7 +51,7 @@ void ComponentManager::PreRender()
 	vector<Component*>::iterator it = components.begin();
 	while (it != components.end())
 	{
-		if ((*it)->GetActive())
+		if ((*it)->enable)
 		{
 			(*it)->PreRender();
 		}
@@ -64,7 +64,7 @@ void ComponentManager::Render()
 	vector<Component*>::iterator it = components.begin();
 	while (it != components.end())
 	{
-		if ((*it)->GetActive())
+		if ((*it)->enable)
 		{
 			(*it)->Render();
 		}
@@ -77,7 +77,7 @@ void ComponentManager::PostRender()
 	vector<Component*>::iterator it = components.begin();
 	while (it != components.end())
 	{
-		if ((*it)->GetActive())
+		if ((*it)->enable)
 		{
 			(*it)->PostRender();
 		}
@@ -90,7 +90,7 @@ void ComponentManager::ImageRender()
 	vector<Component*>::iterator it = components.begin();
 	while (it != components.end())
 	{
-		if ((*it)->GetActive())
+		if ((*it)->enable)
 		{
 			(*it)->ImageRender();
 		}

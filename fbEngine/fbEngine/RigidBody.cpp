@@ -4,7 +4,6 @@
 RigidBody::RigidBody(GameObject* g, Transform* t) :
 	Collision(g,t),
 	myMotionState(NULL),
-	isGround(false),
 	offset(Vector3::zero)
 {
 	name = (char*)typeid(*this).name();
@@ -63,4 +62,25 @@ void RigidBody::Create(float mass, Collider* coll, int id, Vector3 inertia,Vecto
 	Collision::Create(new btRigidBody(btRbInfo), coll, id);
 	//自身を登録
 	PhysicsWorld::Instance()->AddRigidBody(this);
+}
+
+void RigidBody::SetGravity(Vector3 set)
+{
+	//アップキャスト
+	btRigidBody* rigit = (btRigidBody*)collisionObject.get();
+	rigit->setGravity(btVector3(set.x, set.y, set.z));
+}
+
+void RigidBody::SetGravity(btVector3& set)
+{
+	//アップキャスト
+	btRigidBody* rigit = (btRigidBody*)collisionObject.get();
+	rigit->setGravity(set);
+}
+
+void RigidBody::SetGravity(float x, float y, float z)
+{
+	//アップキャスト
+	btRigidBody* rigit = (btRigidBody*)collisionObject.get();
+	rigit->setGravity(btVector3(x, y, z));
 }

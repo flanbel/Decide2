@@ -3,6 +3,7 @@
 class CharaSelect;
 class CharaRingFrame;
 class ImageObject;
+class GameRule;
 
 class CharaSelectScene : public Scene
 {
@@ -15,4 +16,5 @@ private:
 	CharaRingFrame* ringArray[CHARACTER_NUM];
 
 	ImageObject* readyFight;
+	GameRule* gameRule;
 };

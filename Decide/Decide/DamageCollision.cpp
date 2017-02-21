@@ -16,7 +16,7 @@ void DamageCollision::Update()
 		time > life)
 	{
 		//€
-		Active(false);
+		enable = false;
 		return;
 	}
 }

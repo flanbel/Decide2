@@ -1,17 +1,26 @@
 #include "Light.h"
 
-void Light::Awake()
+Light::~Light()
 {
-	color = Color::white;
+	for each (auto lightp in lightVec)
+	{
+		//É|ÉCÉìÉ^çÌèú
+		SAFE_DELETE(lightp);
+	}
 	lightVec.clear();
 }
 
-void Light::AddLight(DirectionalLight l)
+void Light::Awake()
+{
+	lightVec.clear();
+}
+
+void Light::AddLight(DirectionalLight* l)
 {
 	lightVec.push_back(l);
 }
 
-const vector<DirectionalLight>& Light::GetLight()
+const vector<DirectionalLight*> Light::GetLight()
 {
 	return lightVec;
 }
