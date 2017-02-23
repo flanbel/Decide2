@@ -57,7 +57,8 @@ void SkinModel::Awake()
 	Specular = false;
 
 	SkyBox = false;
-	blendcolor = Color::white;
+	AllBlend = Color::white;
+	TextureBlend = Color::white;
 }
 
 //モデルデータの行列更新
@@ -174,7 +175,7 @@ void SkinModel::DrawMeshContainer(
 		effect->SetBool("Spec", Specular);
 		effect->SetBool("SkyBox", SkyBox);
 
-		effect->SetVector("g_blendcolor", (D3DXVECTOR4*)&blendcolor);
+		effect->SetVector("g_blendcolor", (D3DXVECTOR4*)&AllBlend);
 
 		(*graphicsDevice()).SetRenderState(D3DRS_ALPHABLENDENABLE, TRUE);
 		(*graphicsDevice()).SetRenderState(D3DRS_SRCBLEND, D3DBLEND_SRCALPHA);
@@ -217,12 +218,16 @@ void SkinModel::DrawMeshContainer(
 				D3DXVECTOR4* Diffuse = (D3DXVECTOR4*)&pMeshContainer->pMaterials[iAttrib].MatD3D.Diffuse;
 				//テクスチャー
 				LPDIRECT3DTEXTURE9 texture = pMeshContainer->ppTextures[iAttrib];
-
 				//テクスチャが格納されていればセット
 				if (texture != NULL)
 				{
 					// ディフューズテクスチャ。
 					effect->SetTexture("g_diffuseTexture", texture);
+					effect->SetVector("g_Textureblendcolor", (D3DXVECTOR4*)&Color::white);
+					//とりあえず、今回はテクスチャの名前を見る
+					
+					if (strcmp(pMeshContainer->pMaterials[iAttrib].pTextureFilename, "TV_Head.png") == 0)
+						effect->SetVector("g_Textureblendcolor", (D3DXVECTOR4*)&TextureBlend);
 					effect->SetBool("Texflg", true);
 				}
 				//テクスチャがないならカラーセット
@@ -268,6 +273,7 @@ void SkinModel::DrawMeshContainer(
 				if (texture != NULL)
 				{
 					effect->SetTexture("g_Texture", texture);
+					effect->SetVector("g_Textureblendcolor", (D3DXVECTOR4*)&Color::white);
 					effect->SetBool("Texflg", true);
 				}
 				//テクスチャがないならカラーセット

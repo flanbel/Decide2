@@ -21,10 +21,11 @@ float4	g_diffuseLightColor[MAX_LIGHTNUM];		//ディフューズライトのカラー。
 float4	g_ambientLight;								//環境光。
 
 float4  g_diffuseMaterial;		//マテリアルカラー
-float4  g_blendcolor;//混ぜる色
+float4  g_blendcolor;			//全体に混ぜる色
 
 float4x4 g_LVP;					//ライトからみたビュープロジェクション行列
 
+float4  g_Textureblendcolor;	//テクスチャに混ぜる色
 texture g_Texture;				//テクスチャ。
 sampler g_TextureSampler = 
 sampler_state
@@ -121,7 +122,7 @@ float4 PSMain(VS_OUTPUT In):COLOR0
 		}
 		else
 		{
-			diff = tex2D(g_TextureSampler, In.uv);
+			diff = tex2D(g_TextureSampler, In.uv) * g_Textureblendcolor;
 		}
 	}
 	else

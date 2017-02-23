@@ -29,6 +29,7 @@ float4  g_blendcolor;//混ぜる色
 
 float4x4 g_LVP;					//ライトからみたビュープロジェクション行列
 
+float4  g_Textureblendcolor;	//テクスチャに混ぜる色
 texture g_diffuseTexture;		//ディフューズテクスチャ。
 sampler g_diffuseTextureSampler = 
 sampler_state
@@ -138,7 +139,7 @@ float4 PSMain( VS_OUTPUT In ):COLOR0
 	//カラー
 	if (Texflg)
 	{
-		diff = tex2D(g_diffuseTextureSampler, In.uv);
+		diff = tex2D(g_diffuseTextureSampler, In.uv) * g_Textureblendcolor;
 	}
 	else
 	{

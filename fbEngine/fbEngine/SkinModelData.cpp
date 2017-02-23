@@ -432,7 +432,9 @@ HRESULT CAllocateHierarchy::CreateMeshContainer(
 					pd3dDevice,
 					filePath,
 					&pMeshContainer->ppTextures[iMaterial]))
-					) {
+					) 
+				{
+					//なかった
 					pMeshContainer->ppTextures[iMaterial] = NULL;
 				}
 				//キューブテクスチャ
@@ -444,7 +446,8 @@ HRESULT CAllocateHierarchy::CreateMeshContainer(
 					pMeshContainer->ppCubeTextures[iMaterial] = NULL;
 				}
 					// don't remember a pointer into the dynamic memory, just forget the name after loading
-					pMeshContainer->pMaterials[iMaterial].pTextureFilename = NULL;
+					//よくわからんがファイルパスを消している。
+					//pMeshContainer->pMaterials[iMaterial].pTextureFilename = NULL;
 			}
 		}
 	}

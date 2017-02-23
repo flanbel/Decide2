@@ -48,8 +48,6 @@ public:
 	{
 		return modelDate->GetOrgMeshFirst();
 	}
-	//test
-	Color blendcolor;
 	void SetReceive(bool f)
 	{
 		receiveShadow = f;
@@ -62,6 +60,15 @@ public:
 	{
 		SkyBox = f;
 	}
+	void SetTextureBlend(Color c)
+	{
+		TextureBlend = c;
+	}
+
+	void SetAllBlend(Color c)
+	{
+		AllBlend = c;
+	}
 private:
 	//エフェクトへの参照
 	Effect* effect;
@@ -70,6 +77,8 @@ private:
 	Camera* camera;
 	Light* light = nullptr;
 	ShadowCamera* shadowCamera;
+	//ブレンドする色
+	Color TextureBlend, AllBlend;
 
 	//影を生成するときの設定
 	CastShadow castShadow;

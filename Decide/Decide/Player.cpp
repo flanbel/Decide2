@@ -108,6 +108,7 @@ void Player::Start()
 	idxPlate->SetTexture(TextureManager::LoadTexture(path));
 	idxPlate->SetBlendColor(playerColor);
 	Pparameter->SetColor(playerColor);
+	model->SetTextureBlend(playerColor);
 }
 
 #include "DamageCollision.h"

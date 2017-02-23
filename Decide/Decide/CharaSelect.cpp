@@ -51,6 +51,7 @@ void CharaSelect::Start()
 {
 	back->SetBlendColor(playerColor);
 	cursor->SetBlendColor(playerColor);
+	showmodel->GetModel()->SetTextureBlend(playerColor);
 }
 
 void CharaSelect::Update()
