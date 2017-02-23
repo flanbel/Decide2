@@ -23,7 +23,7 @@ void RenderTarget::Create(Vector2 size)
 	texture->size = size;
 
 	//ビューポート設定
-	viewport = { 0, 0, size.x, size.y, 0.0f, 1.0f };
+	viewport = { 0, 0, (DWORD)size.x, (DWORD)size.y, 0.0f, 1.0f };
 
 	//サーフェスのインターフェース取得
 	texture->pTexture->GetSurfaceLevel(0, &buffer);
