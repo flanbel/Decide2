@@ -92,7 +92,7 @@ int GameRule::GetStock()
 
 int GameRule::GetRemainingTime()
 {
-	return (value * 60) - time;
+	return max(0, (value * 60) - time);
 }
 
 bool GameRule::IsGameSet()

@@ -16,14 +16,14 @@ public:
 	public:
 		int idx;  // “Y‚¦š
 		int Kill; // “|‚µ‚½”
-		bool operator<(const Ranking& right) const {
-			//ƒLƒ‹”‚Å”äŠr
+		bool operator < (const Ranking& right) const {
+			//ƒLƒ‹”‚Å¸‡
 			if (Kill > right.Kill)
 			{
 				return true;
 			}
 			//“¯”‚È‚ç“Y‚¦š‚Ì¬‚³‚¢‚Ù‚¤‚ğã‚É
-			else if (idx < right.idx)
+			else if (Kill == right.Kill && idx < right.idx)
 			{
 				return true;
 			}

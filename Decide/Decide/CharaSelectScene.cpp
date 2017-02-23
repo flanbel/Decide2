@@ -142,7 +142,8 @@ void CharaSelectScene::Update()
 		gameRule->SetGameRule(rule, value);
 		
 		wchar_t display[128];
-		wchar_t *ruleW,valueW[5];
+		wchar_t *ruleW = NULL;
+		wchar_t valueW[5] = {L'0'};
 		switch (rule)
 		{
 		case GameRule::STOCK:
