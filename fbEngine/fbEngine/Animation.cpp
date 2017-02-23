@@ -113,9 +113,11 @@ void Animation::Update()
 				//補間終了。
 				isInterpolate = false;
 				weight = 1.0f;
+				animController->SetTrackWeight(currentTrackNo, weight);
 				//現在のトラック以外を無効にする。
 				for (int i = 0; i < numMaxTracks; i++) {
 					if (i != currentTrackNo) {
+						
 						animController->SetTrackEnable(i, FALSE);
 					}
 				}

@@ -23,7 +23,7 @@ void BattleScene::Start()
 	gong = GameObjectManager::AddNew<SoundSource>("Gong", 0);
 	BGM = GameObjectManager::AddNew<SoundSource>("BGM", 0);
 	gong->Init("Asset/Sound/gong.wav");
-	BGM->Init("Asset/Sound/NGAHHH!!.wav");
+	BGM->Init("Asset/Sound/bgm_Battle.wav");
 	BGM->Play(true);
 	//シーン切り替えフラグ
 	Change = false;

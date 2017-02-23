@@ -492,7 +492,7 @@ void Player::Blown()
 				isAction = true;
 			}
 			//ジャンプっていうか空中？
-			jump = true;
+			//jump = true;
 			jumpCount = 1;
 			//ヒットストップ処理
 			if(false)

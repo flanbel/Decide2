@@ -38,10 +38,10 @@ void Collision::Awake()
 {
 #ifdef _DEBUG
 	////ŽlŠp‚¢ƒ‚ƒfƒ‹•`‰æ
-	SkinModel* model = gameObject->AddComponent<SkinModel>();
+	/*SkinModel* model = gameObject->AddComponent<SkinModel>();
 	SkinModelData* data = new SkinModelData();
 	data->CloneModelData(SkinModelManager::LoadModel("BoxCollision.X"));
 	model->SetModelData(data);
-	model->SetAllBlend(Color(1.0f, 0, 0, 0.7f));
+	model->SetAllBlend(Color(1.0f, 0, 0, 0.7f));*/
 #endif // _DEBUG
 }

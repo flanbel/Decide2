@@ -106,7 +106,7 @@ void CharaSelect::Update()
 				show->SetActive(true);
 				showmodel->GetModel()->SetModelData(info->data);
 				showmodel->SetAnim(info->anim);
-				showmodel->GetAnim()->PlayAnimation(0, 1.0f);
+				showmodel->GetAnim()->PlayAnimation(0);
 				name->SetString(info->name);
 			}
 			showmodel->GetAnim()->Update();
@@ -125,14 +125,14 @@ void CharaSelect::Update()
 				if (decision)
 				{
 					//ポーズアニメーション再生
-					showmodel->GetAnim()->PlayAnimation(0, 1.0f);
+					showmodel->GetAnim()->PlayAnimation(0, 0.1f);
 					//音再生
 					sound->Play(false);
 				}
 				else
 				{
 					//待機アニメーション再生
-					showmodel->GetAnim()->PlayAnimation(0, 1.0f);
+					showmodel->GetAnim()->PlayAnimation(0, 0.1f);
 				}
 			}
 		}

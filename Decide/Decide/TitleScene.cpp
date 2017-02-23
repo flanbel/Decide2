@@ -19,7 +19,7 @@ void TitleScene::Start()
 	text->transform->localPosition = Vector3(WindowW/2, WindowH/2, 0);
 
 	SoundSource *source = GameObjectManager::AddNew<SoundSource>("test", 1);
-	source->Init("Asset/Sound/teikoku.wav");
+	source->Init("Asset/Sound/bgm_Title.wav");
 	source->Play(true);
 
 	enter = GameObjectManager::AddNew<SoundSource>("EnterSE", 1);

@@ -128,11 +128,11 @@ void SkinModel::DrawMeshContainer(
 		effect->Begin(NULL, D3DXFX_DONOTSAVESHADERSTATE);
 		effect->BeginPass(0);
 
-		int num = light->GetNum();
+		int num = GameObjectManager::mainLight->GetNum();
 		Vector4 dir[MAX_LIGHTNUM];
 		Color color[MAX_LIGHTNUM];
 		ZeroMemory(dir, sizeof(Vector4)*MAX_LIGHTNUM);
-		const vector<DirectionalLight*> vec = light->GetLight();
+		const vector<DirectionalLight*> vec = GameObjectManager::mainLight->GetLight();
 		FOR(num)
 		{
 			dir[i] = vec[i]->Direction();
