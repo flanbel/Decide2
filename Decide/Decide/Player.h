@@ -81,6 +81,8 @@ private:
 	int playeridx;
 	//ジャンプ中か否か
 	bool jump;
+	//落ちている(降下中)
+	bool fall;
 	int jumpCount;
 	//アクション(攻撃や防御)中か否か
 	bool isAction;
@@ -103,8 +105,6 @@ private:
 	
 	//吹き飛び
 	Vector3 blown;
-	//重力
-	float gravity;
 	//硬直
 	float rigor;
 	//加算用

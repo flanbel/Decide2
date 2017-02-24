@@ -20,8 +20,8 @@ sampler_state
 {
 	Texture = <g_texture>;
 	MipFilter = NONE;
-	MinFilter = NONE;
-	MagFilter = NONE;
+	MinFilter = LINEAR;
+	MagFilter = LINEAR;
 	AddressU = Wrap;
 	AddressV = Wrap;
 };
@@ -69,7 +69,7 @@ float4 ps_main(VS_OUTPUT In) : COLOR0
 		clip(-1);
 	}
 
-	return color * blendColor;
+	return color* blendColor;
 }
 
 //sprite描画テクニック

@@ -12,6 +12,7 @@ public:
 	TEXTURE* GetTexture();
 	void SetBlendColor(Color c);
 	void SetClipColor(Color c);
+	void SetShadow(bool f);
 private:
 	Sprite* sprite;
 };

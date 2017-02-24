@@ -92,8 +92,10 @@ VS_OUTPUT VSMain(VS_INPUT In)
 	
 	Out.world = pos;						//ワールド行列を保持
 	Out.lvp = mul(pos, g_LVP);				//ライトの目線によるワールドビュー射影変換をする
-	
-	pos = mul( pos, g_viewMatrix );			//ワールド空間からビュー空間に変換。
+	if (!SkyBox)
+	{
+		pos = mul(pos, g_viewMatrix);			//ワールド空間からビュー空間に変換。
+	}
 	pos = mul( pos, g_projectionMatrix );	//ビュー空間から射影空間に変換。
 
 	Out.pos = pos;
@@ -117,8 +119,10 @@ float4 PSMain(VS_OUTPUT In):COLOR0
 	{
 		if(SkyBox)
 		{
+			
 			//反転しているので-1をかけて法線をもどす
 			diff = texCUBE(g_cubeSampler, In.normal * -1.0f);
+			return diff;
 		}
 		else
 		{

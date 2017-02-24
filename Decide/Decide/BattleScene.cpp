@@ -18,8 +18,8 @@ void BattleScene::Start()
 	GameObjectManager::AddNew<GameLight>("GameLight", 0);
 	GameObjectManager::AddNew<GameShadowCamera>("GameShadowCamera", 0);
 
-	GameObjectManager::AddNew<Stage>("Stage", 0);
 	GameObjectManager::AddNew<Sky>("Sky", 0);
+	GameObjectManager::AddNew<Stage>("Stage", 1);
 	gong = GameObjectManager::AddNew<SoundSource>("Gong", 0);
 	BGM = GameObjectManager::AddNew<SoundSource>("BGM", 0);
 	gong->Init("Asset/Sound/gong.wav");
@@ -42,6 +42,8 @@ void BattleScene::Start()
 		InttoString(gamerule->GetRemainingTime(), time);
 		Timer->SetString(time);
 	}
+	else
+		Timer = nullptr;
 
 	//[“x‚Ì‰æ‘œ‚ğ‘‚­
 	test = GameObjectManager::AddNew<ImageObject>("test", 4);

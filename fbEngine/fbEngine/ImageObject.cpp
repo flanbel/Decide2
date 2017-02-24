@@ -22,3 +22,8 @@ void ImageObject::SetClipColor(Color c)
 {
 	sprite->SetClipColor(c);
 }
+
+void ImageObject::SetShadow(bool f)
+{
+	sprite->SetShadow(f);
+}

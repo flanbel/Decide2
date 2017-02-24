@@ -270,7 +270,8 @@ VS_ShadowOUT VSShadow(VS_ShadowIN In)
 	pos += (mul(In.pos, g_mWorldMatrixArray[IndexArray[g_numBone - 1]]) * LastWeight);	//ç≈å„ÇÃÇ‚Ç¬ÅH
 	pos = mul(float4(pos.xyz, 1.0f), g_viewMatrix);
 	float4 P = mul(float4(pos.xyz, 1.0f), g_projectionMatrix);
-	Out.shadow = Out.pos = P;
+	Out.pos = P;
+	Out.shadow = P;
 
 	return Out;
 }

@@ -417,12 +417,15 @@ HRESULT CAllocateHierarchy::CreateMeshContainer(
 	if (NumMaterials > 0)
 	{
 		memcpy(pMeshContainer->pMaterials, pMaterials, sizeof(D3DXMATERIAL)* NumMaterials);
-
 		for (iMaterial = 0; iMaterial < NumMaterials; iMaterial++)
 		{
+			
 			//ファイル指定があるなら
 			if (pMeshContainer->pMaterials[iMaterial].pTextureFilename != NULL)
 			{
+				pMeshContainer->pMaterials[iMaterial].pTextureFilename = new CHAR[strlen(pMaterials[iMaterial].pTextureFilename) + 1];
+				strcpy(pMeshContainer->pMaterials[iMaterial].pTextureFilename, pMaterials[iMaterial].pTextureFilename);
+
 				//画像のパス追加
 				char* baseDir = "Asset/Xfile/";
 				char filePath[64];
@@ -530,7 +533,8 @@ HRESULT CAllocateHierarchy::DestroyMeshContainer(LPD3DXMESHCONTAINER pMeshContai
 
 	SAFE_DELETE_ARRAY(pMeshContainer->Name);
 	SAFE_DELETE_ARRAY(pMeshContainer->pAdjacency);
-	SAFE_DELETE_ARRAY(pMeshContainer->pMaterials);
+
+
 	SAFE_DELETE_ARRAY(pMeshContainer->pBoneOffsetMatrices);
 
 	// release all the allocated textures
@@ -539,10 +543,12 @@ HRESULT CAllocateHierarchy::DestroyMeshContainer(LPD3DXMESHCONTAINER pMeshContai
 		for (iMaterial = 0; iMaterial < pMeshContainer->NumMaterials; iMaterial++)
 		{
 			SAFE_RELEASE(pMeshContainer->ppTextures[iMaterial]);
+			SAFE_DELETE_ARRAY(pMeshContainer->pMaterials[iMaterial].pTextureFilename);
 			SAFE_RELEASE(pMeshContainer->ppCubeTextures[iMaterial]);
 		}
 	}
 
+	SAFE_DELETE_ARRAY(pMeshContainer->pMaterials);
 	SAFE_DELETE_ARRAY(pMeshContainer->ppTextures);
 	SAFE_DELETE_ARRAY(pMeshContainer->ppCubeTextures);
 	SAFE_DELETE_ARRAY(pMeshContainer->ppBoneMatrixPtrs);

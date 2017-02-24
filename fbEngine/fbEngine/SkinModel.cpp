@@ -158,7 +158,7 @@ void SkinModel::DrawMeshContainer(
 		effect->SetMatrix("g_projectionMatrix", &camera->Projection());
 		
 		//影カメラのビュープロジェクション行列を作って送信
-		D3DXMATRIX LVP = shadowCamera->View() * shadowCamera->Projection();
+		D3DXMATRIX LVP = GameObjectManager::mainShadowCamera->View() * GameObjectManager::mainShadowCamera->Projection();
 		effect->SetMatrix("g_LVP", &LVP);
 
 		//深度テクスチャ
@@ -176,6 +176,11 @@ void SkinModel::DrawMeshContainer(
 		effect->SetBool("SkyBox", SkyBox);
 
 		effect->SetVector("g_blendcolor", (D3DXVECTOR4*)&AllBlend);
+
+		if(SkyBox)
+		{
+			(*graphicsDevice()).SetRenderState(D3DRS_ZWRITEENABLE, FALSE);
+		}
 
 		(*graphicsDevice()).SetRenderState(D3DRS_ALPHABLENDENABLE, TRUE);
 		(*graphicsDevice()).SetRenderState(D3DRS_SRCBLEND, D3DBLEND_SRCALPHA);
@@ -293,6 +298,11 @@ void SkinModel::DrawMeshContainer(
 		effect->EndPass();
 		effect->End();
 
+		if (SkyBox)
+		{
+			(*graphicsDevice()).SetRenderState(D3DRS_ZWRITEENABLE, TRUE);
+		}
+
 		(*graphicsDevice()).SetRenderState(D3DRS_ALPHABLENDENABLE, FALSE);
 		(*graphicsDevice()).SetRenderState(D3DRS_SRCBLEND, D3DBLEND_ONE);
 		(*graphicsDevice()).SetRenderState(D3DRS_DESTBLEND, D3DBLEND_ZERO);
@@ -314,8 +324,8 @@ void SkinModel::CreateShadow(D3DXMESHCONTAINER_DERIVED * pMeshContainer, D3DXFRA
 		effect->BeginPass(0);
 
 		//影カメラのビュープロジェクション行列を送る
-		effect->SetMatrix("g_viewMatrix", &shadowCamera->View());
-		effect->SetMatrix("g_projectionMatrix", &shadowCamera->Projection());
+		effect->SetMatrix("g_viewMatrix", &GameObjectManager::mainShadowCamera->View());
+		effect->SetMatrix("g_projectionMatrix", &GameObjectManager::mainShadowCamera->Projection());
 
 		//アニメーションの有無で分岐
 		if (pMeshContainer->pSkinInfo != NULL)

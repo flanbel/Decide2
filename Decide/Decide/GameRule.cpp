@@ -4,10 +4,10 @@
 
 GameRule::GameRule(char * name) :
 	GameObject(name),
-	gamerule(GAMERULE::STOCK),
-	CheckGameSet(&GameRule::StockGameSet),
+	gamerule(GAMERULE::TIMELIMIT),
+	CheckGameSet(&GameRule::TimeLimitGameSet),
 	playerCount(0),
-	value(3),
+	value(2),
 	time(0.0f)
 {
 

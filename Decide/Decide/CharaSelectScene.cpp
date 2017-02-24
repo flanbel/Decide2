@@ -24,10 +24,7 @@ void CharaSelectScene::Start()
 	gameRule = GameObjectManager::AddNew<GameRule>("GameRule", 0);
 	gameRule->Discard(false);
 	displayGameRule = GameObjectManager::AddNew<TextObject>("DisplayGameRule", 1);
-	displayGameRule->SetFontStyle("HGS明朝E");
-	displayGameRule->SetString(L"GameRule:Stock　 3");
-	displayGameRule->SetFontSize(40.0f);
-	displayGameRule->SetBlendColor(Color::white);
+	displayGameRule->Initialize(L"GameRule:Stock　 3", 40.0f, Color::white, true, "HGS明朝E");
 	displayGameRule->transform->localPosition = Vector3(50, 100, 0);
 
 	ImageObject* backGround = GameObjectManager::AddNew<ImageObject>("Back",0);
@@ -147,13 +144,13 @@ void CharaSelectScene::Update()
 		switch (rule)
 		{
 		case GameRule::STOCK:
-			ruleW = L"Stock_";
+			ruleW = L"Stock　 ";
 			break;
 		case GameRule::TIMELIMIT:
-			ruleW = L"TimeLimit_";
+			ruleW = L"TimeLimit　 ";
 			break;
 		case GameRule::KNOCKOUT:
-			ruleW = L"KnockOut_";
+			ruleW = L"KnockOut　 ";
 			break;
 		default:
 			break;

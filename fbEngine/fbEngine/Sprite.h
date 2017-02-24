@@ -12,6 +12,8 @@ public:
 	void Start()override;
 	void PreRender()override;
 	void ImageRender()override;
+	//影の生成
+	void CreateShadow();
 	void SetTexture(TEXTURE* t)
 	{
 		texture = t;
@@ -32,6 +34,10 @@ public:
 	{
 		mask = m;
 	}
+	void SetShadow(bool f)
+	{
+		Shadow = f;
+	}
 private:
 	Effect* effect;
 	TEXTURE* texture;
@@ -41,6 +47,8 @@ private:
 	Color clipColor;
 	//マスクするかどうか
 	bool mask;
+	//影を落とすかどうか
+	bool Shadow;
 	
 	//宣言からオブジェクト生成
 	static IDirect3DVertexDeclaration9 *pvertexDec;

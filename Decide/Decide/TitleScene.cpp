@@ -13,9 +13,7 @@ void TitleScene::Start()
 	titleback->SetTexture(TextureManager::LoadTexture("TitleBack.png"));
 	//プリーズエンター
 	TextObject* text = GameObjectManager::AddNew<TextObject>("PleaseEnter", 1);
-	text->SetString(L"<PleaseEnter>");
-	text->SetFontSize(80.0f);
-	text->SetBlendColor(Color::black);
+	text->Initialize(L"<PleaseEnter>", 80.0f, Color::white, true);
 	text->transform->localPosition = Vector3(WindowW/2, WindowH/2, 0);
 
 	SoundSource *source = GameObjectManager::AddNew<SoundSource>("test", 1);

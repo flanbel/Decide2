@@ -33,6 +33,7 @@ public:
 	void AddCollision(Collision* coll);
 	void RemoveCollision(Collision* coll);
 	const Collision* FindOverlappedDamageCollision(btCollisionObject * colliObject,int id) const;
+	const bool FindOverlappedStage(btCollisionObject * colliObject,Vector3 start,Vector3 end) const;
 
 	static PhysicsWorld* Instance();
 private:

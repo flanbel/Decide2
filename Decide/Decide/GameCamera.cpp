@@ -5,13 +5,10 @@ void GameCamera::Awake()
 {
 	Camera* camera = AddComponent<Camera>();
 	GameObjectManager::mainCamera = camera;
-	transform->localPosition = Vector3(-350, 380, -870);
-	transform->localAngle = Vector3(18, 23, 0);
-	
-	transform->localPosition = Vector3(0, 380, -870);
-	transform->localAngle = Vector3(18, 0, 0);
-	camera->Near(10);
-	camera->Far(2100);
+	transform->localPosition = Vector3(0, 991, -684);
+	transform->localAngle = Vector3(60, 0, 0);
+	camera->Near(500);
+	camera->Far(1850);
 	//camera->Near(1);
 	//camera->Far(2000);
 }
@@ -19,69 +16,69 @@ void GameCamera::Awake()
 void GameCamera::Update()
 {
 	//í≤êÆóp
-	/*Camera* camera = GetComponent<Camera>();
-	static Vector2 nf = { 500,1500 };
-	if (KeyBoardInput->isPush(DIK_N))
+	Camera* camera = GetComponent<Camera>();
+	static Vector2 nf = { 500,1850 };
+	if (KeyBoardInput->isPressed(DIK_N))
 	{
 		nf.x++;
 	}
-	if (KeyBoardInput->isPush(DIK_M))
+	if (KeyBoardInput->isPressed(DIK_M))
 	{
 		nf.x--;
 	}
-	if (KeyBoardInput->isPush(DIK_F))
+	if (KeyBoardInput->isPressed(DIK_F))
 	{
 		nf.y++;
 	}
-	if (KeyBoardInput->isPush(DIK_G))
+	if (KeyBoardInput->isPressed(DIK_G))
 	{
 		nf.y--;
 	}
 
-	camera->Near(nf.x);
+	/*camera->Near(nf.x);
 	camera->Far(nf.y);
 
-	if (KeyBoardInput->isPush(DIK_LEFT))
+	if (KeyBoardInput->isPressed(DIK_LEFT))
 	{
-		transform->localAngle.y -= 3;
+		transform->localAngle.y -= 1;
 	}
-	if (KeyBoardInput->isPush(DIK_RIGHT))
+	if (KeyBoardInput->isPressed(DIK_RIGHT))
 	{
-		transform->localAngle.y += 3;
+		transform->localAngle.y += 1;
 	}
-	if (KeyBoardInput->isPush(DIK_UP))
+	if (KeyBoardInput->isPressed(DIK_UP))
 	{
-		transform->localAngle.x -= 3;
+		transform->localAngle.x -= 1;
 	}
-	if (KeyBoardInput->isPush(DIK_DOWN))
+	if (KeyBoardInput->isPressed(DIK_DOWN))
 	{
-		transform->localAngle.x += 3;
+		transform->localAngle.x += 1;
 	}*/
 
 	Vector3 dir = Vector3::zero;
-	if(KeyBoardInput->isPush(DIK_W))
+	if(KeyBoardInput->isPressed(DIK_W))
 	{
-		dir.z += 3;
+		dir.z += 1;
 	}
-	if (KeyBoardInput->isPush(DIK_S))
+	if (KeyBoardInput->isPressed(DIK_S))
 	{
-		dir.z -= 3;
+		dir.z -= 1;
 	}
-	if (KeyBoardInput->isPush(DIK_A))
+	if (KeyBoardInput->isPressed(DIK_A))
 	{
-		dir.x -= 3;
+		dir.x -= 1;
 	}
-	if (KeyBoardInput->isPush(DIK_D))
+	if (KeyBoardInput->isPressed(DIK_D))
 	{
-		dir.x += 3;
+		dir.x += 1;
 	}
-	if (KeyBoardInput->isPush(DIK_O))
+	if (KeyBoardInput->isPressed(DIK_O))
 	{
-		dir.y += 3;
+		dir.y += 1;
 	}
-	if (KeyBoardInput->isPush(DIK_L))
+	if (KeyBoardInput->isPressed(DIK_L))
 	{
-		dir.y -= 3;
+		dir.y -= 1;
 	}
 
 	//transform->localPosition.Add(transform->Direction(dir));

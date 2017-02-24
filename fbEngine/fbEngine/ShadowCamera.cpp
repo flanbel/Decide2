@@ -3,6 +3,6 @@
 void ShadowCamera::Update()
 {
 	ViewMatrixUpdate();
-	//ParallelProjectionMatrixUpdate();
-	ProjectionMatrixUpdate();
+	ParallelProjectionMatrixUpdate();
+	//ProjectionMatrixUpdate();
 }

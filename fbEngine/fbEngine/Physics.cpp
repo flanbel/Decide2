@@ -44,6 +44,54 @@ struct MyContactResultCallback : public btCollisionWorld::ContactResultCallback
 	}
 };
 
+//衝突したときに呼ばれる関数オブジェクト(地面用)
+struct SweepResultGround : public btCollisionWorld::ConvexResultCallback
+{
+	bool isHit = false;									//衝突フラグ。
+	Vector3 hitPos = Vector3(0.0f, -FLT_MAX, 0.0f);	//衝突点。
+	Vector3 startPos = Vector3::zero;					//レイの始点。
+	Vector3 hitNormal = Vector3::zero;				//衝突点の法線。
+	btCollisionObject* me = nullptr;					//自分自身。自分自身との衝突を除外するためのメンバ。
+	float dist = FLT_MAX;								//衝突点までの距離。一番近い衝突点を求めるため。FLT_MAXは単精度の浮動小数点が取りうる最大の値。
+
+														//衝突したときに呼ばれるコールバック関数。
+	virtual	btScalar	addSingleResult(btCollisionWorld::LocalConvexResult& convexResult, bool normalInWorldSpace)
+	{
+		if (convexResult.m_hitCollisionObject == me
+			|| convexResult.m_hitCollisionObject->getUserIndex() == 5
+			) {
+			//自分に衝突した。or キャラクタ属性のコリジョンと衝突した。
+			return 0.0f;
+		}
+		//衝突点の法線を引っ張ってくる。
+		Vector3 hitNormalTmp = *(Vector3*)&convexResult.m_hitNormalLocal;
+		//上方向と法線のなす角度を求める。
+		float angle = hitNormalTmp.Dot(Vector3::up);
+		angle = fabsf(acosf(angle));
+		if (angle < D3DX_PI * 0.2f		//地面の傾斜が54度より小さいので地面とみなす。
+			|| convexResult.m_hitCollisionObject->getUserIndex() == 999 //もしくはコリジョン属性が地面と指定されている。
+			) {
+			//衝突している。
+			isHit = true;
+
+			//ここから先要らない？
+
+			Vector3 hitPosTmp = *(Vector3*)&convexResult.m_hitPointLocal;
+			//衝突点の距離を求める。。
+			Vector3 vDist;
+			vDist.Subtract(hitPosTmp, startPos);
+			float distTmp = vDist.Length();
+			if (dist > distTmp) {
+				//この衝突点の方が近いので、最近傍の衝突点を更新する。
+				hitPos = hitPosTmp;
+				hitNormal = *(Vector3*)&convexResult.m_hitNormalLocal;
+				dist = distTmp;
+			}
+		}
+		return 0.0f;
+	}
+};
+
 PhysicsWorld::PhysicsWorld()
 {
 	collisionConfig = NULL;
@@ -84,8 +132,8 @@ void PhysicsWorld::Start()
 		constraintSolver.get(),
 		collisionConfig.get()
 		));
-
-	dynamicWorld->setGravity(btVector3(0, -98.8, 0));
+	//
+	dynamicWorld->setGravity(btVector3(0, -980.8, 0));
 }
 void PhysicsWorld::Update()
 {
@@ -123,8 +171,25 @@ const Collision * PhysicsWorld::FindOverlappedDamageCollision(btCollisionObject 
 	callback.queryCollisionObject = colliObject;
 	callback.id = id;
 	dynamicWorld->contactTest(colliObject, callback);
+	
 
 	return callback.hitObject;
+}
+
+const bool PhysicsWorld::FindOverlappedStage(btCollisionObject * colliObject, Vector3 s, Vector3 e) const
+{
+	SweepResultGround callback;
+	btTransform start, end;
+	Vector3 endP;
+	start.setIdentity();
+	end.setIdentity();
+	start.setOrigin(btVector3(s.x, s.y, s.x));
+	end.setOrigin(btVector3(e.x, e.y, e.z));
+
+	callback.me = colliObject;
+	callback.startPos.Set(s);
+	dynamicWorld->convexSweepTest((const btConvexShape*)colliObject->getCollisionShape(), start, end, callback);
+	return callback.isHit;
 }
 
 PhysicsWorld* PhysicsWorld::Instance()

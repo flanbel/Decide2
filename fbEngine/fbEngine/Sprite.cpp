@@ -14,6 +14,7 @@ void Sprite::Awake()
 	blendColor = Color::white;
 	clipColor = Color(0, 0, 0, 0);
 	mask = false;
+	Shadow = false;
 }
 
 void Sprite::Start()
@@ -105,42 +106,16 @@ void Sprite::Start()
 
 void Sprite::PreRender()
 {
-	//ステンシルバッファを使用したマスク処理は未実装
-	//if (mask)
-	//{
-	//	// ステンシル設定
-	//	(*graphicsDevice()).SetRenderState(D3DRS_STENCILENABLE, true);
-	//	(*graphicsDevice()).SetRenderState(D3DRS_STENCILFUNC, D3DCMP_ALWAYS);
-	//	(*graphicsDevice()).SetRenderState(D3DRS_STENCILREF, 0x01);
-	//	(*graphicsDevice()).SetRenderState(D3DRS_STENCILPASS, D3DSTENCILOP_REPLACE);
-	//	(*graphicsDevice()).SetRenderState(D3DRS_STENCILZFAIL, D3DSTENCILOP_REPLACE);
-	//	(*graphicsDevice()).SetRenderState(D3DRS_STENCILMASK, 0xff);
-
-	//	Render();
-
-	//	// Z設定
-	//	(*graphicsDevice()).SetRenderState(D3DRS_ZENABLE, true);
-	//	(*graphicsDevice()).SetRenderState(D3DRS_ZFUNC, D3DCMP_NEVER);
-
-	//	//クリッピング
-	//	(*graphicsDevice()).SetRenderState(D3DRS_STENCILENABLE, true);
-	//	(*graphicsDevice()).SetRenderState(D3DRS_STENCILFUNC, D3DCMP_EQUAL);
-	//	(*graphicsDevice()).SetRenderState(D3DRS_STENCILREF, 0x00);
-	//	(*graphicsDevice()).SetRenderState(D3DRS_STENCILPASS, D3DSTENCILOP_KEEP);
-	//	(*graphicsDevice()).SetRenderState(D3DRS_STENCILZFAIL, D3DSTENCILOP_KEEP);
-	//	(*graphicsDevice()).SetRenderState(D3DRS_STENCILMASK, 0xff);
-
-	//	(*graphicsDevice()).SetRenderState(D3DRS_ZENABLE, true);
-	//	(*graphicsDevice()).SetRenderState(D3DRS_ZFUNC, D3DCMP_LESSEQUAL);
-
-	//	(*graphicsDevice()).SetRenderState(D3DRS_STENCILENABLE, false);
-	//}
+	
 }
 
 void Sprite::ImageRender()
 {
 	if (texture == nullptr)
 		return;
+
+	if (Shadow)
+		CreateShadow();
 
 	//エフェクト読み込み
 	effect = EffectManager::LoadEffect("Sprite.fx");
@@ -222,4 +197,23 @@ void Sprite::ImageRender()
 	(*graphicsDevice()).SetRenderState(D3DRS_ALPHABLENDENABLE, FALSE);
 	(*graphicsDevice()).SetRenderState(D3DRS_SRCBLEND, D3DBLEND_ONE);
 	(*graphicsDevice()).SetRenderState(D3DRS_DESTBLEND, D3DBLEND_ZERO);
+}
+
+void Sprite::CreateShadow()
+{
+	//影生成
+	float offset = 5.0f;
+	Color hoji = blendColor;
+	blendColor = Color::black;
+	transform->position.x += offset * transform->scale.x;
+	transform->position.y += offset * transform->scale.y;
+	Shadow = false;
+
+	ImageRender();
+
+	//戻す
+	blendColor = hoji;
+	transform->position.x -= offset * transform->scale.x;
+	transform->position.y -= offset * transform->scale.y;
+	Shadow = true;
 }

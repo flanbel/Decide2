@@ -5,14 +5,14 @@ void TextObject::Awake()
 	text = AddComponent<Text>();
 }
 
+void TextObject::Initialize(wchar_t * string, float size, Color color, bool shadow, char * style)
+{
+	text->Initialize(string, size, color, shadow, style);
+}
+
 void TextObject::SetString(wchar_t* ws)
 {
 	text->SetString(ws);
-}
-
-void TextObject::SetFontSize(Vector3 size)
-{
-	text->SetSize(size);
 }
 
 void TextObject::SetFontSize(float size)
@@ -28,4 +28,9 @@ void TextObject::SetFontStyle(char* style)
 void TextObject::SetBlendColor(Color c)
 {
 	text->SetBlendColor(c);
+}
+
+void TextObject::SetShadowFlg(bool f)
+{
+	text->SetShadowFlg(f);
 }

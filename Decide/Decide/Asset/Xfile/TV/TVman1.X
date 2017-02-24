@@ -28167,10 +28167,14 @@ Frame RootNode {
    }
 
    Material Dflt_Material {
-    0.000000;1.000000;1.000000;1.000000;;
+    1.000000;1.000000;1.000000;1.000000;;
     10.000000;
     0.913726;0.000000;0.000000;;
     0.000000;0.000000;0.000000;;
+
+    TextureFilename Diffuse {
+     "TV_Head.png";
+    }
    }
 
    Material Dflt_Material {

@@ -8,12 +8,12 @@ class TextObject :public GameObject
 public:
 	TextObject(char* name) :GameObject(name) {}
 	void Awake()override;
-
+	void Initialize(wchar_t* string, float size, Color color = Color::white, bool shadow = false, char* style = "‚l‚r –¾’©");
 	void SetString(wchar_t* ws);
-	void SetFontSize(Vector3 size);
 	void SetFontSize(float size);
 	void SetFontStyle(char* style);
 	void SetBlendColor(Color c);
+	void SetShadowFlg(bool f);
 private:
 	Text* text;
 };

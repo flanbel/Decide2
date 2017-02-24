@@ -33,8 +33,8 @@ void Player::Awake()
 	BoxCollider* coll = AddComponent<BoxCollider>();
 	anim = AddComponent<Animation>();
 
-	coll->Create(Vector3(20,50,20));
-	rigid->Create(1, coll,5, Vector3::zero, Vector3(0, 25, 0));
+	coll->Create(Vector3(25,100,25));
+	rigid->Create(1, coll,5, Vector3::zero, Vector3(0, 50, 0));
 	rb = (btRigidBody*)rigid->GetCollisonObj();
 	//スリープさせない
 	rb->setSleepingThresholds(0, 0);
@@ -335,7 +335,7 @@ void Player::Attack()
 		DamageCollision::DamageCollisonInfo info;
 		//攻撃力補正
 		info.damage = Random::Range(1, 3) * Cparameter.power;
-		info.blown = transform->Direction(Vector3(0.0f, 0.5f, 1.5f));
+		info.blown = transform->Direction(Vector3(0.0f, 0.5f, 2.0f));
 		//吹き飛ばし補正
 		info.blown.Scale(Cparameter.blowCorrection);
 		info.rigor = 0.2f;
@@ -351,7 +351,7 @@ void Player::Attack()
 		AttackCollision* obj = GameObjectManager::AddNew<AttackCollision>("kick", 1);
 		Transform* t = obj->GetComponent<Transform>();
 		//あたり判定の大きさ
-		Vector3 size = Vector3(40 + (CharagePower * 20), 40, 60 + (CharagePower * 20));
+		Vector3 size = Vector3(60 /*+ (CharagePower * 20)*/, 60, 80/* + (CharagePower * 20)*/);
 
 		//前に出す
 		t->localPosition = transform->Local(Vector3(0, 60, (size.z/2) + 10));
@@ -491,8 +491,6 @@ void Player::Blown()
 				state = PlayerState::Blow;
 				isAction = true;
 			}
-			//ジャンプっていうか空中？
-			//jump = true;
 			jumpCount = 1;
 			//ヒットストップ処理
 			if(false)
@@ -523,6 +521,10 @@ void Player::Blown()
 		transform->localPosition.Add(blown);
 		blown = Vector3::zero;
 		rigor = 0;
+		//重力を0に
+		btVector3 v = rb->getLinearVelocity();
+		//下方向のやつを消す
+		rb->setLinearVelocity(btVector3(v.x(), v.y(), v.z()));
 		//コントローラ振動
 		XboxInput(playeridx)->Vibration(0, 0);
 		if (state != PlayerState::Dash)
@@ -547,7 +549,6 @@ void Player::Move()
 		if (KeyBoardInput->isPressed(DIK_LSHIFT) || XboxInput(playeridx)->IsPressButton(XINPUT_GAMEPAD_LEFT_SHOULDER))
 		{
 			run = true;
-			
 		}
 		Camera* c = GameObjectManager::mainCamera;
 		Vector3 dir = Vector3::zero;
@@ -596,7 +597,7 @@ void Player::Move()
 			else
 			{
 				//空中だと遅く
-				move.Scale(0.5f);
+				//move.Scale(0.5f);
 			}
 
 			transform->localPosition.Add(move);
@@ -617,35 +618,49 @@ void Player::Move()
 			if (jumpCount < 2)
 			{
 				jump = true;
-				gravity = 0;
-				//一時的に重力を消す
-				rigid->SetGravity(Vector3::zero);
+				btVector3 v = rb->getLinearVelocity();
+				//下方向のやつを消す
+				rb->setLinearVelocity(btVector3(v.x(), 0.0f, v.z()));
 				jumpCount++;
-				
-				//無限ループ
-				anim->PlayAnimation(9, 0.2f);
 			}
 		}
 	}
 
 	if (jump)
 	{
-		
-		//重力加速
-		gravity -= 3.0f * Time::DeltaTime();
 		//上に移動
-		transform->localPosition.Add(Vector3(0, 3 + gravity, 0));
+		float jumpPower = 9.0f;
+		transform->localPosition.Add(Vector3(0, jumpPower, 0));
 		transform->UpdateTransform();
 		rigid->Update();
-
-		//ステージとのあたり判定
-		const DamageCollision *co = (const DamageCollision*)PhysicsWorld::Instance()->FindOverlappedDamageCollision(rb, 7);
-		if (co)
+		Vector3 start, end;
+		start = transform->position + Vector3(0, 50, 0);
+		btVector3 v = rb->getLinearVelocity() * Time::DeltaTime();
+		if((jumpPower + v.y()) > 0)
+		{
+			//上昇中
+			end = transform->position - Vector3(0, v.y()*0.01f, 0);
+			fall = true;
+		}else
+		{
+			//下降中
+			end = transform->position + Vector3(0, v.y(), 0);
+			if(fall)
+			{
+				//降下中のモーション再生
+				anim->PlayAnimation(9, 0.2f);
+			}
+			fall = false;
+		}
+		
+		//ステージ(地面)とのあたり判定
+		const bool isHit = (const DamageCollision*)PhysicsWorld::Instance()->FindOverlappedStage(rb, start, end);
+		if (isHit)
 		{
 			jump = false;
-			rigid->SetGravity(INSTANCE(PhysicsWorld)->GetDynamicWorld()->getGravity());
 			jumpCount = 0;
-			
+			anim->PlayAnimation(0, 0.3f);
+			anim->SetAnimeSpeed(1.0f);
 		}
 	}
 }
@@ -672,6 +687,9 @@ void Player::Death()
 		Pparameter->SetDamage(damage);
 		blown = Vector3::zero;
 		rigor = 0;
+		btVector3 v = rb->getLinearVelocity();
+		//下方向のやつを消す
+		rb->setLinearVelocity(btVector3(v.x(), 0.0f, v.z()));
 		
 		//残機が0じゃないなら(負数なら残機無限)
 		if (stock != 0)

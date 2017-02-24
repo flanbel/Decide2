@@ -7,9 +7,9 @@ void PlayerParameter::Awake()
 {
 	emblem = GameObjectManager::AddNew<ImageObject>("Emblem", 0);
 	frame = GameObjectManager::AddNew<ImageObject>("Frame", 0);
+	killT = GameObjectManager::AddNew<TextObject>("Kill", 0);
 	damageT = GameObjectManager::AddNew<TextObject>("Damage", 0);
 	stockT = GameObjectManager::AddNew<TextObject>("Stock", 0);
-	killT = GameObjectManager::AddNew<TextObject>("Kill", 0);
 	nameT = GameObjectManager::AddNew<TextObject>("Name", 0);
 	//e‚É“o˜^
 	emblem->transform->SetParent(transform);
@@ -27,28 +27,20 @@ void PlayerParameter::Awake()
 	nameT->Discard(false);
 
 	emblem->SetTexture(TextureManager::LoadTexture("nico2.png"));
+	emblem->SetShadow(true);
 	emblem->transform->localPosition = Vector3(90, 0, 0);
 	//frame->SetTexture(TextureManager::LoadTexture("Frame.png"));
 
-	stockT->SetFontStyle("HGS–¾’©E");
-	stockT->SetString(L"3");
-	stockT->SetFontSize(40.0f);
-	stockT->transform->localPosition = Vector3(10, 10, 0);
+	stockT->Initialize(L"3", 40.0f, Color::white, true, "HGS–¾’©E");
+	stockT->transform->localPosition = Vector3(10, 0, 0);
 
-	killT->SetFontStyle("HGS–¾’©E");
-	killT->SetString(L"KILL:0");
-	killT->SetFontSize(40.0f);
-	killT->transform->localPosition = Vector3(40, 10, 0);
+	killT->Initialize(L"KILL:0", 40.0f, Color::white, true, "HGS–¾’©E");
+	killT->transform->localPosition = Vector3(40, 0, 0);
 
-	damageT->SetFontStyle("HGS–¾’©E");
-	damageT->SetString(L"0%");
-	damageT->SetBlendColor(Color::white);
-	damageT->SetFontSize(80.0f);
+	damageT->Initialize(L"0%", 80.0f, Color::white, true, "HGS–¾’©E");
 	damageT->transform->localPosition = Vector3(0, 40, 0);
 
-	nameT->SetFontStyle("HGS–¾’©E");
-	nameT->SetString(L"name");
-	nameT->SetFontSize(30.0f);
+	nameT->Initialize(L"name", 30.0f, Color::white, true, "HGS–¾’©E");
 	nameT->transform->localPosition = Vector3(0, 100, 0);
 }
 
@@ -116,5 +108,5 @@ void PlayerParameter::SetName(wchar_t * name)
 void PlayerParameter::SetColor(Color C)
 {
 	color = C;
-	emblem->SetBlendColor(Color(color.r, color.g, color.b, 0.7f));
+	emblem->SetBlendColor(Color(color.r, color.g, color.b, 1.0f));
 }
