@@ -24,7 +24,7 @@ void CharaSelectScene::Start()
 	gameRule = GameObjectManager::AddNew<GameRule>("GameRule", 0);
 	gameRule->Discard(false);
 	displayGameRule = GameObjectManager::AddNew<TextObject>("DisplayGameRule", 1);
-	displayGameRule->Initialize(L"GameRule:Stock@ 3", 40.0f, Color::white, true, "HGS–¾’©E");
+	displayGameRule->Initialize(L"GameRule:TimeLimit@ 2", 40.0f, Color::white, true, "HGS–¾’©E");
 	displayGameRule->transform->localPosition = Vector3(50, 100, 0);
 
 	ImageObject* backGround = GameObjectManager::AddNew<ImageObject>("Back",0);

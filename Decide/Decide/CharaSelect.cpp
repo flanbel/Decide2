@@ -106,7 +106,7 @@ void CharaSelect::Update()
 				show->SetActive(true);
 				showmodel->GetModel()->SetModelData(info->data);
 				showmodel->SetAnim(info->anim);
-				showmodel->GetAnim()->PlayAnimation(0);
+				showmodel->GetAnim()->PlayAnimation(0,0.1f);
 				name->SetString(info->name);
 			}
 			showmodel->GetAnim()->Update();

@@ -36,16 +36,17 @@ void Animation::PlayAnimation(const int& animationSetIndex)
 		if (animController) {
 			//再生開始
 			isPlaying = true;
+			currentFrame = 0;
 			//アニメーションのグローバルタイムをリセット
 			animController->ResetTime();
-			currentAnimationSetNo = (numAnimSet - 1) - animationSetIndex;
+			currentAnimationSetNo = animationSetIndex;
 			currentTrackNo = 0;
 			//0番目以外のトラックは無効にする。
 			for (int i = 1; i < numMaxTracks; i++) {
 				animController->SetTrackEnable(i, FALSE);
 			}
 			animController->SetTrackWeight(0, 1.0f);
-			animController->SetTrackAnimationSet(currentTrackNo, animationSets[currentAnimationSetNo]);
+			animController->SetTrackAnimationSet(currentTrackNo, animationSets[(numAnimSet - 1) - currentAnimationSetNo]);
 			animController->SetTrackEnable(0, TRUE);
 			animController->SetTrackPosition(0, 0.0f);
 			animController->AdvanceTime(0, NULL);
@@ -66,15 +67,17 @@ void Animation::PlayAnimation(int animationSetIndex, float interpolateTime, int 
 			loopCount = 0;
 			//再生開始
 			isPlaying = true;
+			currentFrame = 0;
 			//アニメーションのグローバルタイムをリセット
 			animController->ResetTime();
+			currentAnimationSetNo = animationSetIndex;
 			//補間開始の印。
 			isInterpolate = true;
 			this->interpolateTime = 0.0f;
 			interpolateEndTime = interpolateTime;
 			currentTrackNo = (currentTrackNo + 1) % numMaxTracks;
 			//トラックにアニメーションセット
-			animController->SetTrackAnimationSet(currentTrackNo, animationSets[(numAnimSet - 1) - animationSetIndex]);
+			animController->SetTrackAnimationSet(currentTrackNo, animationSets[(numAnimSet - 1) - currentAnimationSetNo]);
 			animController->SetTrackEnable(currentTrackNo, TRUE);
 			animController->SetTrackPosition(currentTrackNo, 0.0f);
 			SetAnimeSpeed(1.0f);
@@ -91,23 +94,26 @@ void Animation::Update()
 	//指定されたループ数ないかどうか
 	if (isPlaying)
 	{
-
+		currentFrame++;
 		if (animController == nullptr)
 			return;
 		//現在のトラックのアニメーションセット取得
 		LPD3DXANIMATIONSET aniset;
 		animController->GetTrackAnimationSet(currentTrackNo, &aniset);
 		//そのアニメーションを再生しきるまでの時間
-		double maxtime = aniset->GetPeriod();
+		double maxtime = aniset->GetPeriod() / (double)playSpeed;
 		//現在のアニメーションの時間を取得
 		nowTime = aniset->GetPeriodicPosition(animController->GetTime());
+		double delta = Time::DeltaTime();
+		//割合
+		TimeRatio = min(1.0f, (nowTime + delta) / maxtime);
 
 		//アニメーションの時間加算
-		animController->AdvanceTime(Time::DeltaTime(), NULL);
+		animController->AdvanceTime(delta, NULL);
 
 		if (isInterpolate) {
 			//補間中。
-			interpolateTime += Time::DeltaTime();
+			interpolateTime += delta;
 			float weight = 0.0f;
 			if (interpolateTime > interpolateEndTime) {
 				//補間終了。
@@ -117,7 +123,7 @@ void Animation::Update()
 				//現在のトラック以外を無効にする。
 				for (int i = 0; i < numMaxTracks; i++) {
 					if (i != currentTrackNo) {
-						
+
 						animController->SetTrackEnable(i, FALSE);
 					}
 				}
@@ -138,8 +144,9 @@ void Animation::Update()
 		}
 
 		//再生時間を超えた
-		if((maxtime / playSpeed) < nowTime + Time::DeltaTime())
+		if (maxtime <= nowTime + delta)
 		{
+			currentFrame = 0;
 			loopCount++;
 			//無限ループではない
 			//カウントが指定した数以上になった
@@ -148,9 +155,6 @@ void Animation::Update()
 			{
 				//アニメーション終了
 				isPlaying = false;
-				float delta = maxtime - nowTime - 0.0001f;
-				animController->SetTrackSpeed(currentTrackNo, 0.0f);
-				animController->AdvanceTime(delta, NULL);
 			}
 		}
 

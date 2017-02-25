@@ -1,6 +1,16 @@
 #pragma once
 #include "fbEngine/GameObject.h"
 #include "Character.h"
+//#include "PlayerState.h"
+//#include "PlayerState_Stay.h"
+//#include "PlayerState_Walk.h"
+//#include "PlayerState_Run.h"
+//#include "PlayerState_Jump.h"
+//#include "PlayerState_Fall.h"
+//#include "PlayerState_Punch.h"
+//#include "PlayerState_Kick.h"
+//#include "PlayerState_KickCharge.h"
+//#include "PlayerState_Blow.h"
 
 class SkinModel;
 class Animation;
@@ -16,28 +26,34 @@ class Player:public GameObject
 {
 public:
 	//プレイヤーのステート
-	enum PlayerState
+	enum PState
 	{
-		Stay = 0,		//待機
-		Walk,			//歩き
-		Dash,			//ダッシュ
-		Punch,			//パンチ
-		Kick_Charge,	//蹴りため
-		Kick_Shot,		//蹴り
-		Damage,			//ダメージ
-		Blow,			//吹き飛び
-		USESWORD,		//剣振り
-		ISJUMP,			//ジャンプ中
+		STAY,			//待機
+		WALK,			//歩き
+		DASH,			//ダッシュ
+		JUMP,			//ジャンプ中
+		FALL,			//落下中
+		PUNCH,			//パンチ
+		KICK_CHARGE,	//蹴りため
+		KICK,			//蹴り
+		SLASH,			//剣振り
+		DAMAGE,			//ダメージ
+		BLOW,			//吹き飛び
 	};
 	Player(char* name);
 	void Awake()override;
 	void Start()override;
 	void Update()override;
 	void LateUpdate()override;
-	void Render()override;
 
-	void Move();
+	void UpdateStateMachine();	//ステートマシン更新
+	void ChangeState(PState s);		//ステート切り替え
+	void PlayAnimation(int idx, float time, int loop = -1);
+	void AnimationControl();		//ステートによって再生するアニメーションを指定
 	void Attack();
+	void Move();
+	void Jump();
+	void Damage();
 	void Blown();
 	void ItemAction();
 	//落ちた時の処理
@@ -59,7 +75,17 @@ public:
 	void SetInfo(CharacterInfo* info);
 	void AddKillCount();
 	int GetKillCount();
+
+	const Vector3 GetDir();
 private:
+	//PlayerState* currentState = nullptr;	//現在のステート.
+	//PlayerStateStay StayState;				//待機ステート.
+	//PlayerStateWalk WalkState;				//歩きステート.
+	//PlayerStateRun RunState;				//走りステート.
+	//PlayerStateJump JumpState;
+	//PlayerStateFall FallState;
+private:
+	//コンポーネントとかアドレスの保持が必要なものたち
 	SkinModel* model;
 	Animation* anim;
 	RigidBody* rigid;
@@ -68,6 +94,7 @@ private:
 	CharacterParam Cparameter;
 	D3DXFRAME_DERIVED* handFrame;
 	Item* haveItem;
+	//ゲームルール
 	GameRule* gameRule;
 	//蓄積しているダメージ
 	int damage;
@@ -79,23 +106,16 @@ private:
 	int lastAttack;
 	//プレイヤーの添え字0~3
 	int playeridx;
+	//アクション中かどうか(攻撃とか)
+	bool isAction;
 	//ジャンプ中か否か
 	bool jump;
-	//落ちている(降下中)
-	bool fall;
+	//ジャンプ数
 	int jumpCount;
-	//アクション(攻撃や防御)中か否か
-	bool isAction;
-	//攻撃が当たった時に止まる
-	bool hitStop;
-	//止まる時間
-	int stopTime;
-	//カウント
-	int hitStopCount;
 	//チャージ率
 	double CharagePower;
 	//ステート
-	PlayerState state, old;
+	PState state;
 	//表示用プレート
 	PlatePrimitive* idxPlate;
 	//プレイヤーの色
@@ -103,12 +123,16 @@ private:
 	//パーティクル
 	ParticleEmitter *smoke;
 	
+	//最終的な移動量
+	Vector3 move;
+	//進行
+	Vector3 dir;
 	//吹き飛び
 	Vector3 blown;
 	//硬直
 	float rigor;
-	//加算用
-	float time;
+	//硬直のタイマー
+	float rigortimer;
 
 	//各効果音　
 	SoundSource *PunchSound;

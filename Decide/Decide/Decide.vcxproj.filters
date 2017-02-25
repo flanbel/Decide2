@@ -20,6 +20,12 @@
     <Filter Include="Object\GameObject\SelectScene">
       <UniqueIdentifier>{1f2a52c5-4665-4024-b202-e06a60806454}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Object\GameObject\Player">
+      <UniqueIdentifier>{fbac6501-c74a-456c-8ded-3a8d488955fa}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Object\GameObject\Player\FSM">
+      <UniqueIdentifier>{5ac2aeec-100c-4bde-bbac-30c5c201677b}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Decide.h" />
@@ -28,9 +34,6 @@
       <Filter>Scene</Filter>
     </ClInclude>
     <ClInclude Include="Resource.h" />
-    <ClInclude Include="Player.h">
-      <Filter>Object\GameObject</Filter>
-    </ClInclude>
     <ClInclude Include="GameCamera.h">
       <Filter>Object\GameObject</Filter>
     </ClInclude>
@@ -48,9 +51,6 @@
     </ClInclude>
     <ClInclude Include="TitleScene.h">
       <Filter>Scene</Filter>
-    </ClInclude>
-    <ClInclude Include="PlayerParameter.h">
-      <Filter>Object\GameObject</Filter>
     </ClInclude>
     <ClInclude Include="Item.h">
       <Filter>Object\GameObject</Filter>
@@ -85,6 +85,45 @@
     <ClInclude Include="GameRule.h">
       <Filter>Object\GameObject</Filter>
     </ClInclude>
+    <ClInclude Include="Player.h">
+      <Filter>Object\GameObject\Player</Filter>
+    </ClInclude>
+    <ClInclude Include="PlayerParameter.h">
+      <Filter>Object\GameObject\Player</Filter>
+    </ClInclude>
+    <ClInclude Include="FSM\PlayerState.h">
+      <Filter>Object\GameObject\Player\FSM</Filter>
+    </ClInclude>
+    <ClInclude Include="PlayerState_Run.h">
+      <Filter>Object\GameObject\Player\FSM</Filter>
+    </ClInclude>
+    <ClInclude Include="PlayerState_Stay.h">
+      <Filter>Object\GameObject\Player\FSM</Filter>
+    </ClInclude>
+    <ClInclude Include="PlayerState_Walk.h">
+      <Filter>Object\GameObject\Player\FSM</Filter>
+    </ClInclude>
+    <ClInclude Include="PlayerState_Blow.h">
+      <Filter>Object\GameObject\Player\FSM</Filter>
+    </ClInclude>
+    <ClInclude Include="PlayerState_Fall.h">
+      <Filter>Object\GameObject\Player\FSM</Filter>
+    </ClInclude>
+    <ClInclude Include="PlayerState_Jump.h">
+      <Filter>Object\GameObject\Player\FSM</Filter>
+    </ClInclude>
+    <ClInclude Include="PlayerState_Kick.h">
+      <Filter>Object\GameObject\Player\FSM</Filter>
+    </ClInclude>
+    <ClInclude Include="PlayerState_KickCharge.h">
+      <Filter>Object\GameObject\Player\FSM</Filter>
+    </ClInclude>
+    <ClInclude Include="PlayerState_Punch.h">
+      <Filter>Object\GameObject\Player\FSM</Filter>
+    </ClInclude>
+    <ClInclude Include="PlayerState_Slash.h">
+      <Filter>Object\GameObject\Player\FSM</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="Decide.rc">
@@ -104,9 +143,6 @@
     <ClCompile Include="BattleScene.cpp">
       <Filter>Scene</Filter>
     </ClCompile>
-    <ClCompile Include="Player.cpp">
-      <Filter>Object\GameObject</Filter>
-    </ClCompile>
     <ClCompile Include="GameCamera.cpp">
       <Filter>Object\GameObject</Filter>
     </ClCompile>
@@ -124,9 +160,6 @@
     </ClCompile>
     <ClCompile Include="TitleScene.cpp">
       <Filter>Scene</Filter>
-    </ClCompile>
-    <ClCompile Include="PlayerParameter.cpp">
-      <Filter>Object\GameObject</Filter>
     </ClCompile>
     <ClCompile Include="Item.cpp">
       <Filter>Object\GameObject</Filter>
@@ -160,6 +193,42 @@
     </ClCompile>
     <ClCompile Include="GameRule.cpp">
       <Filter>Object\GameObject</Filter>
+    </ClCompile>
+    <ClCompile Include="Player.cpp">
+      <Filter>Object\GameObject\Player</Filter>
+    </ClCompile>
+    <ClCompile Include="PlayerParameter.cpp">
+      <Filter>Object\GameObject\Player</Filter>
+    </ClCompile>
+    <ClCompile Include="PlayerState_Run.cpp">
+      <Filter>Object\GameObject\Player\FSM</Filter>
+    </ClCompile>
+    <ClCompile Include="PlayerState_Stay.cpp">
+      <Filter>Object\GameObject\Player\FSM</Filter>
+    </ClCompile>
+    <ClCompile Include="PlayerState_Walk.cpp">
+      <Filter>Object\GameObject\Player\FSM</Filter>
+    </ClCompile>
+    <ClCompile Include="PlayerState_Blow.cpp">
+      <Filter>Object\GameObject\Player\FSM</Filter>
+    </ClCompile>
+    <ClCompile Include="PlayerState_Fall.cpp">
+      <Filter>Object\GameObject\Player\FSM</Filter>
+    </ClCompile>
+    <ClCompile Include="PlayerState_Jump.cpp">
+      <Filter>Object\GameObject\Player\FSM</Filter>
+    </ClCompile>
+    <ClCompile Include="PlayerState_Kick.cpp">
+      <Filter>Object\GameObject\Player\FSM</Filter>
+    </ClCompile>
+    <ClCompile Include="PlayerState_KickCharge.cpp">
+      <Filter>Object\GameObject\Player\FSM</Filter>
+    </ClCompile>
+    <ClCompile Include="PlayerState_Punch.cpp">
+      <Filter>Object\GameObject\Player\FSM</Filter>
+    </ClCompile>
+    <ClCompile Include="PlayerState_Slash.cpp">
+      <Filter>Object\GameObject\Player\FSM</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

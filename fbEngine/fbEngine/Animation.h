@@ -45,6 +45,11 @@ public:
 	{
 		return numAnimSet;
 	}
+	//現在再生中のアニメーション番号取得
+	int GetPlayAnimNo() const
+	{
+		return currentAnimationSetNo;
+	}
 	//アニメーションが終了しているかどうか
 	bool GetPlaying()
 	{
@@ -54,6 +59,16 @@ public:
 	double GetNowTime()
 	{
 		return nowTime;
+	}
+
+	int NowFrame()
+	{
+		return currentFrame;
+	}
+	//割合取得
+	double GetTimeRatio()
+	{
+		return TimeRatio;
 	}
 
 	void SetAnimeSpeed(float sp)
@@ -74,7 +89,9 @@ private:
 	float									interpolateEndTime;		//!<補間終了時間。
 	float									interpolateTime;		//!<補間時間。
 
+	double TimeRatio;	//正規化された時間の割合。
 	double nowTime;
+	int currentFrame;		//現在のフレーム数
 	float playSpeed;//再生速度
 	int loopNum;//指定したループ数
 	int loopCount;//ループのカウント
