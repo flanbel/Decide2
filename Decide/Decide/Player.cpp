@@ -560,11 +560,11 @@ void Player::Damage()
 		{
 			//ƒ_ƒ[ƒW‚ðŽó‚¯‚Æ•ûŒü‚ÖŒü‚­
 			//³‹K‰»
-			dir.Normalize();
-			//ƒxƒNƒgƒ‹‚©‚çŠp“x‚ð‹‚ß‚é
-			float rot = D3DXToRadian(360) - atan2f(dir.z, dir.x);
-			//‰ñ“]
-			transform->localAngle.y = D3DXToDegree(rot + D3DXToRadian(90));
+			//dir.Normalize();
+			////ƒxƒNƒgƒ‹‚©‚çŠp“x‚ð‹‚ß‚é
+			//float rot = D3DXToRadian(360) - atan2f(dir.z, dir.x);
+			////‰ñ“]
+			//transform->localAngle.y = D3DXToDegree(rot + D3DXToRadian(90));
 
 			//ÅŒã‚ÉUŒ‚‚µ‚Ä‚«‚½‚Æ‚µ‚Ä‚â‚Â•Û‘¶
 			//‚Æ‚è‚ ‚¦‚¸‰i‘±
@@ -625,6 +625,7 @@ void Player::Blown()
 			blown = Vector3::zero;
 			//ƒRƒ“ƒgƒ[ƒ‰U“®‚ðŽ~‚ß‚é
 			XboxInput(playeridx)->Vibration(0, 0);
+			ChangeState(PState::STAY);
 		}
 	}
 }
