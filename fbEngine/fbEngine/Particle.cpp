@@ -121,12 +121,14 @@ void Particle::Render()
 	shaderEffect->Begin(NULL, D3DXFX_DONOTSAVESHADERSTATE);
 	shaderEffect->BeginPass(0);
 	//Zバッファ
+	(*graphicsDevice()).SetRenderState(D3DRS_ZENABLE, TRUE);
 	(*graphicsDevice()).SetRenderState(D3DRS_ZWRITEENABLE, FALSE);
 
 	shaderEffect->SetMatrix("g_mWVP", &wvp);
 	shaderEffect->SetTexture("g_texture", texture->pTexture);
 	shaderEffect->SetFloat("g_alpha", alpha);
 	shaderEffect->SetValue("g_mulColor", mulColor, sizeof(Vector4));
+	shaderEffect->CommitChanges();
 
 	(*graphicsDevice()).SetStreamSource(0, vertexBuff, 0, sizeof(Particle_Vertex));
 	(*graphicsDevice()).SetFVF(D3DFVF_PARTICLEVERTEX);
@@ -140,6 +142,7 @@ void Particle::Render()
 	(*graphicsDevice()).SetRenderState(D3DRS_SRCBLEND, D3DBLEND_ONE);
 	(*graphicsDevice()).SetRenderState(D3DRS_DESTBLEND, D3DBLEND_ZERO);
 	(*graphicsDevice()).SetRenderState(D3DRS_ZWRITEENABLE, TRUE);
+	(*graphicsDevice()).SetRenderState(D3DRS_ZENABLE, TRUE);
 }
 
 void Particle::Init(const ParicleParameter & param,Vector3 & emitPosition)

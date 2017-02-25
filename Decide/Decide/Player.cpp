@@ -37,8 +37,8 @@ void Player::Awake()
 	BoxCollider* coll = AddComponent<BoxCollider>();
 	anim = AddComponent<Animation>();
 
-	coll->Create(Vector3(25,100,25));
-	rigid->Create(1, coll,5, Vector3::zero, Vector3(0, 50, 0));
+	coll->Create(Vector3(25, 100, 25));
+	rigid->Create(1, coll, 5, Vector3::zero, Vector3(0, 50, 0));
 	rb = (btRigidBody*)rigid->GetCollisonObj();
 	//スリープさせない
 	rb->setSleepingThresholds(0, 0);
@@ -55,7 +55,7 @@ void Player::Awake()
 	//プレート生成
 	idxPlate = GameObjectManager::AddNew<PlatePrimitive>("plate", 4);
 	idxPlate->Discard(false);
-	
+
 	isAction = false;
 	jumpCount = 1;
 	blown = Vector3::zero;
@@ -64,12 +64,13 @@ void Player::Awake()
 	playerColor = Color::white;
 	//初期ポジ(適当)
 	transform->localPosition.y = 200;
-	
 
-	ParicleParameter parm =
+
+	ParicleParameter parm[2] =
+	{
 	{
 		"SmokeBall.png",	//パス
-		Vector3(0,0,0),		//初速
+		Vector3(0,00,0),		//初速
 		Vector2(70,70),		//サイズ
 		0.5f,				//寿命
 		0.08f,				//発生時間
@@ -84,12 +85,37 @@ void Player::Awake()
 		1.0f,				//ブライト
 		0,					//αブレンド
 		Color(1.5f,1.5f,1.5f,1.0f)	//乗算カラー
+	},
+	{
+		"Fire1.png",	//パス
+		Vector3(0,40,0),		//初速
+		Vector2(30,30),		//サイズ
+		1.0f,				//寿命
+		0.01f,				//発生時間
+		Vector3(30,0,30),	//ポジションランダム
+		Vector3(5,5,5),		//初速度ランダム
+		Vector3(0,0,0),		//速度ランダム
+		Vector3::zero,		//重力
+		true,				//フェード
+		0.3f,				//フェード時間
+		1.0f,				//初期α
+		true,				//ビルボード
+		1.0f,				//ブライト
+		1,					//αブレンド
+		Color(1.5f,1.5f,1.5f,1.0f)	//乗算カラー
+	}
 	};
-	smoke = GameObjectManager::AddNew<ParticleEmitter>("Emit", 2);
+	smoke = GameObjectManager::AddNew<ParticleEmitter>("SmokeEmit", 2);
 	smoke->Discard(false);
 	smoke->transform->SetParent(transform);
-	smoke->Init(parm);
+	smoke->Init(parm[0]);
 	smoke->Emit(false);
+
+	fire = GameObjectManager::AddNew<ParticleEmitter>("FireEmit", 2);
+	fire->Discard(false);
+	fire->transform->SetParent(transform);
+	fire->Init(parm[1]);
+	fire->Emit(false);
 }
 
 void Player::Start()
@@ -99,7 +125,7 @@ void Player::Start()
 	PunchSound = GameObjectManager::AddNew<SoundSource>("PunchSound", 0);
 	PunchSound->Init("Asset/Sound/punch.wav");
 
-	Pparameter->transform->localPosition = Vector3((playeridx) * 300, 550, 0);
+	Pparameter->transform->localPosition = Vector3(100 +(playeridx) * 300, 550, 0);
 	model->SetCamera(GameObjectManager::mainCamera);
 	model->SetLight(GameObjectManager::mainLight);
 
@@ -131,21 +157,40 @@ void Player::Update()
 		ChangeState(PState::STAY);
 	}
 
+	if (state == PState::SLASH &&
+		anim->GetTimeRatio() > 0.8f)
+	{
+		ChangeState(PState::STAY);
+	}
+
 	ItemAction();
-	Attack();
-	Damage();
 	move = Vector3::zero;
 	if (!isAction)
 	{
 		Move();
+	}else
+	{
+		//滑る？
+		if (jumpCount > 0)
+			dir.Scale(0.97f);
+		else
+			dir.Scale(0.93f);
+		move.Add(dir);
 	}
+
+	Attack();
+	Damage();
+
 	Jump();
 	Blown();
 
 	//移動
-	transform->localPosition.Add(move);
-	transform->UpdateTransform();
-	rigid->Update();
+	if (move.Length() > 0)
+	{
+		transform->localPosition.Add(move);
+		transform->UpdateTransform();
+		rigid->Update();
+	}
 	
 	//重力が発生している
 	if(jumpCount > 0)
@@ -156,19 +201,19 @@ void Player::Update()
 		start = transform->position + Vector3(0, 50, 0);
 		
 		btVector3 v = rb->getLinearVelocity() * Time::DeltaTime();
-		if ((move.y + v.y()) > 0)
-		{
-			if (v.y() > 0)
-			{
-				//上昇中
-				end = transform->position - Vector3(0, v.y()*0.01f, 0);
-			}
-			else
-			{
-				end = transform->position - Vector3(0, 0.01f, 0);
-			}
-		}
-		else
+		if ((move.y + v.y()) <= 0)
+			//{
+			//	if (v.y() > 0)
+			//	{
+			//		//上昇中
+			//		end = transform->position - Vector3(0, v.y()*0.01f, 0);
+			//	}
+			//	else
+			//	{
+			//		end = transform->position - Vector3(0, 0.0001f, 0);
+			//	}
+			//}
+			//else
 		{
 			//下降中
 			if (v.y() > 0)
@@ -179,39 +224,40 @@ void Player::Update()
 			{
 				end = transform->position + Vector3(0, v.y() + 0.01f, 0);
 			}
-			
+
 			if (!isAction)
 				ChangeState(PState::FALL);
-		}
 
-		//ステージ(地面)とのあたり判定
-		const bool isHit = (const DamageCollision*)PhysicsWorld::Instance()->FindOverlappedStage(rb, start, end);
-		//着地した
-		if (isHit)
-		{
-			jump = false;
-			jumpCount = 0;
-			if (!isAction)
+
+			//ステージ(地面)とのあたり判定
+			const bool isHit = (const DamageCollision*)PhysicsWorld::Instance()->FindOverlappedStage(rb, start, end);
+			//着地した
+			if (isHit)
 			{
-				if (dir.Length() != 0)
+				jump = false;
+				jumpCount = 0;
+				if (!isAction)
 				{
-					//ダッシュ
-					if (XboxInput(playeridx)->IsPressButton(XINPUT_GAMEPAD_LEFT_SHOULDER)
-#ifdef _DEBUG
-						|| KeyBoardInput->isPressed(DIK_LSHIFT)
-#endif // _DEBUG
-						)
+					if (dir.Length() != 0)
 					{
-						ChangeState(PState::DASH);
+						//ダッシュ
+						if (XboxInput(playeridx)->IsPressButton(XINPUT_GAMEPAD_LEFT_SHOULDER)
+#ifdef _DEBUG
+							|| KeyBoardInput->isPressed(DIK_LSHIFT)
+#endif // _DEBUG
+							)
+						{
+							ChangeState(PState::DASH);
+						}
+						else
+						{
+							ChangeState(PState::WALK);
+						}
 					}
 					else
 					{
-						ChangeState(PState::WALK);
+						ChangeState(PState::STAY);
 					}
-				}
-				else
-				{
-					ChangeState(PState::STAY);
 				}
 			}
 		}
@@ -310,6 +356,7 @@ void Player::ChangeState(PState next)
 		break;
 	case PState::KICK_CHARGE:
 		isAction = false;
+		fire->Emit(false);
 		break;
 	case PState::KICK:
 		isAction = false;
@@ -402,7 +449,7 @@ void Player::AnimationControl()
 		PlayAnimation(4, 0.2f, 1);
 		break;
 	case PState::KICK:
-		PlayAnimation(5, 0.2f, 1);
+		PlayAnimation(5, 0.1f, 1);
 		break;
 	case PState::SLASH:
 		//武器振り再生
@@ -449,18 +496,18 @@ void Player::Attack()
 	//チャージ中
 	if (state == PState::KICK_CHARGE)
 	{
+		//フルチャージ
+		if (anim->GetPlaying() == false)
+		{
+			fire->Emit(true);
+		}
 		//ボタンが離された
 		if (!KeyBoardInput->isPressed(DIK_SPACE) && !XboxInput(playeridx)->IsPressButton(XINPUT_GAMEPAD_A))
 		{
-			CharagePower = anim->GetNowTime();
+			float rate = anim->GetTimeRatio();
+			//フルチャージなら1.5倍
+			CharagePower = (rate >= 1.0f) ? 1.5f : rate;
 			ChangeState(PState::KICK);
-		}
-		//チャージ終了
-		else if (anim->GetPlaying() == false)
-		{
-			//キックする
-			CharagePower = 1.5f;
- 			ChangeState(PState::KICK);
 		}
 	}
 
@@ -469,6 +516,10 @@ void Player::Attack()
 	{
 		//現在のフレーム取得
 		int frame = anim->NowFrame();
+
+		//移動量が吹き飛び値の補正になる
+		Vector3 V = dir;
+		V.Scale(0.3f);
 
 		//パンチの攻撃判定
 		if (state == PState::PUNCH &&
@@ -485,19 +536,20 @@ void Player::Attack()
 
 			DamageCollision::DamageCollisonInfo info;
 			//攻撃力補正
-			info.damage = Random::Range(1, 3) * Cparameter.power;
-			info.blown = transform->Direction(Vector3(0.0f, 0.5f, 2.0f));
+			info.damage = Random::Range(2, 3) * Cparameter.power;
+			info.blown = transform->Direction(Vector3(0.0f, 0.5f, 2.0f) + V);
 			//吹き飛ばし補正
 			info.blown.Scale(Cparameter.blowCorrection);
 			info.rigor = 0.2f;
 			info.stoptime = 5;
-			obj->Initialize(playeridx, 0.2f, Vector3(40, 30, 40), info);
+			obj->Initialize(playeridx, 0.2f, Vector3(50, 50, 50), info);
 		}
 
 		//キックの攻撃判定
 		if (state == PState::KICK &&
 			frame == 15)
 		{
+			PunchSound->Play(false);
 			//あたり判定を出す
 			AttackCollision* obj = GameObjectManager::AddNew<AttackCollision>("kick", 1);
 			Transform* t = obj->GetComponent<Transform>();
@@ -511,8 +563,8 @@ void Player::Attack()
 
 			DamageCollision::DamageCollisonInfo info;
 			//攻撃力補正
-			info.damage = (Random::Range(5, 8) * (CharagePower + 0.2f)) * Cparameter.power;
-			info.blown = transform->Direction(Vector3(0.0f, 1.5f, 3.0f));
+			info.damage = (Random::Range(7, 10) * (CharagePower + 0.2f)) * Cparameter.power;
+			info.blown = transform->Direction(Vector3(0.0f, 2.0f, 3.0f) + V);
 			//吹き飛ばし補正
 			info.blown.Scale(Cparameter.blowCorrection * (CharagePower + 0.5f));
 			info.rigor = 0.6f;
@@ -524,7 +576,6 @@ void Player::Attack()
 		if (state == PState::SLASH &&
 			frame == 7)
 		{
-			PunchSound->Play(false);
 			//あたり判定を出す
 			AttackCollision* obj = GameObjectManager::AddNew<AttackCollision>("sword", 1);
 			Transform* t = obj->GetComponent<Transform>();
@@ -533,14 +584,15 @@ void Player::Attack()
 			t->localAngle = transform->localAngle;
 			t->UpdateTransform();
 			Vector3 size = Vector3(40, 70, 40);
+
 			DamageCollision::DamageCollisonInfo info;
 			//攻撃力補正
-			info.damage = Random::Range(5, 10) * Cparameter.power;
-			info.blown = transform->Direction(Vector3(0.0f, 0.5f, 0.5f));
+			info.damage = Random::Range(10, 20) * Cparameter.power;
+			info.blown = transform->Direction(Vector3(0.0f, 0.1f, 0.1f) + V);
 			//吹き飛ばし補正
 			info.blown.Scale(Cparameter.blowCorrection);
 			info.rigor = 0.1f;
-			info.stoptime = 0;
+			info.stoptime = 1;
 			obj->Initialize(playeridx, 0.1f, size, info);
 		}
 	}
@@ -558,13 +610,17 @@ void Player::Damage()
 		const DamageCollision *co = (const DamageCollision*)PhysicsWorld::Instance()->FindOverlappedDamageCollision(rb, i);
 		if (co)
 		{
-			//ダメージを受けと方向へ向く
+			//吹き飛ぶ方向
+			Vector3 vec = co->info.blown;
+			//反対を向く
+			vec.Scale(-1);
+			vec.y = 0;
 			//正規化
-			//dir.Normalize();
-			////ベクトルから角度を求める
-			//float rot = D3DXToRadian(360) - atan2f(dir.z, dir.x);
-			////回転
-			//transform->localAngle.y = D3DXToDegree(rot + D3DXToRadian(90));
+			vec.Normalize();
+			//ベクトルから角度を求める
+			float rot = D3DXToRadian(360) - atan2f(vec.z, vec.x);
+			//回転
+			transform->localAngle.y = D3DXToDegree(rot + D3DXToRadian(90));
 
 			//最後に攻撃してきたとしてやつ保存
 			//とりあえず永続
@@ -583,6 +639,11 @@ void Player::Damage()
 			blown.Scale(Cparameter.toBlowCorrection);
 			//更にダメージによる吹き飛び補正
 			blown.Scale(1.0f + (float)damage / 30.0f);
+
+			//重力を0に
+			btVector3 v = rb->getLinearVelocity();
+			//下方向のやつを消す
+			rb->setLinearVelocity(btVector3(v.x(), max(0.0f, v.y()), v.z()));
 			//吹き飛ばし力があるなら
 			if (blown.Length() > 0)
 			{
@@ -623,6 +684,7 @@ void Player::Blown()
 			move.Add(blown);
 			//吹き飛ばしを0に
 			blown = Vector3::zero;
+
 			//コントローラ振動を止める
 			XboxInput(playeridx)->Vibration(0, 0);
 			ChangeState(PState::STAY);
@@ -686,10 +748,11 @@ void Player::Move()
 		dir.y = 0.0f;
 		move = Vector3(dir.x, dir.y, dir.z);
 
+		Vector3 vec = dir;
 		//正規化
-		dir.Normalize();
+		vec.Normalize();
 		//ベクトルから角度を求める
-		float rot = D3DXToRadian(360) - atan2f(dir.z, dir.x);
+		float rot = D3DXToRadian(360) - atan2f(vec.z, vec.x);
 		//回転
 		transform->localAngle.y = D3DXToDegree(rot + D3DXToRadian(90));
 	}

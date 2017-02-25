@@ -42,7 +42,7 @@ public:
 	CharacterInfo* GetInfo();
 	void Release();
 private:
-	ImageObject* cursor,*back,*show;
+	ImageObject* cursor,*back,*show,*OK;
 	TextObject* name;
 	//ƒvƒŒƒCƒ„[‚Ì“Y‚¦š
 	int playerIdx;

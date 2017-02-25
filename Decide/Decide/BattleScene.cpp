@@ -41,6 +41,7 @@ void BattleScene::Start()
 		wchar_t time[10];
 		InttoString(gamerule->GetRemainingTime(), time);
 		Timer->SetString(time);
+		lastTime = -1;
 	}
 	else
 		Timer = nullptr;
@@ -62,11 +63,14 @@ void BattleScene::Update()
 		//test->SetActive(!test->GetActive());
 	}
 
-	if(Timer)
+	int nowtime = gamerule->GetRemainingTime();
+	if(Timer != nullptr &&
+		lastTime != nowtime)
 	{
 		wchar_t time[10];
-		InttoString(gamerule->GetRemainingTime(), time);
+		InttoString(nowtime, time);
 		Timer->SetString(time);
+		lastTime = nowtime;
 	}
 
 	//‡‚ªI—¹‚µ‚½‚È‚çB

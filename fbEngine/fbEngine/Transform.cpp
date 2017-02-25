@@ -133,7 +133,9 @@ void Transform::UpdateTransform()
 		//親のワールド行列を乗算して、ローカル座標をワールド座標に変換する。
 		D3DXVECTOR4 pos;
 		D3DXVECTOR3 lpos;
+		//ローカルをコピー
 		localPosition.CopyFrom(lpos);
+		//ローカル×ワールド
 		D3DXVec3Transform(&pos, &lpos, &PWorld);
 		//ポジション
 		position.x = pos.x;

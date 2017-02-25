@@ -18,4 +18,5 @@ private:
 	SoundSource *gong,*BGM;
 	GameRule *gamerule;
 	bool Change;
+	int lastTime;	//‘O‚ÌŽžŠÔ
 };

@@ -121,7 +121,7 @@ private:
 	//プレイヤーの色
 	Color playerColor;
 	//パーティクル
-	ParticleEmitter *smoke;
+	ParticleEmitter *smoke,*fire;
 	
 	//最終的な移動量
 	Vector3 move;

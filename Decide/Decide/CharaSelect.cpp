@@ -14,6 +14,7 @@ void CharaSelect::Awake()
 	show = GameObjectManager::AddNew<ImageObject>("show", 0);
 	name = GameObjectManager::AddNew<TextObject>("name", 0);
 	cursor = GameObjectManager::AddNew<ImageObject>("cursor", 3);
+	OK = GameObjectManager::AddNew<ImageObject>("OK", 3);
 	showmodel = GameObjectManager::AddNew<ShowModel>("show", 0);
 	sound = GameObjectManager::AddNew<SoundSource>("test", 1);
 
@@ -42,6 +43,14 @@ void CharaSelect::Awake()
 
 	cursor->transform->SetParent(transform);
 	cursor->transform->localPosition = Vector3(b->size.x / 2, b->size.y / 2, 0);
+
+	TEXTURE* ok = TextureManager::LoadTexture("OK.png");
+	ok->pivot = Vector2(0.5, 0.5);
+	
+	OK->SetTexture(ok);
+	OK->transform->SetParent(transform);
+	OK->transform->localPosition = Vector3(b->size.x / 2, b->size.y / 2, 0);
+	OK->SetActive(false);
 
 	playerColor = Color::white;
 	old = nullptr;
@@ -160,10 +169,12 @@ void CharaSelect::Update()
 	{
 		back->SetBlendColor(playerColor);
 		show->SetBlendColor(Color::white);
+		OK->SetActive(true);
 	}else
 	{
 		back->SetBlendColor(Color(playerColor.r, playerColor.g, playerColor.b, 0.7f));
 		show->SetBlendColor(Color(1, 1, 1, 0.7f));
+		OK->SetActive(false);
 	}
 }
 

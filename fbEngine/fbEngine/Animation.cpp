@@ -155,6 +155,9 @@ void Animation::Update()
 			{
 				//アニメーション終了
 				isPlaying = false;
+				//最後の方で止めておく
+				animController->SetTrackPosition(currentTrackNo, maxtime - 0.001f);
+				animController->AdvanceTime(0,NULL);
 			}
 		}
 

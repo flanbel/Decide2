@@ -7,7 +7,7 @@ void GameCamera::Awake()
 	GameObjectManager::mainCamera = camera;
 	transform->localPosition = Vector3(0, 991, -684);
 	transform->localAngle = Vector3(60, 0, 0);
-	camera->Near(500);
+	camera->Near(10);
 	camera->Far(1850);
 	//camera->Near(1);
 	//camera->Far(2000);
@@ -17,7 +17,7 @@ void GameCamera::Update()
 {
 	//’²®—p
 	Camera* camera = GetComponent<Camera>();
-	static Vector2 nf = { 500,1850 };
+	static Vector2 nf = { 10,1850 };
 	if (KeyBoardInput->isPressed(DIK_N))
 	{
 		nf.x++;
@@ -35,8 +35,9 @@ void GameCamera::Update()
 		nf.y--;
 	}
 
-	/*camera->Near(nf.x);
-	camera->Far(nf.y);
+	//camera->Near(nf.x);
+	//camera->Far(nf.y);
+	/*
 
 	if (KeyBoardInput->isPressed(DIK_LEFT))
 	{
