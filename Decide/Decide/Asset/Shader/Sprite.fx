@@ -69,7 +69,7 @@ float4 ps_main(VS_OUTPUT In) : COLOR0
 		clip(-1);
 	}
 
-	return color* blendColor;
+	return color *blendColor;
 }
 
 //sprite描画テクニック

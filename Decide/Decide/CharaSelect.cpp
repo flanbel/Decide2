@@ -30,6 +30,7 @@ void CharaSelect::Awake()
 
 	TEXTURE* b = TextureManager::LoadTexture("back.png");
 	back->SetTexture(b);
+	back->SetClipColor(Color::red);
 	back->transform->SetParent(transform);
 
 	show->SetTexture(render->texture);

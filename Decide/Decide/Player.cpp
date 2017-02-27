@@ -279,6 +279,7 @@ void Player::Update()
 
 	AnimationControl();
 
+	transform->localAngle.y++;
 	
 
 	//êŠO‚É‚Å‚½‚Æ‚«‚Ìˆ—B
@@ -590,7 +591,7 @@ void Player::Attack()
 
 		//Œ•‚ÌUŒ‚”»’è
 		if (state == PState::SLASH &&
-			frame <= 30 && (frame % 3) == 0)
+			frame <= 30 && (frame % 5) == 0)
 		{
 			//‚ ‚½‚è”»’è‚ğo‚·
 			AttackCollision* obj = GameObjectManager::AddNew<AttackCollision>("sword", 1);
@@ -605,7 +606,7 @@ void Player::Attack()
 
 			DamageCollision::DamageCollisonInfo info;
 			//UŒ‚—Í•â³
-			info.damage = Random::Range(10, 20) * Cparameter.power;
+			info.damage = Random::Range(1, 2) * Cparameter.power;
 			info.blown = transform->Direction(Vector3(1.0f, 1.5f, 0.0f) + V);
 			//‚«”ò‚Î‚µ•â³
 			info.blown.Scale(Cparameter.blowCorrection);

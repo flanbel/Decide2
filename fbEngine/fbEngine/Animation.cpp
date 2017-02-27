@@ -109,7 +109,8 @@ void Animation::Update()
 		TimeRatio = min(1.0f, (nowTime + delta) / maxtime);
 
 		//アニメーションの時間加算
-		animController->AdvanceTime(delta, NULL);
+		//animController->AdvanceTime(delta, NULL);
+		animController->AdvanceTime(1.0f/60.0f, NULL);
 
 		if (isInterpolate) {
 			//補間中。
