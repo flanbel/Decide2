@@ -4,7 +4,9 @@
 #include "Camera.h"
 #include "Light.h"
 
-PlatePrimitive::PlatePrimitive(char * name):GameObject(name)
+PlatePrimitive::PlatePrimitive(char * name):
+	GameObject(name),
+	blendColor(Color::white)
 {
 	//ƒ|ƒWƒVƒ‡ƒ“
 	if (postionBuffer == nullptr)

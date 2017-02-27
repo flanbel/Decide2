@@ -12,24 +12,47 @@ public:
 		KNOCKOUT,		//ノックアウト　先に一定数倒した者の勝ち。
 		NUM,
 	};
+	//ランキング(仮)
 	struct Ranking {
 	public:
-		int idx;  // 添え字
+		int rank;//順位
+		int idx;  // プレイヤーの添え字
 		int Kill; // 倒した数
-		bool operator < (const Ranking& right) const {
-			//キル数で昇順
-			if (Kill > right.Kill)
+		int Stock;
+
+		//キル数でのソート
+		struct KillSort
+		{
+			bool operator()(const Ranking& left, const Ranking& right) const
 			{
-				return true;
+				//キル数で降順
+				if (left.Kill > right.Kill)
+				{
+					return true;
+				}
+				//同数なら添え字の小さいほうを上に
+				else if (left.Kill == right.Kill && left.idx < right.idx)
+				{
+					return true;
+				}
+				//並び替えしない
+				return false;
 			}
-			//同数なら添え字の小さいほうを上に
-			else if (Kill == right.Kill && idx < right.idx)
+		};
+		struct StockSort
+		{
+			//ストック数でソート
+			bool operator()(const Ranking& left, const Ranking& right) const
 			{
-				return true;
+				//ストックで降順
+				if (left.Stock > right.Stock)
+				{
+					return true;
+				}
+				//並び替えしない
+				return false;
 			}
-			//並び替えしない
-			return false;
-		}
+		};
 	};
 
 	
@@ -55,15 +78,22 @@ public:
 
 	//プレイヤーセット
 	void SetPlayer(Player* p,int index);
-	//プレイヤーの倒した数を増やす。(お前がするのか・・・。)
-	void AddKillCount(int index);
+	//プレイヤーのスコア更新
+	void UpdateScore(int index);
 	//プレイヤー完全に死んだ通知を受け取る
 	void PlayerDeath(int index);
 	list<Ranking>& GetRank();
 private:
+	//ランキング更新
+	void UpdateRanking();
+	
+private:
 	//プレイヤー達を管理？
 	Player* Players[PLAYER_NUM];
+	//何人ﾌﾟﾚｲしているか？
 	int playerCount;
+	//何人死んだか？
+	int DeathCount;
 	//順位
 	list<Ranking> rank;
 

@@ -10,6 +10,7 @@ void DamageCollision::Create(float l, int id, Collider * shape, DamageCollisonIn
 
 void DamageCollision::Update()
 {
+	GostCollision::Update();
 	//Žõ–½Šm”F
 	time += (float)Time::DeltaTime();
 	if (life > 0 && 

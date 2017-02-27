@@ -16,6 +16,7 @@ void AttackCollision::Awake()
 
 void AttackCollision::Update()
 {
+	//“–‚½‚Á‚½ || Ž€‚ñ‚Å‚È‚¢
 	if(coll->GetHit() || !coll->enable)
 	{
 		GameObjectManager::AddRemoveList(this);

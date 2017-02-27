@@ -55,6 +55,13 @@ void Player::Awake()
 	//プレート生成
 	idxPlate = GameObjectManager::AddNew<PlatePrimitive>("plate", 4);
 	idxPlate->Discard(false);
+	//王冠生成
+	CrownPlate = GameObjectManager::AddNew<PlatePrimitive>("Crown", 4);
+	CrownPlate->transform->SetParent(idxPlate->transform);
+	CrownPlate->transform->localPosition = Vector3(10, 60, 0);
+	CrownPlate->SetTexture(TextureManager::LoadTexture("Crown.png"));
+	CrownPlate->Discard(false);
+	
 
 	isAction = false;
 	jumpCount = 1;
@@ -134,6 +141,9 @@ void Player::Start()
 	strcat_s(path, strlen(path) + strlen("P.png") + 1, "P.png");
 	idxPlate->SetTexture(TextureManager::LoadTexture(path));
 	idxPlate->SetBlendColor(playerColor);
+	CrownPlate->Start();
+	CrownPlate->SetActive(false);
+	
 	Pparameter->SetColor(playerColor);
 	model->SetTextureBlend(playerColor);
 }
@@ -144,24 +154,6 @@ void Player::Start()
 void Player::Update()
 {
 	UpdateStateMachine();
-	//n割り再生したら遷移開始
-	if (state == PState::KICK &&
-		anim->GetTimeRatio() > 0.7f)
-	{
-		ChangeState(PState::STAY);
-	}
-
-	if (state == PState::PUNCH &&
-		anim->GetTimeRatio() > 0.7f)
-	{
-		ChangeState(PState::STAY);
-	}
-
-	if (state == PState::SLASH &&
-		anim->GetTimeRatio() > 0.8f)
-	{
-		ChangeState(PState::STAY);
-	}
 
 	ItemAction();
 	move = Vector3::zero;
@@ -176,6 +168,28 @@ void Player::Update()
 		else
 			dir.Scale(0.93f);
 		move.Add(dir);
+	}
+
+	//n割り再生したら遷移開始
+	if (state == PState::KICK &&
+		anim->GetTimeRatio() > 0.7f)
+	{
+		ChangeState(PState::STAY);
+	}
+
+	if (state == PState::PUNCH &&
+		anim->GetTimeRatio() > 0.7f)
+	{
+		ChangeState(PState::STAY);
+	}
+
+	if (state == PState::SLASH)
+	{
+		move.Add(transform->Direction(Vector3(0, 0, 5.0f)));
+		if (anim->GetTimeRatio() > 0.8f)
+		{
+			ChangeState(PState::STAY);
+		}
 	}
 
 	Attack();
@@ -277,6 +291,8 @@ void Player::LateUpdate()
 	idxPlate->transform->localPosition = transform->LocalPos(Vector3(-50, 150, 0));
 	idxPlate->transform->Update();
 	idxPlate->transform->LockAt(GameObjectManager::mainCamera->gameObject);
+
+	CrownPlate->transform->LockAt(GameObjectManager::mainCamera->gameObject);
 }
 
 void Player::UpdateStateMachine()
@@ -574,26 +590,28 @@ void Player::Attack()
 
 		//剣の攻撃判定
 		if (state == PState::SLASH &&
-			frame == 7)
+			frame <= 30 && (frame % 3) == 0)
 		{
 			//あたり判定を出す
 			AttackCollision* obj = GameObjectManager::AddNew<AttackCollision>("sword", 1);
 			Transform* t = obj->GetComponent<Transform>();
 			//前に出す
+			/*t->SetParent(transform);
+			t->localPosition = Vector3(0, 60, 30);*/
 			t->localPosition = transform->Local(Vector3(0, 60, 30));
 			t->localAngle = transform->localAngle;
 			t->UpdateTransform();
-			Vector3 size = Vector3(40, 70, 40);
+			Vector3 size = Vector3(70, 70, 40);
 
 			DamageCollision::DamageCollisonInfo info;
 			//攻撃力補正
 			info.damage = Random::Range(10, 20) * Cparameter.power;
-			info.blown = transform->Direction(Vector3(0.0f, 0.1f, 0.1f) + V);
+			info.blown = transform->Direction(Vector3(1.0f, 1.5f, 0.0f) + V);
 			//吹き飛ばし補正
 			info.blown.Scale(Cparameter.blowCorrection);
 			info.rigor = 0.1f;
 			info.stoptime = 1;
-			obj->Initialize(playeridx, 0.1f, size, info);
+			obj->Initialize(playeridx, 0.01f, size, info);
 		}
 	}
 }
@@ -800,9 +818,8 @@ void Player::Death()
 			Pparameter->SetStock(stock);
 		}
 
-		//最後に攻撃してきたやつのキル数増加
-		if (lastAttack >= 0)
-			gameRule->AddKillCount(lastAttack);
+		//スコア更新
+		gameRule->UpdateScore(lastAttack);
 
 		lastAttack = -1;
 		damage = 0;
@@ -814,6 +831,7 @@ void Player::Death()
 		btVector3 v = rb->getLinearVelocity();
 		//下方向のやつを消す
 		rb->setLinearVelocity(btVector3(v.x(), max(0.0f, v.y()), v.z()));
+		ChangeState(PState::STAY);
 
 		//残機が0じゃないなら(負数なら残機無限)
 		if (stock != 0)
@@ -829,6 +847,7 @@ void Player::Death()
 			gameRule->PlayerDeath(playeridx);
 			this->SetActive(false);
 			idxPlate->SetActive(false);
+			CrownPlate->SetActive(false);
 		}
 	}
 }
@@ -885,6 +904,17 @@ void Player::AddKillCount()
 int Player::GetKillCount()
 {
 	return killCount;
+}
+
+int Player::GetStockCount()
+{
+	return stock;
+}
+
+void Player::No1(bool f)
+{
+	if (active == true);
+	CrownPlate->SetActive(f);
 }
 
 const Vector3 Player::GetDir()

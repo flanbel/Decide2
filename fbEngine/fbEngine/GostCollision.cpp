@@ -22,9 +22,11 @@ void GostCollision::Create(Collider * shape, int id)
 
 void GostCollision::Update()
 {
-	//位置更新
-	btTransform worldTrans;
 	//トランスフォーム取得
-	worldTrans = collisionObject->getWorldTransform();
+	btTransform& worldTrans = collisionObject->getWorldTransform();
+	//位置更新
 	worldTrans.setOrigin(btVector3(transform->position.x, transform->position.y, transform->position.z));
+	//回転
+	worldTrans.setRotation(btQuaternion(transform->rotation.x, transform->rotation.y, transform->rotation.z, transform->rotation.w));
+
 }

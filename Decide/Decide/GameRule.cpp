@@ -4,13 +4,12 @@
 
 GameRule::GameRule(char * name) :
 	GameObject(name),
-	gamerule(GAMERULE::TIMELIMIT),
-	CheckGameSet(&GameRule::TimeLimitGameSet),
 	playerCount(0),
+	DeathCount(0),
 	value(2),
 	time(0.0f)
 {
-
+	SetGameRule(GAMERULE::TIMELIMIT, 2);
 }
 
 void GameRule::Awake()
@@ -25,27 +24,7 @@ void GameRule::Update()
 
 void GameRule::CreateScore()
 {
-	//一位の人の順位が入っているか？
-	if (rank.size() < playerCount)
-	{
-		FOR(PLAYER_NUM)
-		{
-			//死んだ奴はnullptrにしてあるので。
-			if (Players[i] != nullptr)
-			{
-				PlayerDeath(i);
-			}
-		}	
-	}
-
-	if (gamerule == GameRule::TIMELIMIT ||
-		gamerule == GameRule::KNOCKOUT)
-	{
-		rank.sort();
-		//倒した数をキーに昇順でソート
-		/*sort(rank.begin(), rank.end(),
-			[](const Ranking& x, const Ranking& y) { return x.Kill < y.Kill; });*/
-	}
+	UpdateRanking();
 }
 
 void GameRule::SetGameRule(GAMERULE rule, int v)
@@ -105,22 +84,26 @@ bool GameRule::IsGameSet()
 void GameRule::SetPlayer(Player * p, int index)
 {
 	Players[index] = p;
+	Ranking r = { 1,index,0,0 };
+	rank.push_front(r);
 	playerCount++;
 }
 
-void GameRule::AddKillCount(int index)
+void GameRule::UpdateScore(int index)
 {
-	//死んだ相手には殺されない、ゲームセットなら加算しない。
-	if (!GameSet && Players[index])
+	//誰かに殺された　&& ゲームセットではない
+	if (index >= 0 && !GameSet)
+	{
 		Players[index]->AddKillCount();
+	}
+	//ランキング更新
+	UpdateRanking();
 }
 
 void GameRule::PlayerDeath(int index)
 {
-	Ranking r = { index,Players[index]->GetKillCount() };
-	rank.push_front(r);
-	//ポインタを捨てる
-	Players[index] = nullptr;
+	//死んだ数を増やす
+	DeathCount++;
 }
 
 list<GameRule::Ranking>& GameRule::GetRank()
@@ -128,10 +111,73 @@ list<GameRule::Ranking>& GameRule::GetRank()
 	return rank;
 }
 
+void GameRule::UpdateRanking()
+{
+	//ランキング更新
+	list<Ranking>::iterator it = rank.begin();
+	while (it != rank.end())
+	{
+		Player* p = Players[it->idx];
+		it->Kill = p->GetKillCount();
+		it->Stock = p->GetStockCount();
+		it++;
+	}
+	//順番にソート
+	if(gamerule == GAMERULE::STOCK)
+	{
+		rank.sort(Ranking::StockSort());
+	}
+	else
+	{
+		rank.sort(Ranking::KillSort());
+	}
+	//順位付け
+	it = rank.begin();
+	int r = 1;
+	Ranking Before = { -1,-1,-1,-1 };	//前のやつ
+	while (it != rank.end())
+	{
+		Player* p = Players[it->idx];
+		if(gamerule == GAMERULE::STOCK)
+		{
+			//残機が同じなら
+			if (Before.Stock == it->Stock)
+			{
+				//順位を同じに
+				r = Before.rank;
+			}
+		}
+		else
+		{
+			//倒した数が同じなら
+			if (Before.Kill == it->Kill)
+			{
+				//順位を同じに
+				r = Before.rank;
+			}
+		}
+		
+		it->rank = r;
+		//一位なら
+		if(it->rank == 1)
+		{
+			p->No1(true);
+		}else
+		{
+			//一位じゃない
+			p->No1(false);
+		}
+		//保持
+		Before = (*it);
+		r++;
+		it++;
+	}
+}
+
 bool GameRule::StockGameSet()
 {
 	//最後の一人かどうか？
-	return ((playerCount - 1) <= rank.size());
+	return ((playerCount - 1) <= DeathCount);
 }
 
 bool GameRule::TimeLimitGameSet()

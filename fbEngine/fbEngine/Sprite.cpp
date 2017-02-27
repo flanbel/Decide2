@@ -202,7 +202,7 @@ void Sprite::ImageRender()
 void Sprite::CreateShadow()
 {
 	//‰e¶¬
-	float offset = 5.0f;
+	float offset = 7.0f;
 	Color hoji = blendColor;
 	blendColor = Color::black;
 	transform->position.x += offset * transform->scale.x;

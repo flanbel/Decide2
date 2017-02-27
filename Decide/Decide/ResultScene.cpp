@@ -52,15 +52,13 @@ void ResultScene::CreateRanking(list<GameRule::Ranking> ranking)
 {
 	int idx = 0;
 	//ˆê‚Â‘O‚Ì‚â‚Â‚Ì‚ğ•Û‘¶
-	GameRule::Ranking beforeRank;
+	GameRule::Ranking beforeRank = {-1,-1,-1,-1};
 	//1ˆÊ‚©‚çÅŒã‚Ü‚Å
 	for each (GameRule::Ranking rank in ranking)
 	{
 		TextObject* rt = GameObjectManager::AddNew<TextObject>("rt", 0);
 		rt->transform->localPosition = Vector3(300, 150 * idx + 150, 0);
-		rt->SetFontStyle("HGS–¾’©E");
-		rt->SetBlendColor(Color::white);
-		rt->SetFontSize(80);
+		rt->Initialize(L"", 80.0f, Color::white, true, "HGS–¾’©E");
 		//•¶šì¬
 		wchar_t display[128];
 		//‡ˆÊ
@@ -71,7 +69,7 @@ void ResultScene::CreateRanking(list<GameRule::Ranking> ranking)
 			//“|‚µ‚½”‚ª“¯‚¶‚È‚ç
 			if (beforeRank.Kill == rank.Kill)
 				//‡ˆÊ‚ğ“¯‚¶‚É
-				r = beforeRank.idx;
+				r = beforeRank.rank;
 		}
 		wchar_t junni[2] = { 48 + (r + 1),0 };
 		wcscpy_s(display, 2, junni);
@@ -80,13 +78,14 @@ void ResultScene::CreateRanking(list<GameRule::Ranking> ranking)
 		wchar_t idxW[2] = { 48 + (rank.idx + 1),0 };
 		wcscat_s(display, 128, idxW);
 		wcscat_s(display, 128, L"     KILL:");
-		wchar_t killW[2] = { 48 + rank.Kill,0 };
+		wchar_t killW[4];
+		InttoString(rank.Kill, killW);
 		wcscat_s(display, 128, killW);
 		rt->SetString(display);
 
 		idx++;
 		//‡ˆÊ‚ğ•Û‘¶‚µ‚Ä‚¨‚­
-		beforeRank.idx = r;
+		beforeRank.rank = r;
 		beforeRank.Kill = rank.Kill;
 	}
 }

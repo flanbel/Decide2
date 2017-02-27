@@ -75,6 +75,9 @@ public:
 	void SetInfo(CharacterInfo* info);
 	void AddKillCount();
 	int GetKillCount();
+	int GetStockCount();
+	//一位かどうか？
+	void No1(bool f);
 
 	const Vector3 GetDir();
 private:
@@ -117,7 +120,7 @@ private:
 	//ステート
 	PState state;
 	//表示用プレート
-	PlatePrimitive* idxPlate;
+	PlatePrimitive *idxPlate, *CrownPlate;
 	//プレイヤーの色
 	Color playerColor;
 	//パーティクル

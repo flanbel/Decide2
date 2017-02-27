@@ -34,9 +34,7 @@ void BattleScene::Start()
 	{
 		//§ŒÀŠÔ•\¦—p‚ÌƒAƒŒ
 		Timer = GameObjectManager::AddNew<TextObject>("Timer", 1);
-		Timer->SetFontStyle("HGS–¾’©E");
-		Timer->SetBlendColor(Color::white);
-		Timer->SetFontSize(80.0f);
+		Timer->Initialize(L"", 80.0f, Color::white, true, "HGS–¾’©E");
 		Timer->transform->localPosition = Vector3(WindowW/2, 40, 0);
 		wchar_t time[10];
 		InttoString(gamerule->GetRemainingTime(), time);

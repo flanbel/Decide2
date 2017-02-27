@@ -150,6 +150,9 @@ void Transform::UpdateTransform()
 		angle.y = localAngle.y;
 		angle.z = localAngle.z;
 		//angle = localAngle * qParentRot;
+		D3DXQUATERNION q;
+		D3DXQuaternionRotationYawPitchRoll(&q, D3DXToRadian(angle.y), D3DXToRadian(angle.x), D3DXToRadian(angle.z));
+		rotation = q;
 	}
 	else {
 		//ÉçÅ[ÉJÉãÇÇªÇÃÇ‹Ç‹
