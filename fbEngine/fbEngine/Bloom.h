@@ -30,13 +30,13 @@ private:
 	Effect* Effect;
 
 	/** レンダリングターゲット. */
-	RenderTarget LuminanceRT;
+	RenderTarget* LuminanceRT;
 
 	/** ぼかし合成用のRT. */
-	RenderTarget CombineRT;
+	RenderTarget* CombineRT;
 
 	/** ダウンサンプリング用RTの数. */
 	static const int NUM_DOWN_SAMPLING_RT = 10;
 	/** 輝度をダウンサンプリングするためのRT. */
-	RenderTarget DownSamplingRT[NUM_DOWN_SAMPLING_RT];
+	RenderTarget* DownSamplingRT[NUM_DOWN_SAMPLING_RT];
 };

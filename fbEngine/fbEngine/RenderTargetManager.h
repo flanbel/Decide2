@@ -10,7 +10,7 @@ struct RenderTarget:Noncopyable
 	//ビューポート
 	D3DVIEWPORT9 viewport;
 	//
-	TEXTURE* texture;
+	TEXTURE *texture;
 	RenderTarget();
 	void Create(Vector2 size);
 };

@@ -1,5 +1,6 @@
 #include "Bloom.h"
 #include "Effect.h"
+#include "RenderTargetManager.h"
 
 void Bloom::Create()
 {
@@ -13,7 +14,8 @@ void Bloom::Create()
 		int h = g_WindowSize.y;
 
 		//輝度レンダリングターゲットの作成
-		LuminanceRT.Create(g_WindowSize);
+		LuminanceRT = new RenderTarget();
+		LuminanceRT->Create(g_WindowSize);
 
 		for (int i = 0; i < NUM_DOWN_SAMPLING_RT / 2; i++)
 		{
@@ -26,13 +28,16 @@ void Bloom::Create()
 			//シフトしてサイズを小さくしていく(縮小バッファの作成)
 
 			//横ブラー用RTの作成
-			DownSamplingRT[baseIndex].Create(Vector2(w >> shift, h >> (shift - 1)));
+			DownSamplingRT[baseIndex] = new RenderTarget();
+			DownSamplingRT[baseIndex]->Create(Vector2(w >> shift, h >> (shift - 1)));
 			//縦ブラー用RTの作成
-			DownSamplingRT[baseIndex + 1].Create(Vector2(w >> shift, h >> shift));
+			DownSamplingRT[baseIndex + 1] = new RenderTarget();
+			DownSamplingRT[baseIndex + 1]->Create(Vector2(w >> shift, h >> shift));
 		}
 
 		//ぼかし合成用RTの作成
-		CombineRT.Create(Vector2(w >> 2, h >> 2));
+		CombineRT = new RenderTarget();
+		CombineRT->Create(Vector2(w >> 2, h >> 2));
 
 		//エフェクトのロード
 		Effect = EffectManager::LoadEffect("Bloom.fx");
@@ -50,8 +55,8 @@ void Bloom::Render()
 		{
 
 			//輝度抽出用のレンダリングターゲットに変更
-			(*graphicsDevice()).SetRenderTarget(0, LuminanceRT.buffer);
-			(*graphicsDevice()).SetDepthStencilSurface(LuminanceRT.depth);
+			(*graphicsDevice()).SetRenderTarget(0, LuminanceRT->buffer);
+			(*graphicsDevice()).SetDepthStencilSurface(LuminanceRT->depth);
 
 			//テクスチャのクリア
 			(*graphicsDevice()).Clear(0, nullptr, D3DCLEAR_TARGET, 0, 1.0f, 0);
@@ -78,7 +83,7 @@ void Bloom::Render()
 		 //輝度をぼかす
 		{
 			//ループ用RTクラスのポインタ
-			RenderTarget* prevRT = &LuminanceRT;
+			RenderTarget* prevRT = LuminanceRT;
 			//ダウンサンプリング用RTの添え字
 			int rtIndex = 0;
 
@@ -87,8 +92,8 @@ void Bloom::Render()
 				//XBlur
 				{
 					//ダウンサンプリング用RTのXBlur用をレンダリングターゲットに設定
-					(*graphicsDevice()).SetRenderTarget(0, DownSamplingRT[rtIndex].buffer);
-					(*graphicsDevice()).SetDepthStencilSurface(DownSamplingRT[rtIndex].depth);
+					(*graphicsDevice()).SetRenderTarget(0, DownSamplingRT[rtIndex]->buffer);
+					(*graphicsDevice()).SetDepthStencilSurface(DownSamplingRT[rtIndex]->depth);
 
 					//画像をクリア
 					(*graphicsDevice()).Clear(0, nullptr, D3DCLEAR_TARGET, 0, 1.0f, 0);
@@ -131,14 +136,14 @@ void Bloom::Render()
 				}//XBlur
 
 				 //YBlur用を設定
-				prevRT = &DownSamplingRT[rtIndex];
+				prevRT = DownSamplingRT[rtIndex];
 				rtIndex++;
 
 				//YBlur
 				{
 					//ダウンサンプリング用RTのYBlur用をレンダリングターゲットに設定
-					(*graphicsDevice()).SetRenderTarget(0, DownSamplingRT[rtIndex].buffer);
-					(*graphicsDevice()).SetDepthStencilSurface(DownSamplingRT[rtIndex].depth);
+					(*graphicsDevice()).SetRenderTarget(0, DownSamplingRT[rtIndex]->buffer);
+					(*graphicsDevice()).SetDepthStencilSurface(DownSamplingRT[rtIndex]->depth);
 
 					//画像をクリア
 					(*graphicsDevice()).Clear(0, nullptr, D3DCLEAR_TARGET, 0, 1.0f, 0);
@@ -180,7 +185,7 @@ void Bloom::Render()
 				}
 
 				//XBlur用を設定
-				prevRT = &DownSamplingRT[rtIndex];
+				prevRT = DownSamplingRT[rtIndex];
 				rtIndex++;
 
 			}//YBlur
@@ -193,16 +198,16 @@ void Bloom::Render()
 			//アルファブレンドをなしに設定
 			(*graphicsDevice()).SetRenderState(D3DRS_ALPHABLENDENABLE, FALSE);
 
-			(*graphicsDevice()).SetRenderTarget(0, CombineRT.buffer);
-			(*graphicsDevice()).SetDepthStencilSurface(CombineRT.depth);
+			(*graphicsDevice()).SetRenderTarget(0, CombineRT->buffer);
+			(*graphicsDevice()).SetDepthStencilSurface(CombineRT->depth);
 
 			//画像をクリア
 			(*graphicsDevice()).Clear(0, nullptr, D3DCLEAR_TARGET, 0, 1.0f, 0);
 
 			float offset[] =
 			{
-				0.5f / static_cast<float>(CombineRT.texture->size.x),
-				0.5f / static_cast<float>(CombineRT.texture->size.y),
+				0.5f / static_cast<float>(CombineRT->texture->size.x),
+				0.5f / static_cast<float>(CombineRT->texture->size.y),
 			};
 
 			Effect->SetTechnique("Combine");
@@ -211,11 +216,11 @@ void Bloom::Render()
 			Effect->BeginPass(0);
 
 			//テクスチャの設定
-			Effect->SetTexture("g_CombineTex00", DownSamplingRT[1].texture->pTexture);
-			Effect->SetTexture("g_CombineTex01", DownSamplingRT[3].texture->pTexture);
-			Effect->SetTexture("g_CombineTex02", DownSamplingRT[5].texture->pTexture);
-			Effect->SetTexture("g_CombineTex03", DownSamplingRT[7].texture->pTexture);
-			Effect->SetTexture("g_CombineTex04", DownSamplingRT[9].texture->pTexture);
+			Effect->SetTexture("g_CombineTex00", DownSamplingRT[1]->texture->pTexture);
+			Effect->SetTexture("g_CombineTex01", DownSamplingRT[3]->texture->pTexture);
+			Effect->SetTexture("g_CombineTex02", DownSamplingRT[5]->texture->pTexture);
+			Effect->SetTexture("g_CombineTex03", DownSamplingRT[7]->texture->pTexture);
+			Effect->SetTexture("g_CombineTex04", DownSamplingRT[9]->texture->pTexture);
 
 			Effect->SetValue("g_Offset", offset, sizeof(offset));
 
@@ -233,8 +238,8 @@ void Bloom::Render()
 
 			float offset[] =
 			{
-				0.5f / static_cast<float>(CombineRT.texture->size.x),
-				0.5f / static_cast<float>(CombineRT.texture->size.y)
+				0.5f / static_cast<float>(CombineRT->texture->size.x),
+				0.5f / static_cast<float>(CombineRT->texture->size.y)
 			};
 
 			//メインレンダーに変更
@@ -251,7 +256,7 @@ void Bloom::Render()
 			Effect->Begin(NULL, D3DXFX_DONOTSAVESHADERSTATE);
 			Effect->BeginPass(0);
 
-			Effect->SetTexture("g_Blur", CombineRT.texture->pTexture);
+			Effect->SetTexture("g_Blur", CombineRT->texture->pTexture);
 			Effect->SetValue("g_Offset", offset, sizeof(offset));
 
 			Effect->CommitChanges();
