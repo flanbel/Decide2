@@ -6,6 +6,7 @@ SceneManager*  SceneManager::instance;
 #include "ImageObject.h"
 #include "Sprite.h"
 
+
 SceneManager::SceneManager()
 {
 	offScreen = new ImageObject("OffScreen");
@@ -60,6 +61,7 @@ void SceneManager::DrawScene()
 
 	//レンダーターゲットを元に戻す
 	INSTANCE(RenderTargetManager)->BeforeRenderTarget();
+	
 	GameObjectManager::PostRenderObject();
 	//オフスクリーンのやつ描画(ブルームが完成するまで)
 	sprite->ImageRender();

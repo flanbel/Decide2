@@ -1,5 +1,7 @@
 #pragma once
 
+#include "Bloom.h"
+
 class Scene;
 class Sprite;
 class ImageObject;
@@ -62,4 +64,6 @@ private:
 	Sprite* sprite;
 	RenderTarget* rt;
 	static SceneManager* instance;
+
+	Bloom bloom;
 };

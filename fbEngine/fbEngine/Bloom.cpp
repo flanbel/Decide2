@@ -1,5 +1,6 @@
 #include "Bloom.h"
 #include "Effect.h"
+#include "RenderTargetManager.h"
 
 void Bloom::Create()
 {
@@ -22,6 +23,8 @@ void Bloom::Create()
 
 			//ダウンサンプリング用RTの添え字を計算
 			int baseIndex = i * 2;
+
+			//シフトしてサイズを小さくしていく(縮小バッファの作成)
 
 			//横ブラー用RTの作成
 			DownSamplingRT[baseIndex].Create(Vector2(w >> shift, h >> (shift - 1)));
