@@ -1,6 +1,5 @@
 #include "Bloom.h"
 #include "Effect.h"
-#include "RenderTargetManager.h"
 
 void Bloom::Create()
 {
