@@ -279,7 +279,8 @@ void Player::Update()
 
 	AnimationControl();
 
-	transform->localAngle.y++;
+	//テスト用
+	//transform->localAngle.y++;
 	
 
 	//場外にでたときの処理。
@@ -826,12 +827,14 @@ void Player::Death()
 		damage = 0;
 		Pparameter->SetDamage(damage);
 		blown = Vector3::zero;
+		move = Vector3::zero;
+		dir = Vector3::zero;
 		rigor = 0;
 		jumpCount = 1;
 		jump = true;
-		btVector3 v = rb->getLinearVelocity();
-		//下方向のやつを消す
-		rb->setLinearVelocity(btVector3(v.x(), max(0.0f, v.y()), v.z()));
+		//btVector3 v = rb->getLinearVelocity();
+		//剛体の移動量も消す
+		rb->setLinearVelocity(btVector3(0.0f, 0.0f, 0.0f));
 		ChangeState(PState::STAY);
 
 		//残機が0じゃないなら(負数なら残機無限)

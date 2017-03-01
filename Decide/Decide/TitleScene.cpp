@@ -29,6 +29,7 @@ void TitleScene::Start()
 void TitleScene::Update()
 {
 	bool flag = false;
+	//スタートボタンの押下確認
 	FOR(PLAYER_NUM)
 	{
 		if (XboxInput(i)->isPushButton(XINPUT_GAMEPAD_START))
@@ -37,8 +38,8 @@ void TitleScene::Update()
 			break;
 		}
 	}
-
-	if((flag ||KeyBoardInput->isPush(DIK_RETURN)) && !PushEnter)
+	//エンターキー
+	if((flag || KeyBoardInput->isPush(DIK_RETURN)) && !PushEnter)
 	{
 		PushEnter = true;
 		enter->Play(false);
