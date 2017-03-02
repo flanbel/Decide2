@@ -1,6 +1,8 @@
 #pragma once
 #include "Component.h"
 
+class Vertex;
+
 class Sprite:public Component
 {
 public:
@@ -50,6 +52,8 @@ private:
 	bool mask;
 	//影を落とすかどうか
 	bool Shadow;
+
+	Vertex* _Vertex;
 	
 	//宣言からオブジェクト生成
 	static IDirect3DVertexDeclaration9 *pvertexDec;

@@ -208,6 +208,9 @@
     <ClInclude Include="Vertex.h">
       <Filter>Object</Filter>
     </ClInclude>
+    <ClInclude Include="Assert.h">
+      <Filter>System</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Object.cpp">

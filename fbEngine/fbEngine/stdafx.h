@@ -68,6 +68,7 @@ using namespace std;
 
 #include "System.h"
 #include "Noncopyable.h"
+#include "Assert.h"
 #include "Time.h"
 #include "Random.h"
 #include "Vector.h"

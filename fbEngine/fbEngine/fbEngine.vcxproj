@@ -140,6 +140,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="Assert.h" />
     <ClInclude Include="Bloom.h" />
     <ClInclude Include="CircleCollision.h" />
     <ClInclude Include="GostCollision.h" />

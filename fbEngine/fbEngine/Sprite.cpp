@@ -1,6 +1,7 @@
 #include "Sprite.h"
 #include "Effect.h"
 #include "VertexDefinition.h"
+#include "Vertex.h"
 
 //ポジションバッファー
 LPDIRECT3DVERTEXBUFFER9 Sprite::postionBuffer = nullptr;
@@ -94,6 +95,11 @@ void Sprite::Start()
 		};
 		//デコレーション作成
 		(*graphicsDevice()).CreateVertexDeclaration(vertexElem, &pvertexDec);
+	}
+
+	if(_Vertex == nullptr)
+	{
+	
 	}
 }
 
