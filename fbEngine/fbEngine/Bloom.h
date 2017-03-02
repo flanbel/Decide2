@@ -1,6 +1,8 @@
 #pragma once
 
 class Effect;
+class ImageObject;
+class Sprite;
 struct RenderTarget;
 
 class Bloom
@@ -17,6 +19,9 @@ private:
 	void UpdateWeight(float dis);
 
 private:
+	//描画用
+	ImageObject* screen;
+	Sprite* sprite;
 
 	/** 有効フラグ. */
 	bool isEnable_;

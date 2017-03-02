@@ -19,7 +19,9 @@ SceneManager::SceneManager()
 	rt->texture->size = rt->texture->size / 2;
 
 	//レンダーターゲットのテクスチャを取得
-	offScreen->SetTexture(rt->texture);
+	sprite->SetTexture(rt->texture);
+	//ブルームの準備
+	//bloom.Create();
 }
 
 SceneManager::~SceneManager()

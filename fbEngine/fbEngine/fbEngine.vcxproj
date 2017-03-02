@@ -149,6 +149,7 @@
     <ClInclude Include="Mouse.h" />
     <ClInclude Include="Movie.h" />
     <ClInclude Include="Particle.h" />
+    <ClInclude Include="Vertex.h" />
     <ClInclude Include="ShadowCamera.h" />
     <ClInclude Include="SoundEngine.h" />
     <ClInclude Include="SoundSource.h" />
@@ -270,6 +271,7 @@
     <ClCompile Include="ParticleEmitter.cpp" />
     <ClCompile Include="Transform.cpp" />
     <ClCompile Include="Vector.cpp" />
+    <ClCompile Include="Vertex.cpp" />
     <ClCompile Include="WaveFile.cpp" />
     <ClCompile Include="WaveFileBank.cpp" />
     <ClCompile Include="XInput.cpp" />

@@ -1,6 +1,10 @@
 #pragma once
 //頂点定義
 
+//頂点の情報(座標、UV、法線etc...)
+//空の基底クラス
+struct VERTEX_INFO{};
+
 //頂点座標
 struct VERTEX_POSITION
 {

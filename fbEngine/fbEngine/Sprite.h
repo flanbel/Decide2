@@ -12,6 +12,7 @@ public:
 	void Start()override;
 	void PreRender()override;
 	void ImageRender()override;
+	void DrawPrimitive();
 	//‰e‚Ì¶¬
 	void CreateShadow();
 	void SetTexture(TEXTURE* t)

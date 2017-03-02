@@ -31,13 +31,6 @@ void Sprite::Start()
 			{ 0.0f, 1.0f, 0.0f, 1.0f },//左上
 			{ 1.0f, 1.0f, 0.0f, 1.0f },//右上
 		};
-		//右回り
-		//VERTEX_POSITION position[] = {
-		//	{ 0.0f, 1.0f, 0.0f, 1.0f },//左上
-		//	{ 1.0f, 1.0f, 0.0f, 1.0f },//右上
-		//	{ 0.0f, 0.0f, 0.0f, 1.0f },//左下
-		//	{ 1.0f, 0.0f, 0.0f, 1.0f },//右下
-		//};
 		//UV定義
 		VERTEX_TEXCOORD texcoord[] = {
 			{ 0.0f, 0.0f },//左下
@@ -50,7 +43,7 @@ void Sprite::Start()
 		(*graphicsDevice()).CreateVertexBuffer(
 			sizeof(VERTEX_POSITION) * 4,	//頂点バッファのサイズ(VERTEX_POSITION*頂点数)
 			D3DUSAGE_WRITEONLY,
-			D3DFVF_XYZW,
+			0,	//固定機能なら頂点の情報を指定する(今回は固定機能ではないので非ＦＶＦ頂点で作成)
 			D3DPOOL_MANAGED,
 			&postionBuffer,
 			NULL
@@ -60,7 +53,7 @@ void Sprite::Start()
 		(*graphicsDevice()).CreateVertexBuffer(
 			sizeof(VERTEX_TEXCOORD) * 4,	//頂点バッファのサイズ(VERTEX_TEXCOORD*頂点数)
 			D3DUSAGE_WRITEONLY,
-			D3DFVF_TEX0,
+			0,
 			D3DPOOL_MANAGED,
 			&texcoordBuffer,
 			NULL
@@ -179,16 +172,8 @@ void Sprite::ImageRender()
 
 	//この関数を呼び出すことで、データの転送が確定する。描画を行う前に一回だけ呼び出す。
 	effect->CommitChanges();
-
-	//FVFのかわり
-	(*graphicsDevice()).SetVertexDeclaration(pvertexDec);     // 頂点宣言を通知
-	//ストリームセット
-	(*graphicsDevice()).SetStreamSource(1, postionBuffer, 0, sizeof(VERTEX_POSITION));
-	(*graphicsDevice()).SetStreamSource(0, texcoordBuffer, 0, sizeof(VERTEX_TEXCOORD));
-
-
-	//D3DPT_TRIANGLESTRIPは連続した頂点で三角形を形成
-	(*graphicsDevice()).DrawPrimitive(D3DPT_TRIANGLESTRIP, 0, 2);
+	//描画
+	DrawPrimitive();
 
 	effect->EndPass();
 	effect->End();
@@ -197,6 +182,20 @@ void Sprite::ImageRender()
 	(*graphicsDevice()).SetRenderState(D3DRS_ALPHABLENDENABLE, FALSE);
 	(*graphicsDevice()).SetRenderState(D3DRS_SRCBLEND, D3DBLEND_ONE);
 	(*graphicsDevice()).SetRenderState(D3DRS_DESTBLEND, D3DBLEND_ZERO);
+}
+
+void Sprite::DrawPrimitive()
+{
+	//FVFのかわり
+	//頂点宣言を通知
+	(*graphicsDevice()).SetVertexDeclaration(pvertexDec);
+	//ストリームセット
+	(*graphicsDevice()).SetStreamSource(1, postionBuffer, 0, sizeof(VERTEX_POSITION));
+	(*graphicsDevice()).SetStreamSource(0, texcoordBuffer, 0, sizeof(VERTEX_TEXCOORD));
+
+
+	//D3DPT_TRIANGLESTRIPは連続した頂点で三角形を形成
+	(*graphicsDevice()).DrawPrimitive(D3DPT_TRIANGLESTRIP, 0, 2);
 }
 
 void Sprite::CreateShadow()

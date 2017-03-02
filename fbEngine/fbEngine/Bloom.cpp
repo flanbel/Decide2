@@ -1,9 +1,15 @@
 #include "Bloom.h"
 #include "Effect.h"
 #include "RenderTargetManager.h"
+#include "ImageObject.h"
+#include "Sprite.h"
 
 void Bloom::Create()
 {
+	screen = new ImageObject("OffScreen");
+	screen->Awake();
+	sprite =screen->GetComponent<Sprite>();
+	sprite->Start();
 	//有効フラグをコピー
 	isEnable_ = true;
 
@@ -73,6 +79,7 @@ void Bloom::Render()
 			Effect->CommitChanges();
 
 			//画像描画
+			sprite->DrawPrimitive();
 			//未実装postEffect->RenderFullScreen();
 
 			Effect->EndPass();
@@ -276,5 +283,9 @@ void Bloom::Render()
 }
 
 void Bloom::Release()
+{
+}
+
+void Bloom::UpdateWeight(float dis)
 {
 }
