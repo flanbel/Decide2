@@ -23,6 +23,8 @@ public:
 	static const Color white;
 	//çï
 	static const Color black;
+	//ñ≥
+	static const Color zero;
 public:
 	operator D3DXCOLOR() { return static_cast<D3DXCOLOR>(*this); }
 	operator LPVOID() { return static_cast<LPVOID>(this); }

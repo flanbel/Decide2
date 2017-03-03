@@ -1,7 +1,7 @@
 /*!
  * @brief	スキンモデルシェーダー。(4ボーンスキニング)
  */
-#include "../../../../fbEngine/fbEngine/System.h"
+#include "System.h"
 bool Texflg;							//テクスチャ
 bool Spec;								//スペキュラ
 bool ReceiveShadow;						//影を写す

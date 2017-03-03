@@ -1,16 +1,8 @@
 #pragma once
 #include "GameObject.h"
 #include "ParticleEmitter.h"
-//D3DFVF_TEXn　はテクスチャのセマンティクスではなく枚数
-#define D3DFVF_PARTICLEVERTEX (D3DFVF_XYZW|D3DFVF_TEX1)
 
-//板ポリゴン生成
-struct Particle_Vertex
-{
-	FLOAT x, y, z, w;
-	FLOAT u, v;
-};
-
+class Vertex;
 
 //パーティクルクラス
 class Particle :public GameObject
@@ -39,8 +31,10 @@ public:
 	{
 		return isDead;
 	}
-private:
-	static LPDIRECT3DVERTEXBUFFER9 vertexBuff;	//頂点バッファー
+private:		
+	static Vertex* _Vertex;						//頂点
+
+
 	TEXTURE*		texture;
 	Effect*			shaderEffect;				//!<シェーダーエフェクト。
 	Camera*	camera;						//!<カメラ。

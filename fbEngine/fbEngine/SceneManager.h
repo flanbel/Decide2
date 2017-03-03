@@ -20,7 +20,7 @@ public:
 	template<class T>
 	void Add()
 	{
-		scenes.push_back(new T);
+		_Scenes.push_back(new T);
 	}
 	//シーンの初期化を行う
 	void StartScene();
@@ -36,13 +36,13 @@ public:
 	{
 		const char* name = typeid(T).name();
 		int idx = 0;
-		for each (Scene* s in scenes)
+		for each (Scene* s in _Scenes)
 		{
 			//名前の一致
 			if (name == typeid(*s).name())
 			{
-				nowScene = idx;
-				return scenes[nowScene];
+				_NowScene = idx;
+				return _Scenes[_NowScene];
 			}
 			idx++;
 		}
@@ -58,11 +58,11 @@ public:
 	}
 	TEXTURE* GetOffScreenTexture();
 private:
-	int nowScene;	//現在のシーンの添え字
-	vector<Scene*> scenes;
-	ImageObject* offScreen;
-	Sprite* sprite;
-	RenderTarget* rt;
+	int _NowScene;	//現在のシーンの添え字
+	vector<Scene*> _Scenes;
+	ImageObject* _OffScreen;
+	Sprite* _Sprite;
+	RenderTarget* _RT;
 	static SceneManager* instance;
 
 	Bloom bloom;

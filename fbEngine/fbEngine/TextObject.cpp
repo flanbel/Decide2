@@ -2,35 +2,35 @@
 #include "Text.h"
 void TextObject::Awake()
 {
-	text = AddComponent<Text>();
+	_Text = AddComponent<Text>();
 }
 
-void TextObject::Initialize(wchar_t * string, float size, Color color, bool shadow, char * style)
+void TextObject::Initialize(wchar_t * string, float size, Color color, DWORD flg , char * style)
 {
-	text->Initialize(string, size, color, shadow, style);
+	_Text->Initialize(string, size, color, flg, style);
 }
 
 void TextObject::SetString(wchar_t* ws)
 {
-	text->SetString(ws);
+	_Text->SetString(ws);
 }
 
 void TextObject::SetFontSize(float size)
 {
-	text->SetSize(size);
+	_Text->SetSize(size);
 }
 
 void TextObject::SetFontStyle(char* style)
 {
-	text->SetStyle(style);
+	_Text->SetStyle(style);
 }
 
 void TextObject::SetBlendColor(Color c)
 {
-	text->SetBlendColor(c);
+	_Text->SetBlendColor(c);
 }
 
-void TextObject::SetShadowFlg(bool f)
+void TextObject::SetEffectFlg(DWORD f)
 {
-	text->SetShadowFlg(f);
+	_Text->SetEffectFlg(f);
 }

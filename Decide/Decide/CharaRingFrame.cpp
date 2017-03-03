@@ -9,15 +9,14 @@ void CharaRingFrame::Awake()
 	ring = GameObjectManager::AddNew<ImageObject>("frame", 0);
 
 	ring->transform->SetParent(transform);
-	ring->SetTexture(TextureManager::LoadTexture("ring.png"));
+	TEXTURE* ringtex = LOADTEXTURE("ring.png");
+	ring->SetTexture(ringtex);
 	ring->SetClipColor(Color::red);
+
 	circle = ring->AddComponent<CircleCollision>();
-	TEXTURE* t = ring->GetComponent<Sprite>()->GetTexture();
-	circle->SetRadius(t->size.x/2);
-	t->pivot = Vector2(0.5, 0.5);
-	TEXTURE* i = TextureManager::LoadTexture("nico.png");
-	i->pivot = Vector2(0.5, 0.5);
-	icon->SetTexture(i);
+	circle->SetRadius(ringtex->size.x/2);
+
+	icon->SetTexture(LOADTEXTURE("nico.png"));
 	icon->transform->SetParent(ring->transform);
 }
 

@@ -11,28 +11,24 @@ public:
 	void Awake()override;
 	void PreRender()override;
 	void ImageRender()override;
-	void Initialize(wchar_t* string, float size, Color color = Color::white, bool shadow = false, char* style = "ＭＳ 明朝");
+	void Initialize(wchar_t* string, float size, Color color = Color::white, DWORD flg = 0x00000000, char* style = "ＭＳ 明朝");
 	//文字列セット
 	void SetString(WCHAR* s);
 	//文字スタイルセット
 	void SetStyle(char* s);
-	void SetSize(float s)
-	{
-		//作られているフォントのサイズで割った倍率
-		size = s / FontSize;
-	}
+	void SetSize(float s);
 	void SetBlendColor(Color c);
-	void SetShadowFlg(bool f);
+	void SetEffectFlg(DWORD f);
 private:
 	//制作する文字列
-	WCHAR* ws;
+	WCHAR* _WString;
 	//サイズ
-	float size;
+	float _Size;
 	//色を保持
-	Color BlendColor;
+	Color _BlendColor;
 	//文字のスタイル名デフォルトは　ＭＳ 明朝
-	char fontStyle[32];
+	char _FontStyle[32];
 
 	//描画用スプライト
-	Sprite* sprite;
+	Sprite* _Sprite;
 };

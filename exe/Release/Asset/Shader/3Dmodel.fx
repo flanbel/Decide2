@@ -1,7 +1,7 @@
 /*!
  *@brief	3Dモデルの描画
  */
-#include "../../../../fbEngine/fbEngine/System.h"
+#include "System.h"
 bool Texflg;							//テクスチャ
 bool Spec;								//スペキュラ
 bool ReceiveShadow;						//影を写す

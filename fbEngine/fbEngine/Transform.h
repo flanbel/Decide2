@@ -17,24 +17,29 @@ public:
 
 	//親を返す関数
 	//戻り値：Transform* 親のアドレス
-	Transform* Parent();
+	Transform* GetParent();
 
 	//自分の親に登録する
-	//戻り値：bool 登録できたか否か
-	//第一引数：Transform
-	bool SetParent(Transform* parent);
+	//第一引数：Transform 親
+	void SetParent(Transform* parent);
 
 	//子供を検索する関数
-	//戻り値：Transform* ヒットした子のアドレス
+	//戻り値：Transform* 一番最初にヒットした子のアドレス
 	//第一引数：char* 子供の名前
 	Transform* FindChild(char* childname);
+	//添え字で取得
+	Transform* FindChild(int idx);
+	//子供を検索する関数
+	//戻り値：Transform** ヒットした子達のアドレスの配列
+	//第一引数：char* 子供の名前
+	Transform** FindChilds(char* childname);
 
 	//子の数を返す関数
 	//戻り値：int 子の数
 	int ChildCnt();
 
 	//子供たち取得
-	map<char*, Transform*> Children();
+	vector<Transform*> Children();
 
 	//ローカルからトランスフォームを更新
 	//戻り値：なし
@@ -52,7 +57,7 @@ public:
 		D3DXVECTOR3 in;
 		D3DXVECTOR3 out;
 		v.CopyFrom(in);
-		D3DXVec3TransformCoord(&out, &in, &rotateMatrix);
+		D3DXVec3TransformCoord(&out, &in, &_RotateMatrix);
 		
 		Vector3 r = out;
 		//正規化はどうしようか？？？
@@ -65,7 +70,7 @@ public:
 		D3DXVECTOR4 pos;
 		D3DXVECTOR3 lpos;
 		v.CopyFrom(lpos);
-		D3DXVec3Transform(&pos, &lpos, &worldMatrix);
+		D3DXVec3Transform(&pos, &lpos, &_WorldMatrix);
 		return Vector3(pos.x, pos.y, pos.z);
 	}
 	Vector3 LocalPos(Vector3 v)
@@ -75,9 +80,9 @@ public:
 		v.CopyFrom(lpos);
 		D3DXMATRIX offset;
 		D3DXMatrixIdentity(&offset);
-		offset._41 = worldMatrix._41;
-		offset._42 = worldMatrix._42;
-		offset._43 = worldMatrix._43;
+		offset._41 = _WorldMatrix._41;
+		offset._42 = _WorldMatrix._42;
+		offset._43 = _WorldMatrix._43;
 		D3DXVec3Transform(&pos, &lpos, &offset);
 		return Vector3(pos.x, pos.y, pos.z);
 	}
@@ -105,9 +110,9 @@ public:
 	Vector3	localAngle;		//ローカル回転
 	Quaternion rotation;	//回転（クウォータニオン）
 private:
-	Transform* parent;		//親のアドレス
-	map<char*,Transform*> children;		//子供達のアドレスを格納したmap
+	Transform* _Parent;		//親のアドレス
+	vector<Transform*> _Children;		//子供達のアドレスを格納した
 	
-	D3DXMATRIX rotateMatrix;	//回転行列
-	D3DXMATRIX worldMatrix;	//ワールド行列
+	D3DXMATRIX _RotateMatrix;	//回転行列
+	D3DXMATRIX _WorldMatrix;	//ワールド行列
 };

@@ -2,20 +2,18 @@
 #include "fbEngine/TextObject.h"
 #include "fbEngine/SoundSource.h"
 #include "fbEngine/ImageObject.h"
+#include "fbEngine/Sprite.h"
 
 void ResultScene::Start()
 {
 	//ResultBack
 	ImageObject* back = GameObjectManager::AddNew<ImageObject>("back", 0);
-	TEXTURE* backT = TextureManager::LoadTexture("ResultBack.jpg");
-	backT->pivot = Vector2(0.5, 0.5);
-	back->SetTexture(backT);
+	back->SetTexture(LOADTEXTURE("ResultBack.jpg"));
 	back->transform->localPosition = Vector3(WindowW / 2, WindowH / 2, 0);
 
 	ImageObject* result = GameObjectManager::AddNew<ImageObject>("result", 1);
-	TEXTURE* tex = TextureManager::LoadTexture("Result.png");
-	tex->pivot = Vector2(0.5, 0.0);
-	result->SetTexture(tex);
+	result->SetPivot(0.5f, 0.0f);
+	result->SetTexture(LOADTEXTURE("Result.png"));
 	result->transform->localPosition = Vector3(WindowW / 2-50, 10, 0);
 
 	//音の再生
@@ -23,9 +21,9 @@ void ResultScene::Start()
 	sound->Init("Asset/Sound/Result.wav");
 	sound->Play(false);
 	//ゲームルール取得
-	gamerule = (GameRule*)GameObjectManager::FindObject("GameRule");
+	_GameRule = (GameRule*)GameObjectManager::FindObject("GameRule");
 	//ランキング作成
-	CreateRanking(gamerule->GetRank());
+	_CreateRanking(_GameRule->GetRank());
 }
 
 void ResultScene::Update()
@@ -48,7 +46,7 @@ void ResultScene::Update()
 	}
 }
 
-void ResultScene::CreateRanking(list<GameRule::Ranking> ranking)
+void ResultScene::_CreateRanking(list<GameRule::Ranking> ranking)
 {
 	int idx = 0;
 	//一つ前のやつのを保存
@@ -58,13 +56,13 @@ void ResultScene::CreateRanking(list<GameRule::Ranking> ranking)
 	{
 		TextObject* rt = GameObjectManager::AddNew<TextObject>("rt", 0);
 		rt->transform->localPosition = Vector3(300, 150 * idx + 150, 0);
-		rt->Initialize(L"", 80.0f, Color::white, true, "HGS明朝E");
+		rt->Initialize(L"", 80.0f, Color::white, SpriteEffectE::SHADOW, "HGS明朝E");
 		//文字作成
 		wchar_t display[128];
 		//順位
 		int r = idx;
 		//ストック以外は順位が被る場合がある。
-		if(gamerule->GetGameRule() != GameRule::GAMERULE::STOCK)
+		if(_GameRule->GetGameRule() != GameRule::GAMERULE::STOCK)
 		{
 			//倒した数が同じなら
 			if (beforeRank.Kill == rank.Kill)

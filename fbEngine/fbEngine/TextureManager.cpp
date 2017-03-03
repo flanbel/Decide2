@@ -17,7 +17,7 @@ TextureManager::~TextureManager()
 }
 
 //“o˜^A“Ç‚İ‚İ‚ğs‚¤
-TEXTURE* TextureManager::LoadTexture(char* filename)
+TEXTURE* LOADTEXTURE(char* filename)
 {
 	TEXTURE* tex;
 

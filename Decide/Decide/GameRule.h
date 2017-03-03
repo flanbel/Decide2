@@ -99,7 +99,7 @@ private:
 
 	bool GameSet;
 	//ゲームルール
-	GAMERULE gamerule;
+	GAMERULE _GameRule;
 	//ストック、制限時間、KO数のいずれかが入る。
 	int value;
 	//大変不本意ではあるがtimeを計る用の変数

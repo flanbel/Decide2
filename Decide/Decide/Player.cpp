@@ -59,7 +59,7 @@ void Player::Awake()
 	CrownPlate = GameObjectManager::AddNew<PlatePrimitive>("Crown", 4);
 	CrownPlate->transform->SetParent(idxPlate->transform);
 	CrownPlate->transform->localPosition = Vector3(10, 60, 0);
-	CrownPlate->SetTexture(TextureManager::LoadTexture("Crown.png"));
+	CrownPlate->SetTexture(LOADTEXTURE("Crown.png"));
 	CrownPlate->Discard(false);
 	
 
@@ -139,7 +139,7 @@ void Player::Start()
 	char path[10];
 	InttoString(playeridx + 1, path);
 	strcat_s(path, strlen(path) + strlen("P.png") + 1, "P.png");
-	idxPlate->SetTexture(TextureManager::LoadTexture(path));
+	idxPlate->SetTexture(LOADTEXTURE(path));
 	idxPlate->SetBlendColor(playerColor);
 	CrownPlate->Start();
 	CrownPlate->SetActive(false);

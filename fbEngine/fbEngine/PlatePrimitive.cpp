@@ -1,16 +1,20 @@
 #include "PlatePrimitive.h"
 #include "Effect.h"
+#include "Vertex.h"
 #include "VertexDefinition.h"
 #include "Camera.h"
 #include "Light.h"
 
-PlatePrimitive::PlatePrimitive(char * name):
+Vertex* PlatePrimitive::_Vertex = nullptr;
+
+PlatePrimitive::PlatePrimitive(char * name) :
 	GameObject(name),
 	blendColor(Color::white)
 {
-	//ポジション
-	if (postionBuffer == nullptr)
+	//頂点バッファ作成
+	if (_Vertex == nullptr)
 	{
+		_Vertex = new Vertex();
 		//ポジション定義
 		VERTEX_POSITION position[] = {
 			{ 0.0f, 0.0f, 0.0f, 1.0f },//左上
@@ -18,35 +22,6 @@ PlatePrimitive::PlatePrimitive(char * name):
 			{ 0.0f, -1.0f, 0.0f, 1.0f },//左下
 			{ 1.0f, -1.0f, 0.0f, 1.0f },//右下
 		};
-
-		//ポジションの頂点バッファ作成
-		(*graphicsDevice()).CreateVertexBuffer(
-			sizeof(VERTEX_POSITION) * 4,	//頂点バッファのサイズ(VERTEX_POSITION*頂点数)
-			D3DUSAGE_WRITEONLY,
-			D3DFVF_XYZW,
-			D3DPOOL_MANAGED,
-			&postionBuffer,
-			NULL
-		);
-
-		//頂点バッファの先頭アドレスへの参照を格納する。
-		VOID* pVertices;
-		//アドレス取得
-		postionBuffer->Lock(
-			0,						//ロックする先頭
-			sizeof(VERTEX_POSITION) * 4,	//ロックする量
-			(void**)&pVertices,		//先頭アドレス
-			D3DLOCK_DISCARD			//フラグ
-		);
-		//アドレスの参照へ頂点定義をコピー
-		memcpy(pVertices, position, sizeof(VERTEX_POSITION) * 4);
-		//ロック解除
-		postionBuffer->Unlock();
-
-	}
-	//UV
-	if (texcoordBuffer == nullptr)
-	{
 		//UV定義
 		VERTEX_TEXCOORD texcoord[] = {
 			{ 0.0f, 0.0f },//左上
@@ -54,34 +29,6 @@ PlatePrimitive::PlatePrimitive(char * name):
 			{ 0.0f, 1.0f },//左下
 			{ 1.0f, 1.0f },//右下
 		};
-
-		//UVの頂点バッファ生成
-		(*graphicsDevice()).CreateVertexBuffer(
-			sizeof(VERTEX_TEXCOORD) * 4,	//頂点バッファのサイズ(VERTEX_TEXCOORD*頂点数)
-			D3DUSAGE_WRITEONLY,
-			D3DFVF_TEX0,
-			D3DPOOL_MANAGED,
-			&texcoordBuffer,
-			NULL
-		);
-		//頂点バッファの先頭アドレスへの参照を格納する。
-		VOID* pVertices;
-		//アドレス取得
-		texcoordBuffer->Lock(
-			0,						//ロックする先頭
-			sizeof(VERTEX_TEXCOORD) * 4,	//ロックする量
-			(void**)&pVertices,		//先頭アドレス
-			D3DLOCK_DISCARD			//フラグ
-		);
-		//アドレスの参照へ頂点定義をコピー
-		memcpy(pVertices, texcoord, sizeof(VERTEX_TEXCOORD) * 4);
-		//ロック解除
-		texcoordBuffer->Unlock();
-	}
-
-	//法線
-	if (normalBuffer == nullptr)
-	{
 		//法線定義
 		VERTEX_NORMAL normal[] = {
 			{ 0.0f, 0.0f, -1.0f, 1.0f },//左上
@@ -90,44 +37,19 @@ PlatePrimitive::PlatePrimitive(char * name):
 			{ 0.0f, 0.0f, -1.0f, 1.0f },//右下
 		};
 
-		//法線の頂点バッファ作成
-		(*graphicsDevice()).CreateVertexBuffer(
-			sizeof(VERTEX_NORMAL) * 4,	//頂点バッファのサイズ(VERTEX_NORMAL*頂点数)
-			D3DUSAGE_WRITEONLY,
-			D3DFVF_XYZW,
-			D3DPOOL_MANAGED,
-			&normalBuffer,
-			NULL
-		);
-
-		//頂点バッファの先頭アドレスへの参照を格納する。
-		VOID* pVertices;
-		//アドレス取得
-		normalBuffer->Lock(
-			0,						//ロックする先頭
-			sizeof(VERTEX_NORMAL) * 4,	//ロックする量
-			(void**)&pVertices,		//先頭アドレス
-			D3DLOCK_DISCARD			//フラグ
-		);
-		//アドレスの参照へ頂点定義をコピー
-		memcpy(pVertices, normal, sizeof(VERTEX_NORMAL) * 4);
-		//ロック解除
-		normalBuffer->Unlock();
-
-	}
-		
-	if(vertexDec == nullptr)
-	{
 		//頂点宣言(頂点がどのように構成されているか)
-		D3DVERTEXELEMENT9 vertexElem[] = {
+		D3DVERTEXELEMENT9 elements[] = {
 			//ストリーム番号,オフセット値,データ型,?,セマンティクス,セマンティクス番号
 			{ 0, 0, D3DDECLTYPE_FLOAT4,D3DDECLMETHOD_DEFAULT,D3DDECLUSAGE_POSITION, 0 } , // 頂点座標
 			{ 1, 0, D3DDECLTYPE_FLOAT2,D3DDECLMETHOD_DEFAULT,D3DDECLUSAGE_TEXCOORD, 0 } , // UV
-			{ 2, 0,	D3DDECLTYPE_FLOAT4,D3DDECLMETHOD_DEFAULT,D3DDECLUSAGE_NORMAL,0},//法線
-			D3DDECL_END()
+			{ 2, 0,	D3DDECLTYPE_FLOAT4,D3DDECLMETHOD_DEFAULT,D3DDECLUSAGE_NORMAL,0 },//法線
 		};
-		//デコレーション作成
-		(*graphicsDevice()).CreateVertexDeclaration(vertexElem, &vertexDec);
+
+		_Vertex->Initialize(PRIMITIVETYPE::TRIANGLESTRIP, 4);
+		_Vertex->CreateVertexBuffer(position, 4, sizeof(VERTEX_POSITION), elements[0]);
+		_Vertex->CreateVertexBuffer(texcoord, 4, sizeof(VERTEX_TEXCOORD), elements[1]);
+		_Vertex->CreateVertexBuffer(normal, 4, sizeof(VERTEX_NORMAL), elements[2]);
+		_Vertex->CreateDeclaration();
 	}
 }
 
@@ -148,7 +70,7 @@ void PlatePrimitive::Start()
 
 void PlatePrimitive::Update()
 {
-	
+
 }
 
 void PlatePrimitive::Render()
@@ -224,15 +146,7 @@ void PlatePrimitive::Render()
 	//この関数を呼び出すことで、データの転送が確定する。描画を行う前に一回だけ呼び出す。
 	effect->CommitChanges();
 
-	//頂点宣言を通知(FVFのかわり)
-	(*graphicsDevice()).SetVertexDeclaration(vertexDec);
-	//ストリームセット
-	(*graphicsDevice()).SetStreamSource(0, postionBuffer, 0, sizeof(VERTEX_POSITION));
-	(*graphicsDevice()).SetStreamSource(1, texcoordBuffer, 0, sizeof(VERTEX_TEXCOORD));
-	(*graphicsDevice()).SetStreamSource(2, normalBuffer, 0, sizeof(VERTEX_NORMAL));
-
-	//D3DPT_TRIANGLESTRIPは連続した頂点で三角形を形成
-	(*graphicsDevice()).DrawPrimitive(D3DPT_TRIANGLESTRIP, 0, 2);
+	_Vertex->DrawPrimitive();
 
 	effect->EndPass();
 	effect->End();

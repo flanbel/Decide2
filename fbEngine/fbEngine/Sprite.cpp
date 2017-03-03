@@ -3,27 +3,30 @@
 #include "VertexDefinition.h"
 #include "Vertex.h"
 
-//ポジションバッファー
-LPDIRECT3DVERTEXBUFFER9 Sprite::postionBuffer = nullptr;
-//UVバッファー
-LPDIRECT3DVERTEXBUFFER9 Sprite::texcoordBuffer = nullptr;
-//デコレーション
-IDirect3DVertexDeclaration9 *Sprite::pvertexDec = nullptr;
+Vertex* Sprite::_Vertex = nullptr;
+
+Sprite::Sprite(GameObject * g, Transform * t) :
+	Component(g, t),
+	_Texture(nullptr),
+	_Pivot(0.5f, 0.5f),
+	_BlendColor(Color::white),
+	_ClipColor(Color::zero),
+	_SpriteEffect(SpriteEffectE::NONE)
+{
+	name = (char*)typeid(*this).name();
+}
 
 void Sprite::Awake()
 {
-	blendColor = Color::white;
-	clipColor = Color(0, 0, 0, 0);
-	mask = false;
-	Shadow = false;
+	
 }
 
 void Sprite::Start()
 {
 	//頂点バッファ作成
-
-	if (postionBuffer == nullptr)
+	if(_Vertex == nullptr)
 	{
+		_Vertex = new Vertex();
 		//後で上下反転させるのであえて左回りにつくる。
 		//ポジション定義
 		VERTEX_POSITION position[] = {
@@ -40,66 +43,17 @@ void Sprite::Start()
 			{ 1.0f, 1.0f },//右上
 		};
 
-		//ポジションの頂点バッファ作成
-		(*graphicsDevice()).CreateVertexBuffer(
-			sizeof(VERTEX_POSITION) * 4,	//頂点バッファのサイズ(VERTEX_POSITION*頂点数)
-			D3DUSAGE_WRITEONLY,
-			0,	//固定機能なら頂点の情報を指定する(今回は固定機能ではないので非ＦＶＦ頂点で作成)
-			D3DPOOL_MANAGED,
-			&postionBuffer,
-			NULL
-		);
-
-		//UVの頂点バッファ生成
-		(*graphicsDevice()).CreateVertexBuffer(
-			sizeof(VERTEX_TEXCOORD) * 4,	//頂点バッファのサイズ(VERTEX_TEXCOORD*頂点数)
-			D3DUSAGE_WRITEONLY,
-			0,
-			D3DPOOL_MANAGED,
-			&texcoordBuffer,
-			NULL
-		);
-
-		//頂点バッファの先頭アドレスへの参照を格納する。
-		VOID* pVertices;
-		//アドレス取得
-		postionBuffer->Lock(
-			0,						//ロックする先頭
-			sizeof(VERTEX_POSITION) * 4,	//ロックする量
-			(void**)&pVertices,		//先頭アドレス
-			D3DLOCK_DISCARD			//フラグ
-		);
-		//アドレスの参照へ頂点定義をコピー
-		memcpy(pVertices, position, sizeof(VERTEX_POSITION) * 4);
-		//ロック解除
-		postionBuffer->Unlock();
-
-
-		//アドレス取得
-		texcoordBuffer->Lock(
-			0,						//ロックする先頭
-			sizeof(VERTEX_TEXCOORD) * 4,	//ロックする量
-			(void**)&pVertices,		//先頭アドレス
-			D3DLOCK_DISCARD			//フラグ
-		);
-		//アドレスの参照へ頂点定義をコピー
-		memcpy(pVertices, texcoord, sizeof(VERTEX_TEXCOORD) * 4);
-		//ロック解除
-		texcoordBuffer->Unlock();
-
 		//頂点宣言(頂点がどのように構成されているか)
-		D3DVERTEXELEMENT9 vertexElem[] = {
-			{ 1, 0              , D3DDECLTYPE_FLOAT4  , D3DDECLMETHOD_DEFAULT, D3DDECLUSAGE_POSITION, 0 }, // 頂点座標
-			{ 0, 0              , D3DDECLTYPE_FLOAT2, D3DDECLMETHOD_DEFAULT, D3DDECLUSAGE_TEXCOORD   , 0 }, // UV
+		D3DVERTEXELEMENT9 elements[] = {
+			{ 0, 0              , D3DDECLTYPE_FLOAT4  , D3DDECLMETHOD_DEFAULT, D3DDECLUSAGE_POSITION, 0 }, // 頂点座標
+			{ 1, 0              , D3DDECLTYPE_FLOAT2, D3DDECLMETHOD_DEFAULT, D3DDECLUSAGE_TEXCOORD   , 0 }, // UV
 			D3DDECL_END()
 		};
-		//デコレーション作成
-		(*graphicsDevice()).CreateVertexDeclaration(vertexElem, &pvertexDec);
-	}
 
-	if(_Vertex == nullptr)
-	{
-	
+		_Vertex->Initialize(PRIMITIVETYPE::TRIANGLESTRIP, 4);
+		_Vertex->CreateVertexBuffer(position, 4, sizeof(VERTEX_POSITION), elements[0]);
+		_Vertex->CreateVertexBuffer(texcoord, 4, sizeof(VERTEX_TEXCOORD), elements[1]);
+		_Vertex->CreateDeclaration();
 	}
 }
 
@@ -110,20 +64,20 @@ void Sprite::PreRender()
 
 void Sprite::ImageRender()
 {
-	if (texture == nullptr)
+	if (_Texture == nullptr)
 		return;
 
-	if (Shadow)
-		CreateShadow();
+	if (_SpriteEffect & SpriteEffectE::SHADOW)
+		_CreateShadow();
 
 	//エフェクト読み込み
-	effect = EffectManager::LoadEffect("Sprite.fx");
+	_Effect = EffectManager::LoadEffect("Sprite.fx");
 
 	D3DXMATRIX  matWorld, matSize, matScale, matRot, matTrans;
 
 	D3DXMatrixIdentity(&matWorld);
 	//画像のサイズを設定
-	D3DXMatrixScaling(&matSize, texture->size.x, texture->size.y, 1.0f);
+	D3DXMatrixScaling(&matSize, _Texture->size.x, _Texture->size.y, 1.0f);
 	//設定されたスケールを設定
 	D3DXMatrixScaling(&matScale, transform->scale.x, transform->scale.y, transform->scale.z);
 	//回転
@@ -157,32 +111,32 @@ void Sprite::ImageRender()
 	(*graphicsDevice()).SetRenderState(D3DRS_DESTBLEND, D3DBLEND_INVSRCALPHA);
 
 	//テクニック設定
-	effect->SetTechnique("SpriteTech");
+	_Effect->SetTechnique("SpriteTech");
 
-	effect->Begin(NULL, 0);
-	effect->BeginPass(0);
+	_Effect->Begin(NULL, 0);
+	_Effect->BeginPass(0);
 
 	//行列
-	effect->SetMatrix("wp", &wp);
+	_Effect->SetMatrix("wp", &wp);
 
 	//テクスチャ
-	effect->SetTexture("g_texture", texture->pTexture);
+	_Effect->SetTexture("g_texture", _Texture->pTexture);
 	//pivot設定(スケーリングや回転の基点)
-	effect->SetFloat("pivotx", texture->pivot.x);
-	effect->SetFloat("pivoty", texture->pivot.y);
+	_Effect->SetFloat("pivotx", _Pivot.x);
+	_Effect->SetFloat("pivoty", _Pivot.y);
 
 	//色設定
-	effect->SetValue("blendColor",blendColor,sizeof(Color));
+	_Effect->SetValue("blendColor",_BlendColor,sizeof(Color));
 	//透明色設定
-	effect->SetValue("clipColor", clipColor, sizeof(Color));
+	_Effect->SetValue("clipColor", _ClipColor, sizeof(Color));
 
 	//この関数を呼び出すことで、データの転送が確定する。描画を行う前に一回だけ呼び出す。
-	effect->CommitChanges();
+	_Effect->CommitChanges();
 	//描画
-	DrawPrimitive();
+	_Vertex->DrawPrimitive();
 
-	effect->EndPass();
-	effect->End();
+	_Effect->EndPass();
+	_Effect->End();
 
 	//変更したステートを元に戻す
 	(*graphicsDevice()).SetRenderState(D3DRS_ALPHABLENDENABLE, FALSE);
@@ -190,35 +144,22 @@ void Sprite::ImageRender()
 	(*graphicsDevice()).SetRenderState(D3DRS_DESTBLEND, D3DBLEND_ZERO);
 }
 
-void Sprite::DrawPrimitive()
-{
-	//FVFのかわり
-	//頂点宣言を通知
-	(*graphicsDevice()).SetVertexDeclaration(pvertexDec);
-	//ストリームセット
-	(*graphicsDevice()).SetStreamSource(1, postionBuffer, 0, sizeof(VERTEX_POSITION));
-	(*graphicsDevice()).SetStreamSource(0, texcoordBuffer, 0, sizeof(VERTEX_TEXCOORD));
-
-
-	//D3DPT_TRIANGLESTRIPは連続した頂点で三角形を形成
-	(*graphicsDevice()).DrawPrimitive(D3DPT_TRIANGLESTRIP, 0, 2);
-}
-
-void Sprite::CreateShadow()
+void Sprite::_CreateShadow()
 {
 	//影生成
 	float offset = 7.0f;
-	Color hoji = blendColor;
-	blendColor = Color::black;
+	Color save = _BlendColor;
+	//色を黒に
+	_BlendColor = Color::black;
 	transform->position.x += offset * transform->scale.x;
 	transform->position.y += offset * transform->scale.y;
-	Shadow = false;
+	_SpriteEffect = (SpriteEffectE)(_SpriteEffect - SpriteEffectE::SHADOW);
 
 	ImageRender();
 
 	//戻す
-	blendColor = hoji;
+	_BlendColor = save;
 	transform->position.x -= offset * transform->scale.x;
 	transform->position.y -= offset * transform->scale.y;
-	Shadow = true;
+	_SpriteEffect = (SpriteEffectE)(_SpriteEffect + SpriteEffectE::SHADOW);
 }

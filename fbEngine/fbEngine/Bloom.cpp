@@ -6,10 +6,6 @@
 
 void Bloom::Create()
 {
-	screen = new ImageObject("OffScreen");
-	screen->Awake();
-	sprite =screen->GetComponent<Sprite>();
-	sprite->Start();
 	//有効フラグをコピー
 	isEnable_ = true;
 
@@ -79,7 +75,6 @@ void Bloom::Render()
 			Effect->CommitChanges();
 
 			//画像描画
-			sprite->DrawPrimitive();
 			//未実装postEffect->RenderFullScreen();
 
 			Effect->EndPass();

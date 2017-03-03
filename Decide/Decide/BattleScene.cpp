@@ -28,16 +28,16 @@ void BattleScene::Start()
 	//シーン切り替えフラグ
 	Change = false;
 
-	gamerule = (GameRule*)GameObjectManager::FindObject("GameRule");
-	gamerule->Discard(false);
-	if(gamerule->GetGameRule() == GameRule::GAMERULE::TIMELIMIT)
+	_GameRule = (GameRule*)GameObjectManager::FindObject("GameRule");
+	_GameRule->Discard(false);
+	if(_GameRule->GetGameRule() == GameRule::GAMERULE::TIMELIMIT)
 	{
 		//制限時間表示用のアレ
 		Timer = GameObjectManager::AddNew<TextObject>("Timer", 1);
 		Timer->Initialize(L"", 80.0f, Color::white, true, "HGS明朝E");
 		Timer->transform->localPosition = Vector3(WindowW/2, 40, 0);
 		wchar_t time[10];
-		InttoString(gamerule->GetRemainingTime(), time);
+		InttoString(_GameRule->GetRemainingTime(), time);
 		Timer->SetString(time);
 		lastTime = -1;
 	}
@@ -61,7 +61,7 @@ void BattleScene::Update()
 		//test->SetActive(!test->GetActive());
 	}
 
-	int nowtime = gamerule->GetRemainingTime();
+	int nowtime = _GameRule->GetRemainingTime();
 	if(Timer != nullptr &&
 		lastTime != nowtime)
 	{
@@ -72,7 +72,7 @@ void BattleScene::Update()
 	}
 
 	//試合が終了したなら。
-	if (gamerule->IsGameSet() && !Change)
+	if (_GameRule->IsGameSet() && !Change)
 	{
 		//音再生
 		gong->Play(false);
@@ -81,7 +81,10 @@ void BattleScene::Update()
 	//切り替え
 	if(!gong->IsPlaying() && Change)
 	{
-		gamerule->CreateScore();
+		//バイブレーションを止める
+		FOR(PLAYER_NUM)
+			XboxInput(i)->Vibration(0, 0);
+		_GameRule->CreateScore();
 		INSTANCE(SceneManager)->ChangeScene("ResultScene");
 		return;
 	}

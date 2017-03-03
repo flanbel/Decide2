@@ -1,7 +1,9 @@
 #pragma once
 #include "GameObject.h"
 
-class PlatePrimitive:public GameObject
+class Vertex;
+
+class PlatePrimitive :public GameObject
 {
 public:
 	PlatePrimitive(char* name);
@@ -29,12 +31,5 @@ private:
 	//混ぜる色
 	Color blendColor;
 
-	//ポジションバッファー
-	LPDIRECT3DVERTEXBUFFER9 postionBuffer;
-	//UVバッファー
-	LPDIRECT3DVERTEXBUFFER9 texcoordBuffer;
-	//法線バッファー
-	LPDIRECT3DVERTEXBUFFER9 normalBuffer;
-	//デコレーション
-	LPDIRECT3DVERTEXDECLARATION9 vertexDec;
+	static Vertex* _Vertex;	//頂点
 };

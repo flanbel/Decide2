@@ -3,38 +3,44 @@
 #include "Camera.h"
 #include "Effect.h"
 #include "EffectManager.h"
+#include "VertexDefinition.h"
+#include "Vertex.h"
 
-LPDIRECT3DVERTEXBUFFER9 Particle::vertexBuff = nullptr;
+Vertex* Particle::_Vertex = nullptr;
 
 void Particle::Awake()
 {
-	//共有板ポリ生成
-	if (vertexBuff == nullptr)
+	//頂点バッファ作成
+	if (_Vertex == nullptr)
 	{
-		//単位ポリゴン(すごく小さい)
-		Particle_Vertex vertices[] = {
-			{ -0.5f, 0.5f, 0.0f, 1.0f,		0.0f, 0.0f, },//左上
-			{ 0.5f, 0.5f, 0.0f, 1.0f,		1.0f, 0.0f, },//右上
-			{ -0.5f, -0.5f, 0.0f, 1.0f,		0.0f, 1.0f, },//左下
-			{ 0.5f, -0.5f, 0.0f, 1.0f,		1.0f, 1.0f, },//右下
+		_Vertex = new Vertex();
+		//後で上下反転させるのであえて左回りにつくる。
+		//ポジション定義
+		VERTEX_POSITION position[] = {
+			{ -0.5f, 0.5f, 0.0f, 1.0f },//左上
+			{ 0.5f, 0.5f, 0.0f, 1.0f},//右上
+			{ -0.5f, -0.5f, 0.0f, 1.0f },//左下
+			{ 0.5f, -0.5f, 0.0f, 1.0f},//右下
+		};
+		//UV定義
+		VERTEX_TEXCOORD texcoord[] = {
+			{ 0.0f, 0.0f, },//左上
+			{ 1.0f, 0.0f, },//右上
+			{ 0.0f, 1.0f, },//左下
+			{ 1.0f, 1.0f, },//右下
 		};
 
-		//頂点生成
-		(*graphicsDevice()).CreateVertexBuffer(
-			sizeof(Particle_Vertex)*4,
-			0,
-			D3DFVF_PARTICLEVERTEX,
-			D3DPOOL_DEFAULT,
-			&vertexBuff,
-			NULL);
+		//頂点宣言(頂点がどのように構成されているか)
+		D3DVERTEXELEMENT9 elements[] = {
+			{ 0, 0              , D3DDECLTYPE_FLOAT4  , D3DDECLMETHOD_DEFAULT, D3DDECLUSAGE_POSITION, 0 }, // 頂点座標
+			{ 1, 0              , D3DDECLTYPE_FLOAT2, D3DDECLMETHOD_DEFAULT, D3DDECLUSAGE_TEXCOORD   , 0 }, // UV
+			D3DDECL_END()
+		};
 
-		VOID* pVertices;
-		vertexBuff->Lock(0,
-			sizeof(Particle_Vertex)*4,
-			(void**)&pVertices,
-			0);
-		memcpy(pVertices, vertices, sizeof(Particle_Vertex)*4);
-		vertexBuff->Unlock();
+		_Vertex->Initialize(PRIMITIVETYPE::TRIANGLESTRIP, 4);
+		_Vertex->CreateVertexBuffer(position, 4, sizeof(VERTEX_POSITION), elements[0]);
+		_Vertex->CreateVertexBuffer(texcoord, 4, sizeof(VERTEX_TEXCOORD), elements[1]);
+		_Vertex->CreateDeclaration();
 	}
 	applyForce = Vector3::zero;
 	texture = nullptr;
@@ -156,9 +162,7 @@ void Particle::Render()
 	shaderEffect->SetValue("g_mulColor", mulColor, sizeof(Vector4));
 	shaderEffect->CommitChanges();
 
-	(*graphicsDevice()).SetStreamSource(0, vertexBuff, 0, sizeof(Particle_Vertex));
-	(*graphicsDevice()).SetFVF(D3DFVF_PARTICLEVERTEX);
-	(*graphicsDevice()).DrawPrimitive(D3DPT_TRIANGLESTRIP, 0, 2);
+	_Vertex->DrawPrimitive();
 
 	shaderEffect->EndPass();
 	shaderEffect->End();
@@ -173,7 +177,7 @@ void Particle::Render()
 
 void Particle::Init(const ParicleParameter & param,Vector3 & emitPosition)
 {
-	texture = TextureManager::LoadTexture((char*)param.texturePath);
+	texture = LOADTEXTURE((char*)param.texturePath);
 	shaderEffect = EffectManager::LoadEffect("Particle.fx");
 	this->camera = GameObjectManager::mainCamera;
 	transform->localScale = Vector3(param.size.x, param.size.y, 1.0f);

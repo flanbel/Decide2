@@ -15,25 +15,26 @@ public:
 	void Awake()override;
 	void Start()override;
 	void Update()override;
+
 	void SetIdx(int idx)
 	{
-		playerIdx = idx;
+		_PlayerIdx = idx;
 	}
 	void SetColor(Color c)
 	{
-		playerColor = c;
+		_PlayerColor = c;
 	}
 	Color GetColor()
 	{
-		return playerColor;
+		return _PlayerColor;
 	}
 	void SetDecision(bool d)
 	{
-		decision = d;
+		_Decision = d;
 	}
 	bool GetDecision()
 	{
-		return decision;
+		return _Decision;
 	}
 	Vector2 GetCursorPos();
 	//キャラクター情報セット
@@ -42,18 +43,18 @@ public:
 	CharacterInfo* GetInfo();
 	void Release();
 private:
-	ImageObject* cursor,*back,*show,*OK;
-	TextObject* name;
+	ImageObject* _Cursor,*_Back,*_Show,*_OK;
+	TextObject* _Name;
 	//プレイヤーの添え字
-	int playerIdx;
+	int _PlayerIdx;
 	//プレイヤーの色
-	Color playerColor;
+	Color _PlayerColor;
 	//決定しているかどうか
-	bool decision;
+	bool _Decision;
 	//情報
-	CharacterInfo* info;
-	CharacterInfo* old;
-	ShowModel* showmodel;
-	RenderTarget* render;
-	SoundSource *sound;
+	CharacterInfo* _Info;
+	CharacterInfo* _Old;
+	ShowModel* _ShowModel;
+	RenderTarget* _Render;
+	SoundSource *_Sound;
 };

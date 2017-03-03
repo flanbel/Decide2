@@ -47,13 +47,13 @@ void GameRule::SetGameRule(GAMERULE rule, int v)
 		break;
 	}
 	//設定
-	gamerule = rule;
+	_GameRule = rule;
 	this->value = v;
 }
 
 GameRule::GAMERULE GameRule::GetGameRule()
 {
-	return gamerule;
+	return _GameRule;
 }
 
 int GameRule::GetValue()
@@ -63,7 +63,7 @@ int GameRule::GetValue()
 
 int GameRule::GetStock()
 {
-	if (gamerule == GAMERULE::STOCK)
+	if (_GameRule == GAMERULE::STOCK)
 		return value;
 	else
 		return -1;
@@ -123,7 +123,7 @@ void GameRule::UpdateRanking()
 		it++;
 	}
 	//順番にソート
-	if(gamerule == GAMERULE::STOCK)
+	if(_GameRule == GAMERULE::STOCK)
 	{
 		rank.sort(Ranking::StockSort());
 	}
@@ -138,7 +138,7 @@ void GameRule::UpdateRanking()
 	while (it != rank.end())
 	{
 		Player* p = Players[it->idx];
-		if(gamerule == GAMERULE::STOCK)
+		if(_GameRule == GAMERULE::STOCK)
 		{
 			//残機が同じなら
 			if (Before.Stock == it->Stock)

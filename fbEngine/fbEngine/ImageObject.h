@@ -8,11 +8,14 @@ class ImageObject :public GameObject
 public:
 	ImageObject(char* name) :GameObject(name) {}
 	void Awake()override;
+
 	void SetTexture(TEXTURE* t);
 	TEXTURE* GetTexture();
+	void SetPivot(Vector2 v);
+	void SetPivot(float x, float y);
 	void SetBlendColor(Color c);
 	void SetClipColor(Color c);
-	void SetShadow(bool f);
+	void SetEffectFlg(DWORD f);
 private:
-	Sprite* sprite;
+	Sprite* _Sprite;
 };

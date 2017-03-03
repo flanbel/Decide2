@@ -26,21 +26,22 @@ void PlayerParameter::Awake()
 	killT->Discard(false);
 	nameT->Discard(false);
 
-	emblem->SetTexture(TextureManager::LoadTexture("nico2.png"));
-	emblem->SetShadow(true);
+	emblem->SetTexture(LOADTEXTURE("nico2.png"));
+	emblem->SetEffectFlg(SpriteEffectE::SHADOW);
+	emblem->SetPivot(0.0f, 0.0f);
 	emblem->transform->localPosition = Vector3(90, 0, 0);
-	//frame->SetTexture(TextureManager::LoadTexture("Frame.png"));
+	//frame->SetTexture(LOADTEXTURE("Frame.png"));
 
-	stockT->Initialize(L"3", 40.0f, Color::white, true, "HGS–¾’©E");
+	stockT->Initialize(L"3", 40.0f, Color::white, SpriteEffectE::SHADOW, "HGS–¾’©E");
 	stockT->transform->localPosition = Vector3(10, 0, 0);
 
-	killT->Initialize(L"KILL:0", 40.0f, Color::white, true, "HGS–¾’©E");
+	killT->Initialize(L"KILL:0", 40.0f, Color::white, SpriteEffectE::SHADOW, "HGS–¾’©E");
 	killT->transform->localPosition = Vector3(40, 0, 0);
 
-	damageT->Initialize(L"0%", 80.0f, Color::white, true, "HGS–¾’©E");
+	damageT->Initialize(L"0%", 80.0f, Color::white, SpriteEffectE::SHADOW, "HGS–¾’©E");
 	damageT->transform->localPosition = Vector3(0, 40, 0);
 
-	nameT->Initialize(L"name", 30.0f, Color::white, true, "HGS–¾’©E");
+	nameT->Initialize(L"name", 30.0f, Color::white, SpriteEffectE::SHADOW, "HGS–¾’©E");
 	nameT->transform->localPosition = Vector3(0, 100, 0);
 }
 

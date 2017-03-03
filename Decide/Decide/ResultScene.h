@@ -8,8 +8,8 @@ public:
 	ResultScene() {};
 	void Start()override;
 	void Update()override;
-
-	void CreateRanking(list<GameRule::Ranking> ranking);
 private:
-	GameRule *gamerule;
+	void _CreateRanking(list<GameRule::Ranking> ranking);
+private:
+	GameRule *_GameRule;
 };

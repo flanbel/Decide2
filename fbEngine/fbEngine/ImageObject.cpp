@@ -3,27 +3,34 @@
 
 void ImageObject::Awake()
 {
-	sprite = AddComponent<Sprite>();
+	_Sprite = AddComponent<Sprite>();
 }
 
 void ImageObject::SetTexture(TEXTURE * t)
 {
-	sprite->SetTexture(t);
+	_Sprite->SetTexture(t);
 }
 TEXTURE * ImageObject::GetTexture()
 {
-	return sprite->GetTexture();
+	return _Sprite->GetTexture();
+}
+void ImageObject::SetPivot(Vector2 v)
+{
+	_Sprite->SetPivot(v);
+}
+void ImageObject::SetPivot(float x, float y)
+{
+	_Sprite->SetPivot(Vector2(x, y));
 }
 void ImageObject::SetBlendColor(Color c)
 {
-	sprite->SetBlendColor(c);
+	_Sprite->SetBlendColor(c);
 }
 void ImageObject::SetClipColor(Color c)
 {
-	sprite->SetClipColor(c);
+	_Sprite->SetClipColor(c);
 }
-
-void ImageObject::SetShadow(bool f)
+void ImageObject::SetEffectFlg(DWORD f)
 {
-	sprite->SetShadow(f);
+	_Sprite->SetEffectFlg(f);
 }

@@ -4,13 +4,11 @@ struct TEXTURE :Noncopyable
 {
 	IDirect3DTexture9* pTexture;	//テクスチャへのポインタ
 	Vector2 size;					//画像サイズ
-	Vector2 pivot;					//基点
 
 	//コンストラクタ
 	TEXTURE::TEXTURE()
 	{
 		pTexture = nullptr;
-		pivot = Vector2(0.0f, 0.0f);
 	}
 
 	//テクスチャへのポインタをリリースする
@@ -36,3 +34,6 @@ private:
 	//テクスチャを格納するmap
 	static map<UINT64,TEXTURE*> textureMap;
 };
+
+//テクスチャ読み込み
+#define LOADTEXTURE(filename) TextureManager::LoadTexture(filename)

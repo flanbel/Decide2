@@ -16,7 +16,7 @@ private:
 	TextObject *Timer;
 	int playerNum;
 	SoundSource *gong,*BGM;
-	GameRule *gamerule;
+	GameRule *_GameRule;
 	bool Change;
 	int lastTime;	//‘O‚ÌŽžŠÔ
 };

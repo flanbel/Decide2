@@ -3,6 +3,7 @@
 #include "fbEngine/TextObject.h"
 #include "fbEngine/Movie.h"
 #include "fbEngine/SoundSource.h"
+#include "fbEngine/Sprite.h"
 void TitleScene::Start()
 {
 	//GameObjectManager::AddNew<Movie>("movie", 1);
@@ -10,10 +11,11 @@ void TitleScene::Start()
 
 	//背景追加
 	ImageObject* titleback = GameObjectManager::AddNew<ImageObject>("TitleBack", 0);
-	titleback->SetTexture(TextureManager::LoadTexture("TitleBack.png"));
+	titleback->SetTexture(LOADTEXTURE("TitleBack.png"));
+	titleback->SetPivot(0.0f, 0.0f);
 	//プリーズエンター
 	TextObject* text = GameObjectManager::AddNew<TextObject>("PleaseEnter", 1);
-	text->Initialize(L"<PleaseEnter>", 80.0f, Color::white, true);
+	text->Initialize(L"<PleaseEnter>", 80.0f, Color::white, SpriteEffectE::SHADOW);
 	text->transform->localPosition = Vector3(WindowW/2, WindowH/2, 0);
 
 	SoundSource *source = GameObjectManager::AddNew<SoundSource>("test", 1);

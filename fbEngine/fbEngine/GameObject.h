@@ -64,6 +64,8 @@ public:
 	void Discard(bool b)
 	{
 		discard = b;
+		//q‚É‚àİ’è
+		
 	}
 
 	bool Discard()
