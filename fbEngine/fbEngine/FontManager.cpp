@@ -42,15 +42,16 @@ void FontManager::Createfont(wchar_t* string, char* Style)
 	case GGO_GRAY8_BITMAP: grad = 64; break;
 	}
 
-	int hash = MakeHash(Style);
+	//スタイルのマップのハッシュ
+	int stylehash = MakeHash(Style);
 	//スタイルのmapが登録されているか？
-	std::map<int, FontManager::FontMap*>::iterator array = fontMapArray.find(hash);
+	std::map<int, FontManager::FontMap*>::iterator array = fontMapArray.find(stylehash);
 	if (array == fontMapArray.end())
 	{
 		//されていないので登録
-		array = fontMapArray.insert(std::make_pair(hash, new FontMap)).first;
+		array = fontMapArray.insert(std::make_pair(stylehash, new FontMap)).first;
 	}
-
+	//イテレータから中身を取得(フォントのマップ)
 	FontManager::FontMap* map = array->second;
 
 	//文字生成開始
@@ -60,7 +61,7 @@ void FontManager::Createfont(wchar_t* string, char* Style)
 		
 		//文字を文字コードに変換？
 		int code = (int)string[i];
-		//mapないに文字が登録されているか
+		//mapに文字が登録されているか
 		if (map->find(code) == map->end())
 		{
 			//登録されていない
@@ -79,8 +80,10 @@ void FontManager::Createfont(wchar_t* string, char* Style)
 			}
 			// テクスチャ作成
 			TEXTURE* Tex = new TEXTURE();
+			//4バイトアラインなビットマップフォントの横幅を得る
 			int fontWidth = (gm.gmBlackBoxX + 3) / 4 * 4;
 			int fontHeight = gm.gmBlackBoxY;
+			//空のテクスチャ作成
 			(*graphicsDevice()).CreateTexture(fontWidth, fontHeight, 1, 0, D3DFMT_A8R8G8B8, D3DPOOL_MANAGED, &Tex->pTexture, NULL);
 
 			// テクスチャにフォントビットマップ情報を書き込み
@@ -114,10 +117,12 @@ void FontManager::Createfont(wchar_t* string, char* Style)
 
 FontData* FontManager::Findfont(wchar_t wchar, char* Style)
 {
-	int hash = MakeHash(Style);
-	FontMap* map = fontMapArray[hash];
+	int stylehash = MakeHash(Style);
+	//スタイルからフォントマップ取得
+	FontMap* map = fontMapArray[stylehash];
 	if(map)
 	{
+		//フォントを返す
 		return map->at(wchar);
 	}
 	return nullptr;

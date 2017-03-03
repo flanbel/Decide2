@@ -24,7 +24,7 @@ SceneManager::SceneManager()
 	_Sprite->SetTexture(_RT->texture);
 	_Sprite->SetPivot(Vector2(0.0f, 0.0f));
 	//ブルームの準備
-	//bloom.Create();
+	_Bloom.Create();
 }
 
 SceneManager::~SceneManager()
@@ -68,8 +68,10 @@ void SceneManager::DrawScene()
 	INSTANCE(RenderTargetManager)->BeforeRenderTarget();
 	
 	GameObjectManager::PostRenderObject();
-	//オフスクリーンのやつ描画(ブルームが完成するまで)
+	//オフスクリーンのやつ描画
 	_Sprite->ImageRender();
+	_Bloom.Render();
+	
 	//2Dとか？
 	GameObjectManager::ImageRenderObject();
 }

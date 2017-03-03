@@ -36,10 +36,10 @@ void PlayerParameter::Awake()
 	stockT->transform->localPosition = Vector3(10, 0, 0);
 
 	killT->Initialize(L"KILL:0", 40.0f, Color::white, SpriteEffectE::SHADOW, "HGS明朝E");
-	killT->transform->localPosition = Vector3(40, 0, 0);
+	killT->transform->localPosition = Vector3(50, 0, 0);
 
 	damageT->Initialize(L"0%", 80.0f, Color::white, SpriteEffectE::SHADOW, "HGS明朝E");
-	damageT->transform->localPosition = Vector3(0, 40, 0);
+	damageT->transform->localPosition = Vector3(0, 80, 0);
 
 	nameT->Initialize(L"name", 30.0f, Color::white, SpriteEffectE::SHADOW, "HGS明朝E");
 	nameT->transform->localPosition = Vector3(0, 100, 0);
@@ -57,13 +57,13 @@ void PlayerParameter::SetDamage(int damage)
 	//ダメージによって位置を変えるよ～(ほんとはテキストで設定したいよ)
 	if(damage < 10)
 	{
-		damageT->transform->localPosition = Vector3(50, 40, 0);
+		damageT->transform->localPosition = Vector3(50, 80, 0);
 	}else if(damage < 100)
 	{
-		damageT->transform->localPosition = Vector3(30, 40, 0);
+		damageT->transform->localPosition = Vector3(30, 80, 0);
 	}else
 	{
-		damageT->transform->localPosition = Vector3(0, 40, 0);
+		damageT->transform->localPosition = Vector3(0, 80, 0);
 	}
 	wcscat_s(display, wcslen(display) + wcslen(L"%") + 1, L"%");
 	damageT->SetString(display);

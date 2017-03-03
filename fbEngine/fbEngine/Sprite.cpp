@@ -74,7 +74,7 @@ void Sprite::ImageRender()
 	_Effect = EffectManager::LoadEffect("Sprite.fx");
 
 	D3DXMATRIX  matWorld, matSize, matScale, matRot, matTrans;
-
+	//‰Šú‰»
 	D3DXMatrixIdentity(&matWorld);
 	//‰æ‘œ‚ÌƒTƒCƒY‚ðÝ’è
 	D3DXMatrixScaling(&matSize, _Texture->size.x, _Texture->size.y, 1.0f);

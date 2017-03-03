@@ -1,11 +1,43 @@
 #include "Bloom.h"
 #include "Effect.h"
 #include "RenderTargetManager.h"
-#include "ImageObject.h"
-#include "Sprite.h"
+#include "Vertex.h"
+#include "VertexDefinition.h"
 
 void Bloom::Create()
 {
+	if (_Vertex == nullptr)
+	{
+		_Vertex = new Vertex();
+
+		//ポジション定義
+		VERTEX_POSITION position[] = {
+			{ -1.0f, -1.0f, 0.0f, 1.0f },//左下
+			{ -1.0f, 1.0f, 0.0f, 1.0f },//左上
+			{ 1.0f, -1.0f, 0.0f, 1.0f },//右下
+			{ 1.0f, 1.0f, 0.0f, 1.0f },//右上
+		};
+		//UV定義
+		VERTEX_TEXCOORD texcoord[] = {
+			{ 0.0f, 1.0f },//左下
+			{ 0.0f, 0.0f },//左上
+			{ 1.0f, 1.0f },//右下
+			{ 1.0f, 0.0f },//右上
+		};
+
+		//頂点宣言(頂点がどのように構成されているか)
+		D3DVERTEXELEMENT9 elements[] = {
+			{ 0, 0              , D3DDECLTYPE_FLOAT4  , D3DDECLMETHOD_DEFAULT, D3DDECLUSAGE_POSITION, 0 }, // 頂点座標
+			{ 1, 0              , D3DDECLTYPE_FLOAT2, D3DDECLMETHOD_DEFAULT, D3DDECLUSAGE_TEXCOORD   , 0 }, // UV
+			D3DDECL_END()
+		};
+
+		_Vertex->Initialize(PRIMITIVETYPE::TRIANGLESTRIP, 4);
+		_Vertex->CreateVertexBuffer(position, 4, sizeof(VERTEX_POSITION), elements[0]);
+		_Vertex->CreateVertexBuffer(texcoord, 4, sizeof(VERTEX_TEXCOORD), elements[1]);
+		_Vertex->CreateDeclaration();
+	}
+
 	//有効フラグをコピー
 	isEnable_ = true;
 
@@ -75,12 +107,16 @@ void Bloom::Render()
 			Effect->CommitChanges();
 
 			//画像描画
-			//未実装postEffect->RenderFullScreen();
+			_Vertex->DrawPrimitive();
 
 			Effect->EndPass();
 			Effect->End();
 
 		}//輝度抽出
+		D3DXVECTOR3 l, r;
+		l = D3DXVECTOR3(2.0f, 2.0f, 2.0f);
+		r = D3DXVECTOR3(0.2125f, 0.7154f, 0.0721f);
+		float a = D3DXVec3Dot(&l, &r);
 
 		 //輝度をぼかす
 		{
@@ -131,7 +167,8 @@ void Bloom::Render()
 
 					Effect->CommitChanges();
 
-					//未実装postEffect->RenderFullScreen();
+					//描画
+					_Vertex->DrawPrimitive();
 
 					Effect->EndPass();
 					Effect->End();
@@ -180,7 +217,8 @@ void Bloom::Render()
 
 					Effect->CommitChanges();
 
-					//未実装postEffect->RenderFullScreen();
+					//描画
+					_Vertex->DrawPrimitive();
 
 					Effect->EndPass();
 					Effect->End();
@@ -228,7 +266,8 @@ void Bloom::Render()
 
 			Effect->CommitChanges();
 
-			//未実装postEffect->RenderFullScreen();
+			//描画
+			_Vertex->DrawPrimitive();
 
 			Effect->EndPass();
 			Effect->End();
@@ -263,7 +302,8 @@ void Bloom::Render()
 
 			Effect->CommitChanges();
 
-			//未実装postEffect->RenderFullScreen();
+			//描画
+			_Vertex->DrawPrimitive();
 
 			Effect->EndPass();
 			Effect->End();
@@ -283,4 +323,18 @@ void Bloom::Release()
 
 void Bloom::UpdateWeight(float dis)
 {
+	float total = 0;
+
+	for (int i = 0; i < NUM_WEIGHTS; i++)
+	{
+		Weights_[i] = expf(-0.5f*(float)(i*i) / dis);
+
+		total += 2.0f * Weights_[i];
+	}
+
+	//規格化
+	for (int i = 0; i < NUM_WEIGHTS; i++)
+	{
+		Weights_[i] /= total;
+	}
 }

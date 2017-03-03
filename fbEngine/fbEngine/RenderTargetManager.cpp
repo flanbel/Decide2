@@ -126,7 +126,7 @@ void RenderTargetManager::BeforeRenderTarget()
 		RemoveRenderTarget(i);
 	}
 	//Œ³‚É–ß‚·
-	ReSetRenderTarget(0, backBuffer);
+	SetRenderTarget(0, backBuffer);
 }
 
 TEXTURE* RenderTargetManager::GetRenderTargetTexture(DWORD idx)

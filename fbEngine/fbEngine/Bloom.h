@@ -1,8 +1,7 @@
 #pragma once
 
 class Effect;
-class ImageObject;
-class Sprite;
+class Vertex;
 struct RenderTarget;
 
 class Bloom
@@ -19,6 +18,8 @@ private:
 	void UpdateWeight(float dis);
 
 private:
+	//
+	Vertex* _Vertex;
 	/** —LŒøƒtƒ‰ƒO. */
 	bool isEnable_;
 

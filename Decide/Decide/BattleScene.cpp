@@ -35,7 +35,7 @@ void BattleScene::Start()
 		//§ŒÀŠÔ•\¦—p‚ÌƒAƒŒ
 		Timer = GameObjectManager::AddNew<TextObject>("Timer", 1);
 		Timer->Initialize(L"", 80.0f, Color::white, true, "HGS–¾’©E");
-		Timer->transform->localPosition = Vector3(WindowW/2, 40, 0);
+		Timer->transform->localPosition = Vector3(WindowW/2, 80, 0);
 		wchar_t time[10];
 		InttoString(_GameRule->GetRemainingTime(), time);
 		Timer->SetString(time);

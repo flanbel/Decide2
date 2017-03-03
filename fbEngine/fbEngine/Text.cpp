@@ -7,7 +7,9 @@ Text::Text(GameObject* g, Transform* t) :
 	Component(g,t),
 	_WString(nullptr),
 	_Size(1.0f),
-	_BlendColor(Color::black)
+	_Spacing(0),
+	_BlendColor(Color::black),
+	_Kerning(true)
 {
 	name = (char*)typeid(*this).name();
 }
@@ -42,15 +44,31 @@ void Text::ImageRender()
 		//文字のデータ取得
 		FontData* data = FontManager::Findfont(_WString[i], _FontStyle);
 		//前の文字のoffset分ずらす
-		transform->position.x += offset;
-		//フォントサイズ*0.7がちょうどいい感じ?
-		transform->position.y = (base.y - (data->gm.gmBlackBoxY*_Size)) + ((FontSize*0.7) * _Size);
+		if (_Kerning)
+		{
+			transform->position.x += offset * _Size;
+		}
+		else
+		{
+			transform->position.x += (offset + data->gm.gmptGlyphOrigin.x) * _Size;
+		}
+		
+		//フォントの左上の座標を引く
+		transform->position.y = base.y - (data->gm.gmptGlyphOrigin.y * _Size);
 		//テクスチャセット
 		_Sprite->SetTexture(data->texture);
 		//描画
 		_Sprite->ImageRender();
-		//次の文字のオフセット位置決定
-		offset = data->gm.gmBlackBoxX * _Size;
+		//次の文字の開始位置
+		if(_Kerning)
+		{
+			offset = data->gm.gmBlackBoxX;
+		}
+		else
+		{
+			offset = data->gm.gmCellIncX + _Spacing;
+		}
+		
 	}
 	//nullptrを設定して描画しないようにする
 	_Sprite->SetTexture(nullptr);
@@ -89,6 +107,11 @@ void Text::SetSize(float s)
 {
 	//作られているフォントのサイズで割った倍率
 	_Size = s / FontSize;
+}
+
+void Text::SetSpacing(float space)
+{
+	_Spacing = space;
 }
 
 void Text::SetBlendColor(Color c)

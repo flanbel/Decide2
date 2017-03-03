@@ -65,5 +65,5 @@ private:
 	RenderTarget* _RT;
 	static SceneManager* instance;
 
-	Bloom bloom;
+	Bloom _Bloom;
 };
