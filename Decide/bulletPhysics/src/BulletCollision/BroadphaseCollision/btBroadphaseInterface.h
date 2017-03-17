@@ -69,7 +69,7 @@ public:
 	virtual	const btOverlappingPairCache*	getOverlappingPairCache() const =0;
 
 	///getAabb returns the axis aligned bounding box in the 'global' coordinate frame
-	///will add some transform later
+	///will add some Transform later
 	virtual void getBroadphaseAabb(btVector3& aabbMin,btVector3& aabbMax) const =0;
 
 	///reset broadphase internal structures, to ensure determinism/reproducability

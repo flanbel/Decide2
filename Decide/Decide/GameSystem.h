@@ -7,7 +7,7 @@
 //選択可能なキャラクターの数
 #define CHARACTER_NUM 1
 
-enum COLLISION_ID
+enum Collision_ID
 {
 	ATTACK_1P,
 	ATTACK_2P,

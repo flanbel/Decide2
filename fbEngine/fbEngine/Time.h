@@ -10,12 +10,12 @@ public:
 	Time(){};
 	static void Update();
 	//デルタタイム取得
-	static double DeltaTime()
+	static const double& DeltaTime()
 	{
 		return deltaTime;
 	}
 	//FPS(仮)取得
-	static float Fps()
+	static const float& Fps()
 	{
 		return fps;
 	}

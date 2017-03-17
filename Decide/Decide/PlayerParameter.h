@@ -8,17 +8,17 @@ class ImageObject;
 class PlayerParameter:public GameObject
 {
 public:
-	PlayerParameter(char* name) :GameObject(name) {}
+	PlayerParameter(const char* name) :GameObject(name) {}
 	void Awake()override;
 	void Update()override;
 	void SetDamage(int damage);
 	void SetStock(int stock);
 	void SetKill(int kill);
-	void SetName(wchar_t* name);
+	void SetName(const wchar_t* name);
 	void SetColor(Color C);
 private:
 	//ƒGƒ“ƒuƒŒƒ€
-	ImageObject* emblem,*frame;
-	TextObject *damageT,*stockT,*killT,*nameT;
-	Color color;
+	ImageObject* _Emblem,*_Frame;
+	TextObject *_DamageT,*_StockT,*_KillT,*_NameT;
+	Color _Color;
 };

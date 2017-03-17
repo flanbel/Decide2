@@ -15,30 +15,30 @@ public:
 	void Release();
 
 private:
-	void UpdateWeight(float dis);
+	void _UpdateWeight(const float& dis);
 
 private:
 	//
 	Vertex* _Vertex;
-	/** 有効フラグ. */
-	bool isEnable_;
+	//有効フラグ. 
+	bool _IsEnable;
 
-	/** 重み. */
+	//重みの数
 	static const int NUM_WEIGHTS = 8;
-	/** 重み [num weights]. */
-	float Weights_[NUM_WEIGHTS];
+	//重み
+	float _Weights[NUM_WEIGHTS];
 
-	/** エフェクト. */
-	Effect* Effect;
+	//エフェクト
+	Effect* _Effect;
 
-	/** レンダリングターゲット. */
-	RenderTarget* LuminanceRT;
+	//輝度用のレンダリングターゲット
+	RenderTarget* _LuminanceRT;
 
-	/** ぼかし合成用のRT. */
-	RenderTarget* CombineRT;
+	//ぼかし合成用のRT
+	RenderTarget* _CombineRT;
 
-	/** ダウンサンプリング用RTの数. */
+	//ダウンサンプリング用RTの数
 	static const int NUM_DOWN_SAMPLING_RT = 10;
-	/** 輝度をダウンサンプリングするためのRT. */
-	RenderTarget* DownSamplingRT[NUM_DOWN_SAMPLING_RT];
+	//輝度をダウンサンプリングするためのRT
+	RenderTarget* _DownSamplingRT[NUM_DOWN_SAMPLING_RT];
 };

@@ -14,5 +14,5 @@ public:
 	void Start()override;
 	void Update()override;
 private:
-	Text* text;
+	Text* _Text;
 };

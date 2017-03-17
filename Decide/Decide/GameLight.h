@@ -4,7 +4,7 @@
 class GameLight :public GameObject
 {
 public:
-	GameLight(char* name) :GameObject(name) {}
+	GameLight(const char* name) :GameObject(name) {}
 	void Awake()override;
 	void Update()override;
 };

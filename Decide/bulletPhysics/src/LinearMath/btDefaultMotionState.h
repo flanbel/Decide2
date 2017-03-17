@@ -22,13 +22,13 @@ ATTRIBUTE_ALIGNED16(struct)	btDefaultMotionState : public btMotionState
 	{
 	}
 
-	///synchronizes world transform from user to physics
+	///synchronizes world Transform from user to physics
 	virtual void	getWorldTransform(btTransform& centerOfMassWorldTrans ) const 
 	{
 			centerOfMassWorldTrans = m_graphicsWorldTrans * m_centerOfMassOffset.inverse() ;
 	}
 
-	///synchronizes world transform from physics to user
+	///synchronizes world Transform from physics to user
 	///Bullet only calls the update of worldtransform for active objects
 	virtual void	setWorldTransform(const btTransform& centerOfMassWorldTrans)
 	{

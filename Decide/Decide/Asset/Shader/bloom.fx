@@ -28,18 +28,20 @@ struct VS_OUTPUT{
 VS_OUTPUT VSMain( VS_INPUT In )
 {
 	VS_OUTPUT Out;
-	Out.pos = In.pos;		//トランスフォーム済み頂点なのでそのまま
+	Out.pos = In.pos;		//トランスフォーム済み頂点なのでそのまま//-1.0f~1.0fの間ってことっぽい
 	Out.tex = (In.pos * 0.5f) + 0.5f;
 	Out.tex.y = 1.0f - Out.tex.y;
 	return Out;
 }
 float4 PSSamplingLuminance( VS_OUTPUT In ) : COLOR
 {
-	float4 color = tex2D(g_SceneSampler, In.tex) * 2.0f;
-	float t = dot( color.xyz, float3(0.2125f, 0.7154f, 0.0721f) );
+	//テクスチャから1以上の数値が取れるのか？
+	float4 color = tex2D(g_SceneSampler, In.tex);
+	float t;
+	//t = dot(color.xyz, float3(0.2125f, 0.7154f, 0.0721f));
+	t = dot(color.xyz, float3(0.2f, 0.2f, 0.2f));
 	clip(t - 1.001f);			//輝度が1.0以下ならピクセルキル
 	color.xyz *= (t - 1.0f);
-	color.a = 1.0f;
 	return color;
 }
 

@@ -17,7 +17,6 @@ public:
 	void SetGravity(btVector3& set);
 	void SetGravity(float x, float y, float z);
 private:
-	Vector3 offset;
 	btDefaultMotionState*	myMotionState;	//モーションステート。
 };
 

@@ -1,24 +1,24 @@
 #include "GameObject.h"
 
 GameObject::GameObject():
-	active(true),
-	discard(true)
+	Object(),
+	_Active(true),
+	_Discard(true)
 {
-	name = "Empty";
-
 	transform = AddComponent<Transform>();
 }
 
-GameObject::GameObject(char* Name)
+GameObject::GameObject(const char* name):
+	Object(name),
+	_Active(true),
+	_Discard(true)
 {
-	//引数なしの方を呼ぶ
-	this->GameObject::GameObject();
-	name = Name;
+	transform = AddComponent<Transform>();
 }
 
 GameObject::~GameObject()
 {
-	components.Release();
+	_Components.Release();
 }
 
 //void GameObject::Active(bool act)
@@ -28,14 +28,14 @@ GameObject::~GameObject()
 //	if (transform->ChildCnt() > 0)
 //	{
 //		//いったん取り出す
-//		map<char*, Transform*> child = transform->Children();
+//		map<char*, transform*> child = transform->Children();
 //		//イテレータ取得
-//		map<char*, Transform*>::iterator it = child.begin();
+//		map<char*, transform*>::iterator it = child.begin();
 //		//終わりまでループ
 //		while (it != child.end())
 //		{
 //			//子を同じ状態にする
-//			it->second->gameObject->active = act;
+//			it->second->gameObject->_Active = act;
 //			it++;
 //		}
 //	}

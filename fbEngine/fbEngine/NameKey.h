@@ -13,7 +13,7 @@ public:
 		if (name != nullptr) {
 			this->name = name;
 			//名前をハッシュ値に変換。
-			hashCode = MakeHash((char*)name);
+			hashCode = Support::MakeHash((char*)name);
 		}
 	}
 	//ハッシュコードを取得。

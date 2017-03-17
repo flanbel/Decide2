@@ -53,7 +53,7 @@ btHingeConstraint::btHingeConstraint(btRigidBody& rbA,btRigidBody& rbB, const bt
 {
 	m_rbAFrame.getOrigin() = pivotInA;
 	
-	// since no frame is given, assume this to be zero angle and just pick rb transform axis
+	// since no frame is given, assume this to be zero angle and just pick rb Transform axis
 	btVector3 rbAxisA1 = rbA.getCenterOfMassTransform().getBasis().getColumn(0);
 
 	btVector3 rbAxisA2;
@@ -112,7 +112,7 @@ m_stopCFM(0),
 m_stopERP(0)
 {
 
-	// since no frame is given, assume this to be zero angle and just pick rb transform axis
+	// since no frame is given, assume this to be zero angle and just pick rb Transform axis
 	// fixed axis in worldspace
 	btVector3 rbAxisA1, rbAxisA2;
 	btPlaneSpace1(axisInA, rbAxisA1, rbAxisA2);

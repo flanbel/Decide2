@@ -1,7 +1,7 @@
 #pragma once
 
 //文字のデータ
-struct FontData:Noncopyable
+struct FontData :Noncopyable
 {
 	FontData(TEXTURE* t, GLYPHMETRICS g)
 	{
@@ -17,16 +17,39 @@ struct FontData:Noncopyable
 class FontManager
 {
 public:
+	FontManager();
+	~FontManager();
 	//文字のテクスチャ生成
 	//戻り値：なし
 	//第一引数：wchar_t* テクスチャを生成したい文字列
 	//第二引数：TCHAR* 文字のスタイル
-	static void Createfont(wchar_t* string, char* Style);
+	void Createfont(const wchar_t* string,const  char* Style);
 	//文字検索
-	static FontData* Findfont(wchar_t wchar,char* Style);
+	FontData* Findfont(const wchar_t& wchar,const char* Style);
+	
+	static FontManager* Instance()
+	{
+		if (_Instance == nullptr)
+		{
+			_Instance = new FontManager();
+		}
+		return _Instance;
+	}
 private:
+	FontData* _CreateFontTexture(const int& code);
+private:
+	//デバイスコンテキスト
+	HDC _HDC;
+	//フォントの属性
+	LOGFONT _LFont;
+	//論理フォントのハンドル
+	HFONT _HFont;
+	//色の階調
+	int _Grad;
+	int _GradFlg;
 	//文字を管理するマップの定義
 	typedef std::map<wchar_t, FontData*> FontMap;
 	//マップの配列
-	static std::map<int, FontMap*> fontMapArray;
+	std::map<int, FontMap*> _FontMapArray;
+	static FontManager* _Instance;
 };

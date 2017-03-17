@@ -7,7 +7,7 @@ class CircleCollision;
 class CharaRingFrame :public GameObject
 {
 public:
-	CharaRingFrame(char* name) :GameObject(name) {}
+	CharaRingFrame(const char* name) :GameObject(name) {}
 	~CharaRingFrame()
 	{
 		FOR(PLAYER_NUM)

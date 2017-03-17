@@ -1,0 +1,24 @@
+//Javaかなんかがそうしてた。
+プライベートな変数・メソッドは先頭にアンダースコアをつける。
+private:
+  int _Check();
+private:
+  int _Rank;
+
+
+//こいつ微妙
+パブリックな変数はローワーキャメルケース(先頭小文字で文字区切りごとに大文字)
+public:
+  Transform transform;
+  Vector3 localPos;
+
+メソッド名・プライベートな変数・クラス名はアッパーキャメルケース(文字の区切りごとに大文字)
+class PlayerCharacter:public Character
+{
+public:
+  void Damage();
+private:
+  void _CheckDeath();
+private:
+  int _HitPoint; //HP
+}

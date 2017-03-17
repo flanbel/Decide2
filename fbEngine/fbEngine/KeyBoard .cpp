@@ -47,5 +47,5 @@ bool KeyBoard::isPush(int key)
 bool KeyBoard::isPressed(int key)
 {
 	//Ši”[‚³‚ê‚Ä‚¢‚é‚Ææ“ª‚Ìbit‚ª—§‚Â‚Ì‚Å0x80‚Æ˜_—Ï‚ð‚Æ‚é
-	return (now[key] & 0x80);
+	return ((now[key] & 0x80) > 0);
 }

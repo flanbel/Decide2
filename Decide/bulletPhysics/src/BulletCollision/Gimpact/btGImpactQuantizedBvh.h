@@ -281,10 +281,10 @@ public:
 
 	//! returns the indices of the primitives in the m_primitive_manager
 	SIMD_FORCE_INLINE bool boxQueryTrans(const btAABB & box,
-		 const btTransform & transform, btAlignedObjectArray<int> & collided_results) const
+		 const btTransform & Transform, btAlignedObjectArray<int> & collided_results) const
 	{
 		btAABB transbox=box;
-		transbox.appy_transform(transform);
+		transbox.appy_transform(Transform);
 		return boxQuery(transbox,collided_results);
 	}
 

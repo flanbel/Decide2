@@ -9,9 +9,24 @@ extern UINT                 g_NumBoneMatricesMax;
 extern D3DXMATRIXA16*       g_pBoneMatrices ;
 bool g_PreRender = false;
 
+SkinModel::SkinModel(GameObject * g, Transform * t) :
+	Component(g, t, typeid(this).name()),
+	_Effect(nullptr),
+	_ModelDate(nullptr),
+	_Camera(nullptr),
+	_Light(nullptr),
+	_ShadowCamera(nullptr),
+	_TextureBlend(Color::white),
+	_AllBlend(Color::white),
+	_ModelEffect(ModelEffectE(ModelEffectE::CAST_SHADOW | ModelEffectE::RECEIVE_SHADOW)),
+	_SkyBox(false)
+{
+	
+}
+
 SkinModel::~SkinModel()
 {
-	SAFE_DELETE(modelDate)
+	SAFE_DELETE(_ModelDate)
 }
 
 //再帰関数
@@ -49,30 +64,23 @@ void SkinModel::DrawFrame(LPD3DXFRAME pFrame)
 void SkinModel::Awake()
 {
 	//mainのものが設定されているならセットされる。
-	camera = GameObjectManager::mainCamera;
-	light = GameObjectManager::mainLight;
-	shadowCamera = GameObjectManager::mainShadowCamera;
-	castShadow = CastShadow::On;
-	receiveShadow = true;
-	Specular = false;
-
-	SkyBox = false;
-	AllBlend = Color::white;
-	TextureBlend = Color::white;
+	_Camera = GameObjectManager::mainCamera;
+	_Light = GameObjectManager::mainLight;
+	_ShadowCamera = GameObjectManager::mainShadowCamera;
 }
 
 //モデルデータの行列更新
 void SkinModel::LateUpdate()
 {
 	//モデルデータがあるなら
-	if (modelDate)
+	if (_ModelDate)
 	{
 		//掛けるワールド行列
 		D3DXMATRIX wolrd;
 		D3DXMatrixIdentity(&wolrd);
-		wolrd = transform->WorldMatrix();
+		wolrd = transform->GetWorldMatrix();
 		
-		modelDate->UpdateBoneMatrix(wolrd);	//行列を更新。
+		_ModelDate->UpdateBoneMatrix(wolrd);	//行列を更新。
 	}
 }
 
@@ -80,22 +88,21 @@ void SkinModel::PreRender()
 {
 	g_PreRender = true;
 	//モデルデータがあるなら
-	if (modelDate)
+	if (_ModelDate)
 	{
 		//再帰関数呼び出し
-		DrawFrame(modelDate->GetFrameRoot());
+		DrawFrame(_ModelDate->GetFrameRoot());
 	}
-
 }
 
 void SkinModel::Render()
 {
 	g_PreRender = false;
 	//モデルデータがあるなら
-	if (modelDate)
+	if (_ModelDate)
 	{
 		//再帰関数呼び出し
-		DrawFrame(modelDate->GetFrameRoot());
+		DrawFrame(_ModelDate->GetFrameRoot());
 	}
 }
 
@@ -110,7 +117,7 @@ void SkinModel::DrawMeshContainer(
 	if(g_PreRender)
 	{
 		//影描画
-		if (castShadow)
+		if (_ModelEffect & ModelEffectE::CAST_SHADOW)
 			CreateShadow(pMeshContainer, pFrame);
 	}
 	//モデル描画
@@ -118,66 +125,62 @@ void SkinModel::DrawMeshContainer(
 	{
 		//エフェクト読み込み
 		if (pMeshContainer->pSkinInfo != NULL)
-			effect = EffectManager::LoadEffect("AnimationModel.fx");
+			_Effect = EffectManager::LoadEffect("AnimationModel.fx");
 		else
-			effect = EffectManager::LoadEffect("3Dmodel.fx");
+			_Effect = EffectManager::LoadEffect("3Dmodel.fx");
 
 		//テクニックをセット
-		effect->SetTechnique("NormalRender");
+		_Effect->SetTechnique("NormalRender");
 		//開始（必ず終了すること）
-		effect->Begin(NULL, D3DXFX_DONOTSAVESHADERSTATE);
-		effect->BeginPass(0);
+		_Effect->Begin(NULL, D3DXFX_DONOTSAVESHADERSTATE);
+		_Effect->BeginPass(0);
 
-		int num = GameObjectManager::mainLight->GetNum();
-		Vector4 dir[MAX_LIGHTNUM];
-		Color color[MAX_LIGHTNUM];
-		ZeroMemory(dir, sizeof(Vector4)*MAX_LIGHTNUM);
-		const vector<DirectionalLight*> vec = GameObjectManager::mainLight->GetLight();
+		const int num = GameObjectManager::mainLight->GetNum();
+		Vector4 dir[System::MAX_LIGHTNUM];
+		Color color[System::MAX_LIGHTNUM];
+		ZeroMemory(dir, sizeof(Vector4)*System::MAX_LIGHTNUM);
+		const vector<DirectionalLight*>& vec = GameObjectManager::mainLight->GetLight();
 		FOR(num)
 		{
 			dir[i] = vec[i]->Direction();
-			color[i] = vec[i]->color;
+			color[i] = vec[i]->GetColor();
 		}
 		
 		//ライトの向きを転送。
-		effect->SetValue("g_diffuseLightDirection", &dir, sizeof(Vector4)*MAX_LIGHTNUM);
+		_Effect->SetValue("g_diffuseLightDirection", &dir, sizeof(Vector4)*System::MAX_LIGHTNUM);
 		//ライトのカラーを転送。
-		effect->SetValue("g_diffuseLightColor", &color, sizeof(Color)*MAX_LIGHTNUM);
+		_Effect->SetValue("g_diffuseLightColor", &color, sizeof(Color)*System::MAX_LIGHTNUM);
 		//ライト数セット
-		effect->SetInt("g_LightNum", num);
+		_Effect->SetInt("g_LightNum", num);
 		//環境光
-		effect->SetVector("g_ambientLight", &D3DXVECTOR4(0.3, 0.3, 0.3, 1.0f));
+		_Effect->SetVector("g_ambientLight", &D3DXVECTOR4(0.4, 0.4, 0.4, 1.0f));
 
 		//カメラのポジションセット(スペキュラライト用)
 		Vector3 campos = GameObjectManager::mainCamera->transform->position;
-		effect->SetValue("g_cameraPos", &D3DXVECTOR4(campos.x, campos.y, campos.z, 1.0f), sizeof(D3DXVECTOR4));
+		_Effect->SetValue("g_cameraPos", &D3DXVECTOR4(campos.x, campos.y, campos.z, 1.0f), sizeof(D3DXVECTOR4));
 		
 		//各行列を送信
-		effect->SetMatrix("g_rotationMatrix", &transform->RotateMatrix());
-		effect->SetMatrix("g_viewMatrix", &camera->View());
-		effect->SetMatrix("g_projectionMatrix", &camera->Projection());
+		_Effect->SetMatrix("g_rotationMatrix", transform->RotateMatrixAddress());
+		_Effect->SetMatrix("g_viewMatrix", &_Camera->View());
+		_Effect->SetMatrix("g_projectionMatrix", &_Camera->Projection());
 		
 		//影カメラのビュープロジェクション行列を作って送信
 		D3DXMATRIX LVP = GameObjectManager::mainShadowCamera->View() * GameObjectManager::mainShadowCamera->Projection();
-		effect->SetMatrix("g_LVP", &LVP);
+		_Effect->SetMatrix("g_LVP", &LVP);
 
 		//深度テクスチャ
-		if (receiveShadow)
-		{
-			effect->SetTexture("g_Shadow", INSTANCE(RenderTargetManager)->GetRenderTargetTexture(0)->pTexture);
-			effect->SetBool("ReceiveShadow",true);
-		}else
-		{
-			
-			effect->SetBool("ReceiveShadow", false);
-		}
-		//スペキュラライト
-		effect->SetBool("Spec", Specular);
-		effect->SetBool("SkyBox", SkyBox);
+		TEXTURE* shadow = INSTANCE(RenderTargetManager)->GetRTTextureFromList(RTIdxE::SHADOWDEPTH);
+		_Effect->SetTexture("g_Shadow", shadow->pTexture);
+		Vector2 texel = Vector2(1.0f / shadow->Size.x, 1.0f / shadow->Size.y);
+		_Effect->SetValue("g_TexelSize", &texel,sizeof(Vector2));
+		//影を映すかどうかのフラグセット
+		_Effect->SetBool("ReceiveShadow", (_ModelEffect & ModelEffectE::RECEIVE_SHADOW) > 0);
+		//スペキュラフラグセット
+		_Effect->SetBool("Spec", (_ModelEffect & ModelEffectE::SPECULAR) > 0);
 
-		effect->SetVector("g_blendcolor", (D3DXVECTOR4*)&AllBlend);
+		_Effect->SetVector("g_blendcolor", (D3DXVECTOR4*)&_AllBlend);
 
-		if(SkyBox)
+		if(_SkyBox)
 		{
 			(*graphicsDevice()).SetRenderState(D3DRS_ZWRITEENABLE, FALSE);
 		}
@@ -213,11 +216,11 @@ void SkinModel::DrawMeshContainer(
 				}
 
 				//骨のワールド行列配列
-				effect->SetMatrixArray("g_mWorldMatrixArray", g_pBoneMatrices, pMeshContainer->NumPaletteEntries);
+				_Effect->SetMatrixArray("g_mWorldMatrixArray", g_pBoneMatrices, pMeshContainer->NumPaletteEntries);
 				//骨の数
-				effect->SetFloat("g_numBone", (float)pMeshContainer->NumInfl);
+				_Effect->SetFloat("g_numBone", (float)pMeshContainer->NumInfl);
 				// ボーン数。
-				effect->SetInt("CurNumBones", pMeshContainer->NumInfl - 1);
+				//_Effect->SetInt("CurNumBones", pMeshContainer->NumInfl - 1);
 
 				//ディフューズカラー取得
 				D3DXVECTOR4* Diffuse = (D3DXVECTOR4*)&pMeshContainer->pMaterials[iAttrib].MatD3D.Diffuse;
@@ -227,23 +230,23 @@ void SkinModel::DrawMeshContainer(
 				if (texture != NULL)
 				{
 					// ディフューズテクスチャ。
-					effect->SetTexture("g_diffuseTexture", texture);
-					effect->SetVector("g_Textureblendcolor", (D3DXVECTOR4*)&Color::white);
+					_Effect->SetTexture("g_diffuseTexture", texture);
+					_Effect->SetVector("g_Textureblendcolor", (D3DXVECTOR4*)&Color::white);
 					//とりあえず、今回はテクスチャの名前を見る
 					
 					if (strcmp(pMeshContainer->pMaterials[iAttrib].pTextureFilename, "TV_Head.png") == 0)
-						effect->SetVector("g_Textureblendcolor", (D3DXVECTOR4*)&TextureBlend);
-					effect->SetBool("Texflg", true);
+						_Effect->SetVector("g_Textureblendcolor", (D3DXVECTOR4*)&_TextureBlend);
+					_Effect->SetBool("Texflg", true);
 				}
 				//テクスチャがないならカラーセット
 				else if (Diffuse != NULL)
 				{
-					effect->SetVector("g_diffuseMaterial", Diffuse);
-					effect->SetBool("Texflg", false);
+					_Effect->SetVector("g_diffuseMaterial", Diffuse);
+					_Effect->SetBool("Texflg", false);
 				}
 
 				//この関数を呼び出すことで、データの転送が確定する。
-				effect->CommitChanges();
+				_Effect->CommitChanges();
 				//メッシュ描画
 				pMeshContainer->MeshData.pMesh->DrawSubset(iAttrib);
 			}
@@ -251,7 +254,7 @@ void SkinModel::DrawMeshContainer(
 		//アニメーションしない方
 		else
 		{
-			effect->SetMatrix("g_worldMatrix", &pFrame->CombinedTransformationMatrix);
+			_Effect->SetMatrix("g_worldMatrix", &pFrame->CombinedTransformationMatrix);
 
 			//マテリアルの数
 			DWORD MaterialNum = pMeshContainer->NumMaterials;
@@ -265,7 +268,8 @@ void SkinModel::DrawMeshContainer(
 				D3DXVECTOR4* Diffuse = (D3DXVECTOR4*)&mtrl[i].MatD3D.Diffuse;
 				//テクスチャー
 				LPDIRECT3DBASETEXTURE9 texture;
-				if(SkyBox)
+				_Effect->SetBool("SkyBox", _SkyBox);
+				if(_SkyBox)
 				{
 					texture = pMeshContainer->ppCubeTextures[i];
 				}
@@ -277,28 +281,28 @@ void SkinModel::DrawMeshContainer(
 				//テクスチャが格納されていればセット
 				if (texture != NULL)
 				{
-					effect->SetTexture("g_Texture", texture);
-					effect->SetVector("g_Textureblendcolor", (D3DXVECTOR4*)&Color::white);
-					effect->SetBool("Texflg", true);
+					_Effect->SetTexture("g_Texture", texture);
+					_Effect->SetVector("g_Textureblendcolor", (D3DXVECTOR4*)&Color::white);
+					_Effect->SetBool("Texflg", true);
 				}
 				//テクスチャがないならカラーセット
 				else
 				{
-					effect->SetVector("g_diffuseMaterial", Diffuse);
-					effect->SetBool("Texflg", false);
+					_Effect->SetVector("g_diffuseMaterial", Diffuse);
+					_Effect->SetBool("Texflg", false);
 				}
 
 				//この関数を呼び出すことで、データの転送が確定する。
-				effect->CommitChanges();
+				_Effect->CommitChanges();
 				//メッシュ描画
 				pMeshContainer->MeshData.pMesh->DrawSubset(i);
 			}
 		}
 
-		effect->EndPass();
-		effect->End();
+		_Effect->EndPass();
+		_Effect->End();
 
-		if (SkyBox)
+		if (_SkyBox)
 		{
 			(*graphicsDevice()).SetRenderState(D3DRS_ZWRITEENABLE, TRUE);
 		}
@@ -313,75 +317,74 @@ void SkinModel::CreateShadow(D3DXMESHCONTAINER_DERIVED * pMeshContainer, D3DXFRA
 {
 	//エフェクト読み込み
 	if (pMeshContainer->pSkinInfo != NULL)
-		effect = EffectManager::LoadEffect("AnimationModel.fx");
+		_Effect = EffectManager::LoadEffect("AnimationModel.fx");
 	else
-		effect = EffectManager::LoadEffect("3Dmodel.fx");
+		_Effect = EffectManager::LoadEffect("3Dmodel.fx");
 	//テクニック設定
-	effect->SetTechnique("Shadow");
+	_Effect->SetTechnique("Shadow");
+
+	//開始
+	_Effect->Begin(0, D3DXFX_DONOTSAVESTATE);
+	_Effect->BeginPass(0);
+
+	//影カメラのビュープロジェクション行列を送る
+	_Effect->SetMatrix("g_viewMatrix", &GameObjectManager::mainShadowCamera->View());
+	_Effect->SetMatrix("g_projectionMatrix", &GameObjectManager::mainShadowCamera->Projection());
+
+	//アニメーションの有無で分岐
+	if (pMeshContainer->pSkinInfo != NULL)
 	{
-		//開始
-		effect->Begin(0, D3DXFX_DONOTSAVESTATE);
-		effect->BeginPass(0);
-
-		//影カメラのビュープロジェクション行列を送る
-		effect->SetMatrix("g_viewMatrix", &GameObjectManager::mainShadowCamera->View());
-		effect->SetMatrix("g_projectionMatrix", &GameObjectManager::mainShadowCamera->Projection());
-
-		//アニメーションの有無で分岐
-		if (pMeshContainer->pSkinInfo != NULL)
+		UINT iAttrib;
+		//バッファー
+		LPD3DXBONECOMBINATION pBoneComb = LPD3DXBONECOMBINATION(pMeshContainer->pBoneCombinationBuf->GetBufferPointer());
+		//各マテリアル
+		for (iAttrib = 0; iAttrib < pMeshContainer->NumAttributeGroups; iAttrib++)
 		{
-			UINT iAttrib;
-			//バッファー
-			LPD3DXBONECOMBINATION pBoneComb = LPD3DXBONECOMBINATION(pMeshContainer->pBoneCombinationBuf->GetBufferPointer());
-			//各マテリアル
-			for (iAttrib = 0; iAttrib < pMeshContainer->NumAttributeGroups; iAttrib++)
+			//ボーン
+			for (DWORD iPaletteEntry = 0; iPaletteEntry < pMeshContainer->NumPaletteEntries; ++iPaletteEntry)
 			{
-				//ボーン
-				for (DWORD iPaletteEntry = 0; iPaletteEntry < pMeshContainer->NumPaletteEntries; ++iPaletteEntry)
+				DWORD iMatrixIndex = pBoneComb[iAttrib].BoneId[iPaletteEntry];
+				if (iMatrixIndex != UINT_MAX)
 				{
-					DWORD iMatrixIndex = pBoneComb[iAttrib].BoneId[iPaletteEntry];
-					if (iMatrixIndex != UINT_MAX)
-					{
-						//骨の最終的な行列計算
-						D3DXMatrixMultiply(
-							&g_pBoneMatrices[iPaletteEntry],
-							//骨のオフセット(移動)行列
-							&pMeshContainer->pBoneOffsetMatrices[iMatrixIndex],
-							//フレームのワールド行列
-							pMeshContainer->ppBoneMatrixPtrs[iMatrixIndex]
-						);
-					}
+					//骨の最終的な行列計算
+					D3DXMatrixMultiply(
+						&g_pBoneMatrices[iPaletteEntry],
+						//骨のオフセット(移動)行列
+						&pMeshContainer->pBoneOffsetMatrices[iMatrixIndex],
+						//フレームのワールド行列
+						pMeshContainer->ppBoneMatrixPtrs[iMatrixIndex]
+					);
 				}
-
-				//骨のワールド行列配列
-				effect->SetMatrixArray("g_mWorldMatrixArray", g_pBoneMatrices, pMeshContainer->NumPaletteEntries);
-				//骨の数]
-				effect->SetFloat("g_numBone", (float)pMeshContainer->NumInfl);
-				// ボーン数。
-				effect->SetInt("CurNumBones", pMeshContainer->NumInfl - 1);
-
-				//この関数を呼び出すことで、データの転送が確定する。
-				effect->CommitChanges();
-				//メッシュ描画
-				pMeshContainer->MeshData.pMesh->DrawSubset(iAttrib);
 			}
-		}
-		else
-		{
-			effect->SetMatrix("g_worldMatrix", &pFrame->CombinedTransformationMatrix);
 
-			//モデル描画
-			for (DWORD i = 0; i < pMeshContainer->NumMaterials; i++)
-			{
-				//この関数を呼び出すことで、データの転送が確定する。
-				effect->CommitChanges();
-				//メッシュ描画
-				pMeshContainer->MeshData.pMesh->DrawSubset(i);
-			}
-		}
+			//骨のワールド行列配列
+			_Effect->SetMatrixArray("g_mWorldMatrixArray", g_pBoneMatrices, pMeshContainer->NumPaletteEntries);
+			//骨の数]
+			_Effect->SetFloat("g_numBone", (float)pMeshContainer->NumInfl);
+			// ボーン数。
+			//_Effect->SetInt("CurNumBones", pMeshContainer->NumInfl - 1);
 
-		//終了
-		effect->EndPass();
-		effect->End();
+			//この関数を呼び出すことで、データの転送が確定する。
+			_Effect->CommitChanges();
+			//メッシュ描画
+			pMeshContainer->MeshData.pMesh->DrawSubset(iAttrib);
+		}
 	}
+	else
+	{
+		_Effect->SetMatrix("g_worldMatrix", &pFrame->CombinedTransformationMatrix);
+
+		//モデル描画
+		for (DWORD i = 0; i < pMeshContainer->NumMaterials; i++)
+		{
+			//この関数を呼び出すことで、データの転送が確定する。
+			_Effect->CommitChanges();
+			//メッシュ描画
+			pMeshContainer->MeshData.pMesh->DrawSubset(i);
+		}
+	}
+
+	//終了
+	_Effect->EndPass();
+	_Effect->End();
 }

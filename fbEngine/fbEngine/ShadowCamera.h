@@ -4,9 +4,9 @@
 class ShadowCamera :public Camera
 {
 public:
-	ShadowCamera(GameObject* g, Transform* t) :Camera(g, t)
+	ShadowCamera(GameObject* g, Transform* t) :Camera(g, t, typeid(this).name())
 	{
-		name = (char*)typeid(*this).name();
+		
 	}
 	void Update()override;
 	//ïΩçsìäâe

@@ -9,15 +9,15 @@ void GameLight::Awake()
 	DirectionalLight* Dl[4];
 	FOR(num)
 		Dl[i] = new DirectionalLight();
-	Dl[0]->rot = Vector3(45, 45, 180);	//‰œ
-	Dl[1]->rot = Vector3(0, 0, 180);	//‰œ
-	Dl[2]->rot = Vector3(0, -90, 0);	//¶
-	Dl[3]->rot = Vector3(90, 0, 0);	//‰º
-
-	Dl[0]->color = Color(0.7, 0.7, 0.7, 1.0);	//‰œ
-	Dl[1]->color = Color(0.3, 0.3, 0.3, 0.1);	//‰E
-	Dl[2]->color = Color(0.3, 0.3, 0.3, 0.1);//¶
-	Dl[3]->color = Color(0.3, 0.3, 0.3, 0.1);	//‰º
+	Dl[0]->SetEulerAngles(Vector3(45, 45, 180));	//‰œ
+	Dl[1]->SetEulerAngles(Vector3(0, 0, 180));	//‰œ
+	Dl[2]->SetEulerAngles(Vector3(0, -90, 0));	//¶
+	Dl[3]->SetEulerAngles(Vector3(90, 0, 0));	//‰º
+	
+	Dl[0]->SetColor(Color(0.7f, 0.7f, 0.7f, 1.0f));	//‰œ
+	Dl[1]->SetColor(Color(0.3f, 0.3f, 0.3f, 0.1f));	//‰E
+	Dl[2]->SetColor(Color(0.3f, 0.3f, 0.3f, 0.1f));	//¶
+	Dl[3]->SetColor(Color(0.3f, 0.3f, 0.3f, 0.1f));	//‰º
 	FOR(num)
 		light->AddLight(Dl[i]);
 }

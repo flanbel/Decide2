@@ -516,12 +516,12 @@ void	btSequentialImpulseConstraintSolver::applyAnisotropicFriction(btCollisionOb
 
 	if (colObj && colObj->hasAnisotropicFriction(frictionMode))
 	{
-		// transform to local coordinates
+		// Transform to local coordinates
 		btVector3 loc_lateral = frictionDirection * colObj->getWorldTransform().getBasis();
 		const btVector3& friction_scaling = colObj->getAnisotropicFriction();
 		//apply anisotropic friction
 		loc_lateral *= friction_scaling;
-		// ... and transform it back to global coordinates
+		// ... and Transform it back to global coordinates
 		frictionDirection = colObj->getWorldTransform().getBasis() * loc_lateral;
 	}
 

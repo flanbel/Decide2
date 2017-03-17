@@ -6,24 +6,27 @@ class Animation;
 class Item:public GameObject
 {
 public:
-	Item(char* name) :GameObject(name)
+	Item(const char* name) :GameObject(name)
 	{
 		
 	}
 	void Awake()override;
 	void LateUpdate()override;
 	//アイテムを持つときに呼び出す関数
-	void ToHave(D3DXMATRIX* m);
+	//引数はキャラクターの持ち手のボーンの行列。
+	//持てたならtrue,持てないならfalse
+	bool ToHave(const D3DXMATRIX* handmat);
 	//離す
-	void ToSeparate();
+	//引数はプレイヤーのワールド行列
+	void ToSeparate(const D3DXMATRIX& world);
 private:
-	Animation* anim;
-	RigidBody* rigid;
-	float lifetime;	//寿命
-	float timer;
-	bool isPossessed;//所持されている。
+	Animation* _Anim;	//アニメーション
+	RigidBody* _Rigid;	//剛体(剛体である必要はあるか？)	
+	float _LifeTime;	//寿命
+	float _Timer;
+	bool _IsHave;//所持されている。
 	//持ち手(handle)の行列(アイテム側)
-	D3DXMATRIX* itemHandleMat;
+	D3DXMATRIX* _ItemHandleMat;
 	//持つボーンの行列(キャラクター側)
-	D3DXMATRIX* handMat;
+	const D3DXMATRIX* _HandMat;
 };

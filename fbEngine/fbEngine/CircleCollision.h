@@ -5,9 +5,9 @@
 class CircleCollision :public Collison2D
 {
 public:
-	CircleCollision(GameObject* g, Transform* t) : Collison2D(g, t)
+	CircleCollision(GameObject* g, Transform* t) : Collison2D(g, t, typeid(this).name())
 	{
-		name = (char*)typeid(*this).name();
+		
 	}
 	bool Judgment(Vector2 point);
 	bool Judgment(CircleCollision* circle);

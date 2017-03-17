@@ -63,4 +63,12 @@ public:
 		c.b = b;
 		c.a = a;
 	}
+
+	Color operator * (float f)
+	{
+		this->r *= f;
+		this->g *= f;
+		this->b *= f;
+		return *this;
+	}
 };

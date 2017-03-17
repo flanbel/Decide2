@@ -22,13 +22,13 @@ void WaveFileBank::Release(int groupID)
 }
 void WaveFileBank::RegistWaveFile(int groupID, WaveFilePtr waveFile)
 {
-	//TK_ASSERT(groupID < MAX_GROUP, "groupID is invalid");
+	FB_ASSERT(groupID < MAX_GROUP, "groupID is invalid");
 	m_waveFileMap[groupID].insert({ waveFile->GetFilePathHash(), waveFile });
 }
 WaveFilePtr WaveFileBank::FindWaveFile(int groupID, const char* filePath)
 {
-	//TK_ASSERT(groupID < MAX_GROUP, "groupID is invalid");
-	auto value = m_waveFileMap[groupID].find(MakeHash((char*)filePath));
+	FB_ASSERT(groupID < MAX_GROUP, "groupID is invalid");
+	auto value = m_waveFileMap[groupID].find(Support::MakeHash((char*)filePath));
 	if (value != m_waveFileMap[groupID].end()) {
 		return value->second;
 	}
@@ -36,7 +36,7 @@ WaveFilePtr WaveFileBank::FindWaveFile(int groupID, const char* filePath)
 }
 WaveFilePtr WaveFileBank::FindWaveFile(int groupID, const NameKey& nameKey)
 {
-	//TK_ASSERT(groupID < MAX_GROUP, "groupID is invalid");
+	FB_ASSERT(groupID < MAX_GROUP, "groupID is invalid");
 	auto value = m_waveFileMap[groupID].find(nameKey.GetHashCode());
 	if (value != m_waveFileMap[groupID].end()) {
 		return value->second;

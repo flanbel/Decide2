@@ -362,16 +362,16 @@ public:
     btGeneric6DofConstraint(btRigidBody& rbA, btRigidBody& rbB, const btTransform& frameInA, const btTransform& frameInB ,bool useLinearReferenceFrameA);
     btGeneric6DofConstraint(btRigidBody& rbB, const btTransform& frameInB, bool useLinearReferenceFrameB);
     
-	//! Calcs global transform of the offsets
+	//! Calcs global Transform of the offsets
 	/*!
-	Calcs the global transform for the joint offset for body A an B, and also calcs the agle differences between the bodies.
+	Calcs the global Transform for the joint offset for body A an B, and also calcs the agle differences between the bodies.
 	\sa btGeneric6DofConstraint.getCalculatedTransformA , btGeneric6DofConstraint.getCalculatedTransformB, btGeneric6DofConstraint.calculateAngleInfo
 	*/
     void calculateTransforms(const btTransform& transA,const btTransform& transB);
 
 	void calculateTransforms();
 
-	//! Gets the global transform of the offset for body A
+	//! Gets the global Transform of the offset for body A
     /*!
     \sa btGeneric6DofConstraint.getFrameOffsetA, btGeneric6DofConstraint.getFrameOffsetB, btGeneric6DofConstraint.calculateAngleInfo.
     */
@@ -380,7 +380,7 @@ public:
     	return m_calculatedTransformA;
     }
 
-    //! Gets the global transform of the offset for body B
+    //! Gets the global Transform of the offset for body B
     /*!
     \sa btGeneric6DofConstraint.getFrameOffsetA, btGeneric6DofConstraint.getFrameOffsetB, btGeneric6DofConstraint.calculateAngleInfo.
     */

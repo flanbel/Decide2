@@ -16,16 +16,16 @@ EffectManager::~EffectManager()
 
 Effect* EffectManager::LoadEffect(char* filename)
 {
-	Effect* pEffect = nullptr;
+	Effect* effect = nullptr;
 
 	auto it = effectDictinary.find(filename);
 	//辞書内にエフェクトが登録されてない
 	if (it == effectDictinary.end()) 
 	{
 		char* filepath = new char[64];
-		strcpy_s(filepath, Length("Asset/Shader/"), "Asset/Shader/");
-		strcat_s(filepath, Length(filepath) + Length(filename), filename);
-		ID3DXEffect* effect;	//Effectへのポインタ
+		strcpy_s(filepath, strlen("Asset/Shader/")+1, "Asset/Shader/");
+		strcat_s(filepath, strlen(filepath) + strlen(filename)+1, filename);
+		ID3DXEffect* ieffect;	//Effectへのポインタ
 		LPD3DXBUFFER  compileErrorBuffer = NULL;
 		//Effectファイル読み込み
 		HRESULT hr = D3DXCreateEffectFromFile(
@@ -39,7 +39,7 @@ Effect* EffectManager::LoadEffect(char* filename)
 			D3DXSHADER_SKIPVALIDATION,
 #endif
 			NULL,
-			&effect,
+			&ieffect,
 			&compileErrorBuffer
 			);
 
@@ -47,15 +47,15 @@ Effect* EffectManager::LoadEffect(char* filename)
 			MessageBox(NULL, (LPCSTR)(compileErrorBuffer->GetBufferPointer()), "error", MB_OK);
 		}
 
-		pEffect = new Effect();
-		pEffect->SetEffect(effect);
+		effect = new Effect(filename);
+		effect->SetEffect(ieffect);
 		//辞書に登録
-		effectDictinary[filename] = pEffect;
+		effectDictinary[filename] = effect;
 	}
 	else
 	{
-		pEffect = it->second;
+		effect = it->second;
 	}
 
-	return pEffect;
+	return effect;
 }

@@ -151,7 +151,7 @@ public:
 
 
 	///getAabb returns the axis aligned bounding box in the 'global' coordinate frame
-	///will add some transform later
+	///will add some Transform later
 	virtual void getBroadphaseAabb(btVector3& aabbMin,btVector3& aabbMax) const
 	{
 		aabbMin.setValue(-BT_LARGE_FLOAT,-BT_LARGE_FLOAT,-BT_LARGE_FLOAT);

@@ -18,7 +18,7 @@ class btPolarDecomposition
     static const unsigned int DEFAULT_MAX_ITERATIONS;
 
     /**
-     * Creates an instance with optional parameters.
+     * Creates an _Instance with optional parameters.
      *
      * @param tolerance     - the tolerance used to determine convergence of the
      *                        algorithm

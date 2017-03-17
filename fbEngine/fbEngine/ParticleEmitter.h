@@ -39,24 +39,27 @@ public:
 	~ParticleEmitter() {};
 	/*!
 	 *@brief	初期化。
-	 *@param[in]	random		乱数生成に使用する乱数生成機。
-	 *@param[in]	camera		パーティクルの描画で使用するカメラ。
-	 *@param[in]	param		パーティクル生成用のパラメータ。
-	 *@param[in]	emitPosition	エミッターの座標。
+	 *@_Param[in]	random		乱数生成に使用する乱数生成機。
+	 *@_Param[in]	camera		パーティクルの描画で使用するカメラ。
+	 *@_Param[in]	_Param		パーティクル生成用のパラメータ。
+	 *@_Param[in]	emitPosition	エミッターの座標。
 	 */
-	void Init(const ParicleParameter& param);
+	void Init(const ParicleParameter& _Param);
 	void Start() override;
 	void Update() override;
 	void Render() override;
 	/*!
 	*@brief	パーティクルに力を加える。
-	*@param[in]	applyForce		乱数生成に使用する乱数生成機。
+	*@_Param[in]	applyForce		乱数生成に使用する乱数生成機。
 	*/
 	void ApplyForce(Vector3& applyForce);
-	void Emit(bool b);
+	void SetEmitFlg(bool b);
+private:
+	//パーティクル生成
+	void Emit();
 private:
 	bool	emit;//生成フラグ
-	float					timer;			//!<タイマー
-	ParicleParameter		param;			//!<パラメータ。
-	std::list<Particle*>	particleList;	//!<パーティクルのリスト。
+	float					_Timer;			//!<タイマー
+	ParicleParameter		_Param;			//!<パラメータ。
+	std::list<Particle*>	_ParticleList;	//!<パーティクルのリスト。
 };

@@ -22,8 +22,8 @@ public:
 	void Create( const Vector3& size );
 	btCollisionShape* GetBody() override
 	{
-		return shape;
+		return _Shape;
 	}
 private:
-	btBoxShape*		shape;
+	btBoxShape*		_Shape;
 };

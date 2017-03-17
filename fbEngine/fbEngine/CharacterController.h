@@ -17,7 +17,7 @@
 class CCharacterController :Component{
 public:
 	CCharacterController(GameObject* g, Transform* t):
-		Component(g,t)
+		Component(g,t, typeid(this).name())
 	{
 			m_collider = g->AddComponent<CCapsuleCollider>();
 	}

@@ -1,25 +1,22 @@
 #include "Text.h"
 #include "FontManager.h"
 #include "GameObject.h"
-#include "Sprite.h"
 
 Text::Text(GameObject* g, Transform* t) :
-	Component(g,t),
+	Component(g,t,typeid(this).name()),
 	_WString(nullptr),
 	_Size(1.0f),
 	_Spacing(0),
-	_BlendColor(Color::black),
-	_Kerning(true)
+	_Kerning(true),
+	_TextFormat(TEXT::TextFormatE::CENTER)
 {
-	name = (char*)typeid(*this).name();
+	
 }
 
 void Text::Awake()
 {
 	//スプライトを追加
 	_Sprite = gameObject->AddComponent<Sprite>();
-	//ブレンドカラー設定
-	_Sprite->SetBlendColor(_BlendColor);
 	//削除する色
 	_Sprite->SetClipColor(Color(1.0f, 1.0f, 1.0f, 0.0f));
 	_Sprite->SetPivot(Vector2(0.0f, 0.0f));
@@ -36,17 +33,34 @@ void Text::ImageRender()
 	Vector3 buf = transform->scale;
 	Vector3 base = transform->position;
 	transform->scale = Vector3(_Size, _Size, _Size);
+
+	switch (_TextFormat)
+	{
+	case TEXT::LEFT:
+		transform->position.x -= _Length * 0.0f;
+		break;
+	case TEXT::CENTER:
+		transform->position.x -= _Length * 0.5f;
+		break;
+	case TEXT::RIGHT:
+		transform->position.x -= _Length * 1.0f;
+		break;
+	default:
+		break;
+	}
+
+
 	//一つ前の文字のオフセット量セット
 	float offset = 0;
 	//フォントをセットして文字数分描画するっていうのは重い！
 	for (short i = 0;_WString[i] != '\0';i++)
 	{
 		//文字のデータ取得
-		FontData* data = FontManager::Findfont(_WString[i], _FontStyle);
+		FontData* data = INSTANCE(FontManager)->Findfont(_WString[i], _FontStyle);
 		//前の文字のoffset分ずらす
 		if (_Kerning)
 		{
-			transform->position.x += offset * _Size;
+			transform->position.x += (offset)* _Size;
 		}
 		else
 		{
@@ -62,11 +76,11 @@ void Text::ImageRender()
 		//次の文字の開始位置
 		if(_Kerning)
 		{
-			offset = data->gm.gmBlackBoxX;
+			offset = (float)data->gm.gmBlackBoxX;
 		}
 		else
 		{
-			offset = data->gm.gmCellIncX + _Spacing;
+			offset = (float)data->gm.gmCellIncX + _Spacing;
 		}
 		
 	}
@@ -75,52 +89,93 @@ void Text::ImageRender()
 	transform->scale = buf;
 }
 
-void Text::Initialize(wchar_t * string, float _Size, Color color, DWORD flg, char * style)
+void Text::Initialize(const wchar_t * string, const float& _Size, const Color& color, const sprite::SpriteEffectE& flg, const char * style, TEXT::TextFormatE format)
 {
 	SetStyle(style);
-	SetString(string);
 	SetSize(_Size);
+	SetString(string);
+	SetFormat(format);
 	SetBlendColor(color);
-	SetEffectFlg(flg);
+	SetEffectFlg(flg,true);
 }
 
-void Text::SetString(WCHAR * s)
+void Text::SetString(const wchar_t * s)
 {
 	//前回の文字列解放
 	if (_WString)
 		SAFE_DELETE(_WString);
 	//長さ(+1は終端文字分)
-	size_t len = wcsnlen(s, 128) + 1;
+	size_t len = wcslen(s) + 1;
 	//メモリ確保
 	_WString = new wchar_t[len]();
 	//値コピー
 	wcscpy_s(_WString, len, s);
-	FontManager::Createfont(_WString, _FontStyle);
+	INSTANCE(FontManager)->Createfont(_WString, _FontStyle);
+
+	_UpdateLength();
 }
 
-void Text::SetStyle(char * s)
+void Text::SetStyle(const char * s)
 {
 	strcpy_s(_FontStyle, 32, s);
 }
 
-void Text::SetSize(float s)
+void Text::SetSize(const float& s)
 {
 	//作られているフォントのサイズで割った倍率
 	_Size = s / FontSize;
+	_UpdateLength();
 }
 
-void Text::SetSpacing(float space)
+void Text::SetSpacing(const float& space)
 {
 	_Spacing = space;
+	_UpdateLength();
 }
 
-void Text::SetBlendColor(Color c)
+void Text::SetBlendColor(const Color& c)
 {
-	_BlendColor = c;
-	_Sprite->SetBlendColor(_BlendColor);
+	_Sprite->SetBlendColor(c);
 }
 
-void Text::SetEffectFlg(DWORD f)
+void Text::SetEffectFlg(const sprite::SpriteEffectE& e)
 {
-	_Sprite->SetEffectFlg(f);
+	_Sprite->SetEffectFlg((DWORD)e);
+}
+
+void Text::SetEffectFlg(const sprite::SpriteEffectE& e, const bool& f)
+{
+	_Sprite->SetEffectFlg((DWORD)e,f);
+}
+
+void Text::SetFormat(TEXT::TextFormatE format)
+{
+	_TextFormat = format;
+}
+
+void Text::_UpdateLength()
+{
+	//nullチェック
+	if (!_WString)
+		return;
+	//初期化
+	_Length = 0.0f;
+	//横の長さ計算
+	for (short i = 0; _WString[i] != '\0'; i++)
+	{
+		//文字のデータ取得
+		FontData* data = INSTANCE(FontManager)->Findfont(_WString[i], _FontStyle);
+
+		//文字の横幅を足していく
+		if (_Kerning)
+		{
+			_Length += data->gm.gmBlackBoxX;
+		}
+		else
+		{
+			_Length += (data->gm.gmCellIncX + data->gm.gmptGlyphOrigin.x + _Spacing);
+		}
+	}
+	//サイズをかける
+	_Length *= _Size;
 }

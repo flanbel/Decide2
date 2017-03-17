@@ -9,7 +9,7 @@ class GameObject : public Object
 {
 public:
 	GameObject();
-	GameObject(char* name);
+	GameObject(const char* name);
 	virtual ~GameObject();
 
 	/*virtual void Awake() {};
@@ -19,64 +19,64 @@ public:
 	virtual void PreRender() {};
 	virtual void Render() {};*/
 
+	//コンポーネント追加
 	template<class T>
 	T* AddComponent()
 	{
-		return components.AddComponent<T>(this,transform);
+		return _Components.AddComponent<T>(this,transform);
 	}
-
+	//コンポーネント追加
 	void AddComponent(Component* c)
 	{
-		return components.AddComponent(c);
+		return _Components.AddComponent(c);
 	}
-
-	Component* GetComponent(char* name)
+	//名前からコンポーネント取得
+	Component* GetComponent(const char* name)
 	{
-		return components.GetComponent(name);
+		return _Components.GetComponent(name);
 	}
-
+	//コンポーネント取得
 	template <class T>
 	T* GetComponent()
 	{
-		return components.GetComponent<T>();
+		return _Components.GetComponent<T>();
 	}
 
-	ComponentManager& GetComponentManager()
+	//ゲームオブジェクトマネージャでしか使わない。(どうにかすべき)
+	const ComponentManager& GetComponentManager()
 	{
-		return components;
+		return _Components;
 	}
-
-	//トランスフォーム
-	Transform* transform;
 
 	//オブジェクトのアクティブフラグを設定する　セッター
-	virtual void SetActive(bool act)
+	virtual void SetActive(const bool& act)
 	{
-		active = act;
+		_Active = act;
 	}
 
 	//アクティブかどうか取得　ゲッター
-	bool GetActive()
+	const bool& GetActive()
 	{
-		return active;
+		return _Active;
 	}
 
-	void Discard(bool b)
+	void Discard(const bool& b)
 	{
-		discard = b;
-		//子にも設定
-		
+		_Discard = b;	
 	}
 
-	bool Discard()
+	const bool& Discard()
 	{
-		return discard;
+		return _Discard;
 	}
+public:
+	//トランスフォーム(簡単にアクセスしたかった。)
+	Transform* transform;	
 protected:
 	//コンポーネントたち
-	ComponentManager components;
+	ComponentManager _Components;
 	//アクティブでないオブジェクトは描画もアップデートもされない
-	bool active;
+	bool _Active;
 	//オブジェクトを破棄する
-	bool discard;
+	bool _Discard;
 };

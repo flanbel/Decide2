@@ -111,7 +111,7 @@ void			btRigidBody::saveKinematicState(btScalar timeStep)
 	//todo: clamp to some (user definable) safe minimum timestep, to limit maximum angular/linear velocities
 	if (timeStep != btScalar(0.))
 	{
-		//if we use motionstate to synchronize world transforms, get the new kinematic/animated world transform
+		//if we use motionstate to synchronize world transforms, get the new kinematic/animated world Transform
 		if (getMotionState())
 			getMotionState()->getWorldTransform(m_worldTransform);
 		btVector3 linVel,angVel;

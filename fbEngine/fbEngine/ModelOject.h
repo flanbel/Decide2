@@ -12,6 +12,6 @@ public:
 	void Update()override;
 	void LoadModel(char* path);
 private:
-	SkinModel* model;
-	Animation* anim;
+	SkinModel* _Model;
+	Animation* _Anim;
 };

@@ -13,8 +13,8 @@ void CharaSelect::Awake()
 	_Back = GameObjectManager::AddNew<ImageObject>("BackImage",0);
 	_Show = GameObjectManager::AddNew<ImageObject>("Show", 0);
 	_Name = GameObjectManager::AddNew<TextObject>("Name", 0);
-	_Cursor = GameObjectManager::AddNew<ImageObject>("Cursor", 3);
-	_OK = GameObjectManager::AddNew<ImageObject>("OK", 3);
+	_Cursor = GameObjectManager::AddNew<ImageObject>("Cursor", 2);
+	_OK = GameObjectManager::AddNew<ImageObject>("OK", 2);
 	_ShowModel = GameObjectManager::AddNew<ShowModel>("ShowModel", 0);
 	_Sound = GameObjectManager::AddNew<SoundSource>("test", 1);
 
@@ -22,31 +22,22 @@ void CharaSelect::Awake()
 	_Sound->Init("Asset/Sound/Select.wav");
 	
 	_Name->transform->SetParent(transform);
-	_Name->transform->localPosition = Vector3(50, 350, 0);
-	_Name->SetBlendColor(Color::white);
-	_Name->SetFontSize(40);
-	_Name->SetFontStyle("HGS明朝E");
-	_Name->SetString(L"notSelect");
+	_Name->transform->localPosition = Vector3(0, 190, 0);
+	_Name->Initialize(L"notSelect", 40.0f, Color::white, sprite::SpriteEffectE::SHADOW, "HGS明朝E");
 
-	TEXTURE* b = LOADTEXTURE("Back.png");
-	_Back->SetTexture(b);
-	_Back->SetPivot(0.0f, 0.0f);
+	_Back->SetTexture(LOADTEXTURE("Back.png"));
 	_Back->SetClipColor(Color::red);
 	_Back->transform->SetParent(transform);
 
-	_Show->SetTexture(_Render->texture);
-	_Show->SetPivot(0.0f, 0.0f);
-	_Show->transform->SetParent(transform);
-	_Show->transform->localPosition = Vector3(-20, 40, 0);
-	_Show->SetActive(true);
-
 	_Cursor->SetTexture(LOADTEXTURE("Cursor.png"));
 	_Cursor->transform->SetParent(transform);
-	_Cursor->transform->localPosition = Vector3(b->size.x / 2, b->size.y / 2, 0);
+
+	_Show->SetTexture(_Render->texture);
+	_Show->transform->SetParent(transform);
+	_Show->SetActive(false);
 	
 	_OK->SetTexture(LOADTEXTURE("OK.png"));
 	_OK->transform->SetParent(transform);
-	_OK->transform->localPosition = Vector3(b->size.x / 2, b->size.y / 2, 0);
 	_OK->SetActive(false);
 
 	_PlayerColor = Color::white;
@@ -57,7 +48,9 @@ void CharaSelect::Start()
 {
 	_Back->SetBlendColor(_PlayerColor);
 	_Cursor->SetBlendColor(_PlayerColor);
-	_ShowModel->GetModel()->SetTextureBlend(_PlayerColor);
+	_ShowAnim = _ShowModel->GetAnim();
+	_ShowSkinModel = _ShowModel->GetModel();
+	_ShowSkinModel->SetTextureBlend(_PlayerColor);
 }
 
 void CharaSelect::Update()
@@ -70,10 +63,10 @@ void CharaSelect::Update()
 	if (true/*connect*/)
 	{
 		Vector3 dir = Vector3::zero;
-		float speed = 4.0f;
+		float speed = 7.0f;
 		//コントローラー移動
-		dir.x = (XboxInput(_PlayerIdx)->GetAnalog(AnalogInput::L_STICK).x / 32767.0f)*speed;
-		dir.y = -(XboxInput(_PlayerIdx)->GetAnalog(AnalogInput::L_STICK).y / 32767.0f)*speed;
+		dir.x = (XboxInput(_PlayerIdx)->GetAnalog(AnalogInputE::L_STICK).x / 32767.0f)*speed;
+		dir.y = -(XboxInput(_PlayerIdx)->GetAnalog(AnalogInputE::L_STICK).y / 32767.0f)*speed;
 
 		if (KeyBoardInput->isPressed(DIK_W))
 		{
@@ -110,35 +103,36 @@ void CharaSelect::Update()
 			{
 				//モデル表示
 				_Show->SetActive(true);
-				_ShowModel->GetModel()->SetModelData(_Info->data);
-				_ShowModel->SetAnim(_Info->anim);
-				_ShowModel->GetAnim()->PlayAnimation(0,0.1f);
-				_Name->SetString(_Info->name);
+				_ShowSkinModel->SetModelData(_Info->Data);
+				_ShowModel->SetAnim(_Info->Anim);
+				_ShowAnim = _Info->Anim;
+				_ShowAnim->PlayAnimation(0,0.1f);
+				_Name->SetString(_Info->Name);
 			}
-			_ShowModel->GetAnim()->Update();
-			_ShowModel->GetModel()->LateUpdate();
+			_ShowAnim->Update();
+			_ShowSkinModel->LateUpdate();
 			//オフスクリーンレンダリング
 			{
-				RenderTargetManager::Instance()->ReSetRenderTarget(0, _Render, Color(0, 0, 0, 0));
-				_ShowModel->GetModel()->Render();
-				RenderTargetManager::Instance()->RemoveRenderTarget(0);
+				RenderTargetManager::Instance()->ReSetRT(0, _Render, Color(0, 0, 0, 0));
+				_ShowSkinModel->Render();
+				RenderTargetManager::Instance()->RemoveRT(0);
 			}
 			//決定
-			if (KeyBoardInput->isPush(DIK_Z)|| XboxInput(_PlayerIdx)->isPushButton(XINPUT_GAMEPAD_B))
+			if (KeyBoardInput->isPush(DIK_Z)|| XboxInput(_PlayerIdx)->IsPushButton(XINPUT_GAMEPAD_B))
 			{
 				_Decision = !_Decision;
 				//決定の時
 				if (_Decision)
 				{
 					//ポーズアニメーション再生
-					_ShowModel->GetAnim()->PlayAnimation(0, 0.1f);
+					_ShowAnim->PlayAnimation(0, 0.1f);
 					//音再生
 					_Sound->Play(false);
 				}
 				else
 				{
 					//待機アニメーション再生
-					_ShowModel->GetAnim()->PlayAnimation(0, 0.1f);
+					_ShowAnim->PlayAnimation(0, 0.1f);
 				}
 			}
 		}
@@ -194,6 +188,6 @@ CharacterInfo * CharaSelect::GetInfo()
 
 void CharaSelect::Release()
 {
-	_ShowModel->GetModel()->SetModelData(nullptr);
+	_ShowSkinModel->SetModelData(nullptr);
 	_ShowModel->SetAnim(nullptr);
 }

@@ -8,10 +8,10 @@ class CollisionObject:public GameObject
 {
 public:
 	CollisionObject(char* name) :GameObject(name) {}
-	void Initialize(int ID, float Life, Vector3 Size);
+	void Initialize(int ID, float Life, Vector3 size);
 	void Awake()override;
 	void Update()override;
 private:
-	BoxCollider* shape;
-	GostCollision* coll;
+	BoxCollider* _Shape;
+	GostCollision* _Coll;
 };

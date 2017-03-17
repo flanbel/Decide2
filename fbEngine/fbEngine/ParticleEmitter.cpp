@@ -4,34 +4,24 @@
 /*!
  * @brief	パーティクル生成機
  */
-void ParticleEmitter::Init(const ParicleParameter& param )
+void ParticleEmitter::Init(const ParicleParameter& _Param )
 {
-		this->param = param;
-		timer = param.intervalTime;
+		this->_Param = _Param;
+		_Timer = _Param.intervalTime;
 }
 void ParticleEmitter::Start()
 {
 }
 void ParticleEmitter::Update()
 {
-	if (emit)
-	{
-		timer += Time::DeltaTime();
-		if (timer >= param.intervalTime) {
-			//パーティクルを生成。
-			Particle* p = new Particle("particle");
-			p->Awake();
-			p->Init(param, transform->position);
-			timer = 0.0f;
-			particleList.push_back(p);
-		}
-	}
-	list<Particle*>::iterator p = particleList.begin();
-	while (p != particleList.end()) {
+	Emit();
+	//パーティクルのアップデート
+	list<Particle*>::iterator p = _ParticleList.begin();
+	while (p != _ParticleList.end()) {
 		//死
 		if ((*p)->IsDead()) {
 			SAFE_DELETE(*p);
-			p = particleList.erase(p);
+			p = _ParticleList.erase(p);
 		}
 		//生
 		else {
@@ -40,23 +30,42 @@ void ParticleEmitter::Update()
 		}
 	}
 }
+
+void ParticleEmitter::Render()
+{
+	for (auto p : _ParticleList) {
+		p->Render();
+	}
+}
+
+
 	/*!
 	*@brief	パーティクルに力を加える。
-	*@param[in]	applyForce		乱数生成に使用する乱数生成機。
+	*@_Param[in]	applyForce		乱数生成に使用する乱数生成機。
 	*/
 void ParticleEmitter::ApplyForce(Vector3& applyForce)
 {
-	for (auto p : particleList) {
+	for (auto p : _ParticleList) {
 		p->ApplyForce(applyForce);
 	}
 }
-	void ParticleEmitter::Emit(bool b)
-	{
-		emit = b;
-	}
-void ParticleEmitter::Render()
+void ParticleEmitter::SetEmitFlg(bool b)
 {
-	for (auto p : particleList) {
-		p->Render();
+	emit = b;
+}
+void ParticleEmitter::Emit()
+{
+	//生成
+	if (emit)
+	{
+		_Timer += Time::DeltaTime();
+		if (_Timer >= _Param.intervalTime) {
+			//パーティクルを生成。
+			Particle* p = new Particle("particle");
+			p->Awake();
+			p->Init(_Param, transform->position);
+			_Timer = 0.0f;
+			_ParticleList.push_back(p);
+		}
 	}
 }

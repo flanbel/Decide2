@@ -3,6 +3,6 @@
 #include "fbEngine/SkinModelData.h"
 CharacterInfo::~CharacterInfo()
 {
-	SAFE_DELETE(data);
-	SAFE_DELETE(anim);
+	SAFE_DELETE(Data);
+	SAFE_DELETE(Anim);
 }

@@ -43,7 +43,7 @@ public:
 	{
 	}
 
-	///getAabb returns the axis aligned bounding box in the coordinate frame of the given transform t.
+	///getAabb returns the axis aligned bounding box in the coordinate frame of the given Transform t.
 	virtual void getAabb(const btTransform& t,btVector3& aabbMin,btVector3& aabbMax) const =0;
 
 	virtual void	getBoundingSphere(btVector3& center,btScalar& radius) const;

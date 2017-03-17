@@ -12,7 +12,7 @@ void Sky::Awake()
 	SkinModelData* modeldata = new SkinModelData();
 	modeldata->CloneModelData(SkinModelManager::LoadModel("Sky.X"));
 	model->SetModelData(modeldata);
-	model->SetReceive(false);
+	model->SetModelEffect(ModelEffectE::RECEIVE_SHADOW, false);
 	model->SetSky(true);
 	transform->localAngle.x = 15;
 }

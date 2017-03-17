@@ -1,1 +1,10 @@
-﻿  LinearMath.vcxproj -> D:\_Users\Desktop\Decide1\Decide\\bulletPhysics\lib\Debug\LinearMath_Debug.lib
+﻿  btAlignedAllocator.cpp
+  btConvexHull.cpp
+  btConvexHullComputer.cpp
+  btGeometryUtil.cpp
+  btPolarDecomposition.cpp
+  btQuickprof.cpp
+  btSerializer.cpp
+  btVector3.cpp
+  コードを生成中...
+  LinearMath.vcxproj -> D:\_Users\Desktop\Decide1\Decide\\bulletPhysics\lib\Debug\LinearMath_Debug.lib

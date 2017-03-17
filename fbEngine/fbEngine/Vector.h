@@ -11,7 +11,7 @@ public:
 	//共用体
 	union {
 		struct { float x, y; };
-		float v[2];
+		float in[2];
 	};
 
 	Vector2() 
@@ -45,44 +45,44 @@ public:
 		return x * x + y * y;
 	}
 
-	Vector2 operator + (Vector2 v)
+	Vector2 operator + (Vector2 in)
 	{
-		this->x += v.x;
-		this->y += v.y;
+		this->x += in.x;
+		this->y += in.y;
 	}
 
-	Vector2 operator - (Vector2 v)
+	Vector2 operator - (Vector2 in)
 	{
-		this->x -= v.x;
-		this->y -= v.y;
+		this->x -= in.x;
+		this->y -= in.y;
 		return *this;
 	}
 
-	Vector2 operator * (Vector2 v)
+	Vector2 operator * (Vector2 in)
 	{
-		this->x *= v.x;
-		this->y *= v.y;
+		this->x *= in.x;
+		this->y *= in.y;
 	}
 
-	Vector2 operator * (float v)
+	Vector2 operator * (float in)
 	{
 		Vector2 vec2;
-		vec2.x = this->x * v;
-		vec2.y = this->y * v;
+		vec2.x = this->x * in;
+		vec2.y = this->y * in;
 		return vec2;
 	}
 
-	Vector2 operator / (Vector2 v)
+	Vector2 operator / (Vector2 in)
 	{
-		this->x /= v.x;
-		this->y /= v.y;
+		this->x /= in.x;
+		this->y /= in.y;
 	}
 
-	Vector2 operator / (float v)
+	Vector2 operator / (float in)
 	{
 		Vector2 vec2;
-		vec2.x = this->x / v;
-		vec2.y = this->y / v;
+		vec2.x = this->x / in;
+		vec2.y = this->y / in;
 		return vec2;
 	}
 };
@@ -92,7 +92,7 @@ class Vector3{
 public:
 	union{
 		struct { float x, y, z; };
-		float v[3];
+		float in[3];
 	};
 	static const Vector3 zero;
 	static const Vector3 right;
@@ -114,11 +114,11 @@ public:
 		this->x = this->y = this->z = 0;
 	}
 	//D3DXVECTOR3をVector3に変換
-	Vector3(D3DXVECTOR3& v)
+	Vector3(D3DXVECTOR3& in)
 	{
-		this->x = v.x;
-		this->y = v.y;
-		this->z = v.z;
+		this->x = in.x;
+		this->y = in.y;
+		this->z = in.z;
 	}
 	/*!
 	* @brief	コンストラクタ。
@@ -128,11 +128,11 @@ public:
 		Set(x, y, z);
 	}
 	//Vector3をD3DXVECTOR3に変換コピーする
-	void CopyFrom(D3DXVECTOR3& v) const
+	void CopyFrom(D3DXVECTOR3& in) const
 	{
-		v.x = x;
-		v.y = y;
-		v.z = z;
+		in.x = x;
+		in.y = y;
+		in.z = z;
 	}
 	template<class TVector>
 	void CopyTo(TVector& dst) const
@@ -160,11 +160,11 @@ public:
 	/*!
 	 * @brief	ベクトルを加算。
 	 */
-	void Add(const Vector3& v)
+	void Add(const Vector3& in)
 	{
-		x += v.x;
-		y += v.y;
-		z += v.z;
+		x += in.x;
+		y += in.y;
+		z += in.z;
 	}
 	void Add(const Vector3& v0, const Vector3& v1)
 	{
@@ -175,11 +175,11 @@ public:
 	/*!
 	 * @brief	ベクトルを減算。
 	 */
-	void Subtract(const Vector3& v)
+	void Subtract(const Vector3& in)
 	{
-		x -= v.x;
-		y -= v.y;
-		z -= v.z;
+		x -= in.x;
+		y -= in.y;
+		z -= in.z;
 	}
 	void Subtract(const Vector3& v0, const Vector3& v1)
 	{
@@ -190,18 +190,18 @@ public:
 	/*!
 	 * @brief	内積。
 	 */
-	float Dot(const Vector3& v)
+	float Dot(const Vector3& in)
 	{
-		return x * v.x + y * v.y + z * v.z;
+		return x * in.x + y * in.y + z * in.z;
 	}
 	/*!
 	 * @brief	外積。
 	 */
-	void Cross(const Vector3& v)
+	void Cross(const Vector3& in)
 	{
-		float _x = (x * v.z) - (v.y * z);
-		float _y = (z * v.x) - (v.z * x);
-		float _z = (x * v.y) - (v.x * y);
+		float _x = (x * in.z) - (in.y * z);
+		float _y = (z * in.x) - (in.z * x);
+		float _z = (x * in.y) - (in.x * y);
 		x = _x;
 		y = _y;
 		z = _z;
@@ -258,35 +258,49 @@ public:
 		z /= d;
 	}
 
-	Vector3 operator + (Vector3 v)
-	{
-		this->x += v.x;
-		this->y += v.y;
-		this->z += v.z;
-		return *this;
-	}
-
-	Vector3 operator - (Vector3 v)
+	Vector3 operator + (Vector3 in)
 	{
 		Vector3 out;
-		out.x = this->x - v.x;
-		out.y = this->y - v.y;
-		out.z = this->z - v.z;
+		out.x = this->x + in.x;
+		out.y = this->y + in.y;
+		out.z = this->z + in.z;
 		return out;
 	}
 
-	Vector3 operator * (Vector3 v)
+	Vector3 operator - (Vector3 in)
 	{
-		this->x *= v.x;
-		this->y *= v.y;
-		this->z *= v.z;
+		Vector3 out;
+		out.x = this->x - in.x;
+		out.y = this->y - in.y;
+		out.z = this->z - in.z;
+		return out;
 	}
 
-	Vector3 operator / (Vector3 v)
+	Vector3 operator * (Vector3 in)
 	{
-		this->x /= v.x;
-		this->y /= v.y;
-		this->z /= v.z;
+		Vector3 out;
+		out.x = this->x * in.x;
+		out.y = this->y * in.y;
+		out.z = this->z * in.z;
+		return out;
+	}
+
+	Vector3 operator * (float in)
+	{
+		Vector3 out;
+		out.x = this->x * in;
+		out.y = this->y * in;
+		out.z = this->z * in;
+		return out;
+	}
+
+	Vector3 operator / (Vector3 in)
+	{
+		Vector3 out;
+		out.x = this->x / in.x;
+		out.y = this->y / in.y;
+		out.z = this->z / in.z;
+		return out;
 	}
 };
 	
@@ -295,7 +309,7 @@ class Vector4{
 public:
 	union{
 		struct { float x, y, z, w; };
-		float v[4];
+		float in[4];
 	};
 public:
 	operator D3DXVECTOR4(void) { return static_cast<D3DXVECTOR4>(*this); }
@@ -320,12 +334,12 @@ public:
 	/*!
 	 *@brief	ベクトルを加算。
 	 */
-	void Add(const Vector4& v)
+	void Add(const Vector4& in)
 	{
-		x += v.x;
-		y += v.y;
-		z += v.z;
-		w += v.w;
+		x += in.x;
+		y += in.y;
+		z += in.z;
+		w += in.w;
 	}
 	void Add(const Vector4& v0, const Vector4& v1)
 	{
@@ -337,11 +351,11 @@ public:
 	/*!
 	 *@brief	ベクトルを減算。
 	 */
-	void Subtract(const Vector4& v)
+	void Subtract(const Vector4& in)
 	{
-		x -= v.x;
-		y -= v.y;
-		z -= v.z;
+		x -= in.x;
+		y -= in.y;
+		z -= in.z;
 	}
 	void Subtract(const Vector4& v0, const Vector4& v1)
 	{
@@ -353,9 +367,9 @@ public:
 	/*!
 	 *@brief	内積
 	 */
-	float Dot(const Vector4& v)
+	float Dot(const Vector4& in)
 	{
-		return x * v.x + y * v.y + z * v.z + w * v.w;
+		return x * in.x + y * in.y + z * in.z + w * in.w;
 	}
 	/*!
 	 * @brief	長さを取得
@@ -382,36 +396,36 @@ public:
 		w *= s;
 	}
 
-	Vector4 operator + (Vector4 v)
+	Vector4 operator + (Vector4 in)
 	{
-		this->x += v.x;
-		this->y += v.y;
-		this->z += v.z;
-		this->w += v.w;
+		this->x += in.x;
+		this->y += in.y;
+		this->z += in.z;
+		this->w += in.w;
 	}
 
-	Vector4 operator - (Vector4 v)
+	Vector4 operator - (Vector4 in)
 	{
-		this->x -= v.x;
-		this->y -= v.y;
-		this->z -= v.z;
-		this->w -= v.w;
+		this->x -= in.x;
+		this->y -= in.y;
+		this->z -= in.z;
+		this->w -= in.w;
 	}
 
-	Vector4 operator * (Vector4 v)
+	Vector4 operator * (Vector4 in)
 	{
-		this->x *= v.x;
-		this->y *= v.y;
-		this->z *= v.z;
-		this->w *= v.w;
+		this->x *= in.x;
+		this->y *= in.y;
+		this->z *= in.z;
+		this->w *= in.w;
 	}
 
-	Vector4 operator / (Vector4 v)
+	Vector4 operator / (Vector4 in)
 	{
-		this->x /= v.x;
-		this->y /= v.y;
-		this->z /= v.z;
-		this->w /= v.w;
+		this->x /= in.x;
+		this->y /= in.y;
+		this->z /= in.z;
+		this->w /= in.w;
 	}
 };
 	

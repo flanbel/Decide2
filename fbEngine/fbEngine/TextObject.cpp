@@ -1,36 +1,46 @@
 #include "TextObject.h"
-#include "Text.h"
+
 void TextObject::Awake()
 {
 	_Text = AddComponent<Text>();
 }
 
-void TextObject::Initialize(wchar_t * string, float size, Color color, DWORD flg , char * style)
+void TextObject::Initialize(const wchar_t * string, const float& size, const Color& color, const sprite::SpriteEffectE& flg , const char * style, TEXT::TextFormatE format)
 {
-	_Text->Initialize(string, size, color, flg, style);
+	_Text->Initialize(string, size, color, flg, style, format);
 }
 
-void TextObject::SetString(wchar_t* ws)
+void TextObject::SetString(const wchar_t* ws)
 {
 	_Text->SetString(ws);
 }
 
-void TextObject::SetFontSize(float size)
+void TextObject::SetFontSize(const float& size)
 {
 	_Text->SetSize(size);
 }
 
-void TextObject::SetFontStyle(char* style)
+void TextObject::SetFontStyle(const char* style)
 {
 	_Text->SetStyle(style);
 }
 
-void TextObject::SetBlendColor(Color c)
+void TextObject::SetBlendColor(const Color& c)
 {
 	_Text->SetBlendColor(c);
 }
 
-void TextObject::SetEffectFlg(DWORD f)
+void TextObject::SetEffectFlg(const sprite::SpriteEffectE& e)
 {
-	_Text->SetEffectFlg(f);
+	_Text->SetEffectFlg(e);
+}
+
+void TextObject::SetEffectFlg(const sprite::SpriteEffectE& e, const bool& f)
+{
+	_Text->SetEffectFlg(e,f);
+}
+
+void TextObject::SetFormat(TEXT::TextFormatE format)
+{
+	_Text->SetFormat(format);
 }

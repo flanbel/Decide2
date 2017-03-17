@@ -9,7 +9,7 @@ public:
 	void Start()override;
 	void Update()override;
 private:
-	void _CreateRanking(list<GameRule::Ranking> ranking);
+	void _CreateRanking(const list<GameRule::Ranking>& ranking);
 private:
 	GameRule *_GameRule;
 };

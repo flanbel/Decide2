@@ -27,7 +27,7 @@ void Camera::Update()
 void Camera::ViewMatrixUpdate()
 {
 	//‹ts—ñŽæ“¾
-	D3DXMatrixInverse(&view, NULL, &transform->WorldMatrix());
+	D3DXMatrixInverse(&view, NULL, &transform->GetWorldMatrix());
 }
 
 void Camera::ProjectionMatrixUpdate()

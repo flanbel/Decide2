@@ -1017,7 +1017,7 @@ Last column is added as the position
 }\
 
 
-/** transform normal vector by inverse transpose of matrix
+/** Transform normal vector by inverse transpose of matrix
  * and then renormalize the vector
  *
  * This macro computes inverse transpose of matrix m,
@@ -1426,7 +1426,7 @@ Last column is added as the position
    SCALE_ADJOINT_4X4 (b, _tmp_, a);		\
 }\
 
-//! Get the triple(3) row of a transform matrix
+//! Get the triple(3) row of a Transform matrix
 #define MAT_GET_ROW(mat,vec3,rowindex)\
 {\
     vec3[0] = mat[rowindex][0];\
@@ -1434,7 +1434,7 @@ Last column is added as the position
     vec3[2] = mat[rowindex][2]; \
 }\
 
-//! Get the tuple(2) row of a transform matrix
+//! Get the tuple(2) row of a Transform matrix
 #define MAT_GET_ROW2(mat,vec2,rowindex)\
 {\
     vec2[0] = mat[rowindex][0];\
@@ -1442,7 +1442,7 @@ Last column is added as the position
 }\
 
 
-//! Get the quad (4) row of a transform matrix
+//! Get the quad (4) row of a Transform matrix
 #define MAT_GET_ROW4(mat,vec4,rowindex)\
 {\
     vec4[0] = mat[rowindex][0];\
@@ -1451,7 +1451,7 @@ Last column is added as the position
     vec4[3] = mat[rowindex][3];\
 }\
 
-//! Get the triple(3) col of a transform matrix
+//! Get the triple(3) col of a Transform matrix
 #define MAT_GET_COL(mat,vec3,colindex)\
 {\
     vec3[0] = mat[0][colindex];\
@@ -1459,7 +1459,7 @@ Last column is added as the position
     vec3[2] = mat[2][colindex]; \
 }\
 
-//! Get the tuple(2) col of a transform matrix
+//! Get the tuple(2) col of a Transform matrix
 #define MAT_GET_COL2(mat,vec2,colindex)\
 {\
     vec2[0] = mat[0][colindex];\
@@ -1467,7 +1467,7 @@ Last column is added as the position
 }\
 
 
-//! Get the quad (4) col of a transform matrix
+//! Get the quad (4) col of a Transform matrix
 #define MAT_GET_COL4(mat,vec4,colindex)\
 {\
     vec4[0] = mat[0][colindex];\
@@ -1476,26 +1476,26 @@ Last column is added as the position
     vec4[3] = mat[3][colindex];\
 }\
 
-//! Get the triple(3) col of a transform matrix
+//! Get the triple(3) col of a Transform matrix
 #define MAT_GET_X(mat,vec3)\
 {\
     MAT_GET_COL(mat,vec3,0);\
 }\
 
-//! Get the triple(3) col of a transform matrix
+//! Get the triple(3) col of a Transform matrix
 #define MAT_GET_Y(mat,vec3)\
 {\
     MAT_GET_COL(mat,vec3,1);\
 }\
 
-//! Get the triple(3) col of a transform matrix
+//! Get the triple(3) col of a Transform matrix
 #define MAT_GET_Z(mat,vec3)\
 {\
     MAT_GET_COL(mat,vec3,2);\
 }\
 
 
-//! Get the triple(3) col of a transform matrix
+//! Get the triple(3) col of a Transform matrix
 #define MAT_SET_X(mat,vec3)\
 {\
     mat[0][0] = vec3[0];\
@@ -1503,7 +1503,7 @@ Last column is added as the position
     mat[2][0] = vec3[2];\
 }\
 
-//! Get the triple(3) col of a transform matrix
+//! Get the triple(3) col of a Transform matrix
 #define MAT_SET_Y(mat,vec3)\
 {\
     mat[0][1] = vec3[0];\
@@ -1511,7 +1511,7 @@ Last column is added as the position
     mat[2][1] = vec3[2];\
 }\
 
-//! Get the triple(3) col of a transform matrix
+//! Get the triple(3) col of a Transform matrix
 #define MAT_SET_Z(mat,vec3)\
 {\
     mat[0][2] = vec3[0];\
@@ -1520,7 +1520,7 @@ Last column is added as the position
 }\
 
 
-//! Get the triple(3) col of a transform matrix
+//! Get the triple(3) col of a Transform matrix
 #define MAT_GET_TRANSLATION(mat,vec3)\
 {\
     vec3[0] = mat[0][3];\
@@ -1528,7 +1528,7 @@ Last column is added as the position
     vec3[2] = mat[2][3]; \
 }\
 
-//! Set the triple(3) col of a transform matrix
+//! Set the triple(3) col of a Transform matrix
 #define MAT_SET_TRANSLATION(mat,vec3)\
 {\
     mat[0][3] = vec3[0];\

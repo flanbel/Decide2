@@ -11,7 +11,7 @@ GameObject* GameObjectManager::Add(GameObject* pAdd, int priority)
 {
 	if(gameObjects.size() <= 0)
 	{
-		gameObjects.resize(MAX_PRIORITY);
+		gameObjects.resize(System::MAX_PRIORITY);
 	}
 	GameObject* obj = pAdd;
 	gameObjects.at(priority).push_back(obj);
@@ -21,7 +21,7 @@ GameObject* GameObjectManager::Add(GameObject* pAdd, int priority)
 
 void GameObjectManager::StartObject()
 {
-	for (short priority = 0; priority < MAX_PRIORITY; priority++)
+	for (short priority = 0; priority < System::MAX_PRIORITY; priority++)
 	{
 		for each (GameObject* obj in gameObjects[priority])
 		{
@@ -39,7 +39,7 @@ void GameObjectManager::UpdateObject()
 	//削除リストを削除
 	RemoveObject();
 
-	for (short priority = 0; priority < MAX_PRIORITY; priority++)
+	for (short priority = 0; priority < System::MAX_PRIORITY; priority++)
 	{
 		for each (GameObject* obj in gameObjects[priority])
 		{
@@ -54,7 +54,7 @@ void GameObjectManager::UpdateObject()
 
 void GameObjectManager::LateUpdateObject()
 {
-	for (short priority = 0; priority < MAX_PRIORITY; priority++)
+	for (short priority = 0; priority < System::MAX_PRIORITY; priority++)
 	{
 		for each (GameObject* obj in gameObjects[priority])
 		{
@@ -70,7 +70,7 @@ void GameObjectManager::LateUpdateObject()
 void GameObjectManager::PreRenderObject()
 {
 	//レンダーターゲットセット
-	for (short priority = 0; priority < MAX_PRIORITY; priority++)
+	for (short priority = 0; priority < System::MAX_PRIORITY; priority++)
 	{
 		for each (GameObject* obj in gameObjects[priority])
 		{
@@ -85,7 +85,7 @@ void GameObjectManager::PreRenderObject()
 
 void GameObjectManager::RenderObject()
 {
-	for (short priority = 0; priority < MAX_PRIORITY; priority++)
+	for (short priority = 0; priority < System::MAX_PRIORITY; priority++)
 	{
 		for each (GameObject* obj in gameObjects[priority])
 		{
@@ -100,7 +100,7 @@ void GameObjectManager::RenderObject()
 
 void GameObjectManager::PostRenderObject()
 {
-	for (short priority = 0; priority < MAX_PRIORITY; priority++)
+	for (short priority = 0; priority < System::MAX_PRIORITY; priority++)
 	{
 		for each (GameObject* obj in gameObjects[priority])
 		{
@@ -115,7 +115,7 @@ void GameObjectManager::PostRenderObject()
 
 void GameObjectManager::ImageRenderObject()
 {
-	for (short priority = 0; priority < MAX_PRIORITY; priority++)
+	for (short priority = 0; priority < System::MAX_PRIORITY; priority++)
 	{
 		for each (GameObject* obj in gameObjects[priority])
 		{
@@ -130,7 +130,7 @@ void GameObjectManager::ImageRenderObject()
 
 void GameObjectManager::AddRemoveList(GameObject * obj)
 {
-	for (short priority = 0; priority < MAX_PRIORITY; priority++)
+	for (short priority = 0; priority < System::MAX_PRIORITY; priority++)
 	{
 		list<GameObject*>::iterator it = gameObjects[priority].begin();
 
@@ -151,14 +151,14 @@ void GameObjectManager::AddRemoveList(GameObject * obj)
 
 void GameObjectManager::AddRemoveList(char * name)
 {
-	for (short priority = 0; priority < MAX_PRIORITY; priority++)
+	for (short priority = 0; priority < System::MAX_PRIORITY; priority++)
 	{
 		list<GameObject*>::iterator it = gameObjects[priority].begin();
 
 		while (it != gameObjects[priority].end())
 		{
 			//名前の比較
-			if (strcmp(name, (*it)->Name()) == 0)
+			if (strcmp(name, (*it)->GetName()) == 0)
 			{
 				RemoveObj remove(it,priority);
 				removeList.push_back(remove);
@@ -172,14 +172,14 @@ void GameObjectManager::AddRemoveList(char * name)
 
 GameObject* GameObjectManager::FindObject(char* name)
 {
-	for (short priority = 0; priority < MAX_PRIORITY; priority++)
+	for (short priority = 0; priority < System::MAX_PRIORITY; priority++)
 	{
 		list<GameObject*>::iterator it = gameObjects[priority].begin();
 
 		while (it != gameObjects[priority].end())
 		{
 			//名前の比較
-			if (strcmp(name, (*it)->Name()) == 0)
+			if (strcmp(name, (*it)->GetName()) == 0)
 			{
 				return (*it);
 			}
@@ -193,14 +193,14 @@ GameObject* GameObjectManager::FindObject(char* name)
 
 bool GameObjectManager::FindObjects(char* name, GameObject ** objArray)
 {
-	for (short priority = 0; priority < MAX_PRIORITY; priority++)
+	for (short priority = 0; priority < System::MAX_PRIORITY; priority++)
 	{
 		list<GameObject*>::iterator it = gameObjects[priority].begin();
 
 		while (it != gameObjects[priority].end())
 		{
 			//名前の比較
-			if (strcmp(name, (*it)->Name()) == 0)
+			if (strcmp(name, (*it)->GetName()) == 0)
 			{
 				objArray[0] = (*it);
 			}
@@ -223,7 +223,7 @@ void GameObjectManager::RemoveObject()
 
 void GameObjectManager::Release()
 {
-	for (short priority = 0; priority < MAX_PRIORITY; priority++)
+	for (short priority = 0; priority < System::MAX_PRIORITY; priority++)
 	{
 		if (gameObjects.size() > 0)
 		{

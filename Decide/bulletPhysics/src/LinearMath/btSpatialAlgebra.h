@@ -175,7 +175,7 @@ struct btSpatialTransformationMatrix
 	};
 	//
 	template<typename SpatialVectorType>
-	void transform(	const SpatialVectorType &inVec,
+	void Transform(	const SpatialVectorType &inVec,
                       SpatialVectorType &outVec,
 					eOutputOperation outOp = None)
 	{
@@ -298,7 +298,7 @@ struct btSpatialTransformationMatrix
 	SpatialVectorType operator * (const SpatialVectorType &vec)
 	{
 		SpatialVectorType out;
-		transform(vec, out);
+		Transform(vec, out);
 		return out;
 	}
 };

@@ -3,12 +3,12 @@
 #include "fbEngine/Animation.h"
 ShowModel::~ShowModel()
 {
-	SAFE_DELETE(model);
+	SAFE_DELETE(_Model);
 }
 void ShowModel::Awake()
 {
-	model = new SkinModel(this,transform);
-	model->Awake();
+	_Model = new SkinModel(this,transform);
+	_Model->Awake();
 }
 
 void ShowModel::Update()

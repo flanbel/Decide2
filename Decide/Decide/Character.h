@@ -8,52 +8,52 @@ struct CharacterParam
 public:
 	CharacterParam()
 	{
-		speed = 0;
-		power = 0;
-		blowCorrection = 0;
-		toBlowCorrection = 0;
+		Speed = 0;
+		Power = 0;
+		BlowCorrection = 0;
+		ToBlowCorrection = 0;
 	};
-	CharacterParam(float s, float p, float b, float tob)
+	CharacterParam(const float& s, const float& p, const float& b, const float& tob)
 	{
-		speed = s;
-		power = p;
-		blowCorrection = b;
-		toBlowCorrection = tob;
+		Speed = s;
+		Power = p;
+		BlowCorrection = b;
+		ToBlowCorrection = tob;
 	}
 	//速度
-	float speed;
+	float Speed;
 	//攻撃力
-	float power;
+	float Power;
 	//吹き飛ばし補正()
-	float blowCorrection;
+	float BlowCorrection;
 	//吹き飛び補正
-	float toBlowCorrection;
+	float ToBlowCorrection;
 };
 
 //キャラクターの情報
 struct CharacterInfo:Noncopyable
 {
 public:
-	CharacterInfo(wchar_t* n,char* p, CharacterParam par,SkinModelData* d, Animation* a = nullptr)
+	CharacterInfo(const wchar_t* n,const char* p,const CharacterParam* par,SkinModelData* d,Animation* a = nullptr)
 	{
-		name = n;
-		path = p;
-		data = d;
-		anim = a;
-		parameter = par;
+		Name = n;
+		Path = p;
+		Data = d;
+		Anim = a;
+		Parameter = par;
 	}
 	~CharacterInfo();
 	
 	//名前
-	wchar_t* name;
+	const wchar_t* Name;
 	//データパス
-	char* path;
+	const char* Path;
 	//モデルデータ
-	SkinModelData* data;
+	SkinModelData* Data;
 	//アニメーション
-	Animation* anim;
+	Animation* Anim;
 	//パラメータ
-	CharacterParam parameter;
+	const CharacterParam* Parameter;
 };
 //キャラクタークラス
 class Character:public GameObject

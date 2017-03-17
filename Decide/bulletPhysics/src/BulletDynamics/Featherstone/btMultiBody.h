@@ -266,7 +266,7 @@ public:
 
 
     //
-    // transform vectors in local frame of link i to world frame (or vice versa)
+    // Transform vectors in local frame of link i to world frame (or vice versa)
     //
     btVector3 localPosToWorld(int i, const btVector3 &vec) const;
     btVector3 localDirToWorld(int i, const btVector3 &vec) const;

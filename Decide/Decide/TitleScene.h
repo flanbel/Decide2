@@ -9,6 +9,6 @@ public:
 	void Start()override;
 	void Update()override;
 private:
-	SoundSource *enter;
-	bool PushEnter;
+	//Œø‰Ê‰¹
+	SoundSource *_EnterSE;
 };

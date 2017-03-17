@@ -8,47 +8,44 @@
 void Item::Awake()
 {
 	SkinModel* model = AddComponent<SkinModel>();
-	anim = AddComponent<Animation>();
+	_Anim = AddComponent<Animation>();
 
-	rigid = AddComponent<RigidBody>();
+	_Rigid = AddComponent<RigidBody>();
 	BoxCollider* coll = AddComponent<BoxCollider>();
 
 	coll->Create(Vector3(15, 50, 15));
 	//ID:6
-	rigid->Create(1, coll, 6,Vector3::zero, Vector3(0, 25, 0));
+	_Rigid->Create(1, coll, 6,Vector3::zero, Vector3(0, 25, 0));
 
 	SkinModelData* modeldata = new SkinModelData();
-	modeldata->CloneModelData(SkinModelManager::LoadModel("Item/StandardSowrd.X"), anim);
+	modeldata->CloneModelData(SkinModelManager::LoadModel("Item/StandardSowrd.X"), _Anim);
 	model->SetModelData(modeldata);
 
-	//持ち手のフレーム取得
-	D3DXFRAME_DERIVED* frame = (D3DXFRAME_DERIVED*)D3DXFrameFind(modeldata->GetFrameRoot(), "Handle");
+	//アイテムの持ち手のフレーム取得
+	D3DXFRAME_DERIVED* frame = (D3DXFRAME_DERIVED*)D3DXFrameFind(modeldata->GetFrameRoot(), "Handle_Bone");
 	if (frame)
 	{
-		itemHandleMat = &frame->TransformationMatrix;
+		_ItemHandleMat = &frame->TransformationMatrix;
 	}
 
-	lifetime = 10.0f;
-	timer = 0.0f;
-	isPossessed = false;
+	_LifeTime = 10.0f;
+	_Timer = 0.0f;
+	_IsHave = false;
 }
 
 void Item::LateUpdate()
 {
-	if (isPossessed)
+	if (_IsHave)
 	{
 		D3DXMATRIX world;
-		D3DXMatrixMultiply(&world, handMat, itemHandleMat);
-		world.m[3][0] = handMat->m[3][0] - itemHandleMat->m[3][0];
-		world.m[3][1] = handMat->m[3][1] - itemHandleMat->m[3][1];
-		world.m[3][2] = handMat->m[3][2] - itemHandleMat->m[3][2];
-		transform->WorldMatrix(world);
+		D3DXMatrixMultiply(&world, _HandMat, _ItemHandleMat);
+		transform->SetWorldMatrix(world);
 	}
 	//所有されてない
 	else
 	{
-		timer += Time::DeltaTime();
-		if (timer >= lifetime)
+		_Timer += Time::DeltaTime();
+		if (_Timer >= _LifeTime)
 		{
 			//自身を削除
 			GameObjectManager::AddRemoveList(this);
@@ -56,16 +53,29 @@ void Item::LateUpdate()
 	}
 }
 
-void Item::ToHave(D3DXMATRIX* m)
+bool Item::ToHave(const D3DXMATRIX* handmat)
 {
-	handMat = m;
-	if (itemHandleMat && handMat)
+	//持たれていない
+	if (!_IsHave)
 	{
-		isPossessed = true;
+		_HandMat = handmat;
+		if (_ItemHandleMat && _HandMat)
+		{
+			_IsHave = true;
+			return true;
+		}
 	}
+	return false;
 }
 
-void Item::ToSeparate()
+void Item::ToSeparate(const D3DXMATRIX& world)
 {
-	isPossessed = false;
+	Vector3 pos;
+	pos.x = world.m[3][0];
+	pos.y = world.m[3][1];
+	pos.z = world.m[3][2];
+	transform->localPosition = pos;
+
+	_HandMat = nullptr;
+	_IsHave = false;
 }

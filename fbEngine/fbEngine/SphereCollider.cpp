@@ -9,7 +9,7 @@
  * @brief	コンストラクタ。
  */
 SphereCollider::SphereCollider(GameObject* g, Transform* t) :
-	Collider(g,t),
+	Collider(g,t, typeid(this).name()),
 	shape(NULL)
 {
 

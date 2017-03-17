@@ -57,7 +57,7 @@ void Mouse::Update()
 	}
 }
 
-int Mouse::GetValue(MouseIn m)
+int Mouse::GetValue(MouseInE m)
 {
 	int value = false;
 	switch (m)

@@ -5,9 +5,9 @@
 class SquareCollision :public Collison2D
 {
 public:
-	SquareCollision(GameObject* g, Transform* t) : Collison2D(g, t)
+	SquareCollision(GameObject* g, Transform* t) : Collison2D(g, t, typeid(this).name())
 	{
-		name = (char*)typeid(*this).name();
+		
 	}
 	bool Judgment(Vector2 point);
 	bool Judgment(SquareCollision* Square);

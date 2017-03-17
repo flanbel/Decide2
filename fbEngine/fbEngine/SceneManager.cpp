@@ -1,10 +1,9 @@
 #include "SceneManager.h"
 #include "Scene.h"
 
-SceneManager*  SceneManager::instance;
+SceneManager*  SceneManager::_Instance;
 
 #include "ImageObject.h"
-#include "Sprite.h"
 
 
 SceneManager::SceneManager()
@@ -16,9 +15,10 @@ SceneManager::SceneManager()
 	//レンダーターゲット作成
 	_RT = new RenderTarget();
 	//大きさ二倍で作って高画質に
-	_RT->Create(g_WindowSize * 2);
+	//浮動小数点バッファで作成
+	_RT->Create(g_WindowSize * 2, D3DFMT_A16B16G16R16F);
 	//掛ける倍率は0.5ｆ
-	_RT->texture->size = _RT->texture->size / 2;
+	_RT->texture->Size = _RT->texture->Size / 2;
 
 	//レンダーターゲットのテクスチャを取得
 	_Sprite->SetTexture(_RT->texture);
@@ -38,9 +38,10 @@ void SceneManager::Add(Scene* pAdd)
 #include "FPS.h"
 void SceneManager::StartScene()
 {
-#ifdef _DEBUG
-	GameObjectManager::AddNew<FPS>("fps", MAX_PRIORITY);
-#endif // DEBUG
+//#ifdef _DEBUG
+	FPS* fps = GameObjectManager::AddNew<FPS>("fps", System::MAX_PRIORITY);
+	fps->transform->localPosition = Vector3(0, 30, 0);
+//#endif // DEBUG
 	_Scenes[_NowScene]->Start();
 	GameObjectManager::StartObject();
 }
@@ -55,29 +56,34 @@ void SceneManager::UpdateScene()
 
 void SceneManager::DrawScene()
 {
-	//0番目に設定(深度書き込み用バッファ)
-	INSTANCE(RenderTargetManager)->ReSetRenderTarget(0, INSTANCE(RenderTargetManager)->GetRenderTarget(0));
-	//影とかのやつ
+	//0番目に設定(影の深度書き込み用バッファ)
+	INSTANCE(RenderTargetManager)->ReSetRT(0, INSTANCE(RenderTargetManager)->GetRTFromList(RTIdxE::SHADOWDEPTH));
+	//事前描画(影とか深度とか輝度とか)
 	GameObjectManager::PreRenderObject();
 
 	//0番目に設定(オフスクリーンレンダリング用)
-	INSTANCE(RenderTargetManager)->ReSetRenderTarget(0, _RT);
+	INSTANCE(RenderTargetManager)->ReSetRT(0, _RT);
 	GameObjectManager::RenderObject();
-
 	//レンダーターゲットを元に戻す
-	INSTANCE(RenderTargetManager)->BeforeRenderTarget();
+	INSTANCE(RenderTargetManager)->BeforeRT();
 	
-	GameObjectManager::PostRenderObject();
 	//オフスクリーンのやつ描画
 	_Sprite->ImageRender();
 	_Bloom.Render();
+	GameObjectManager::PostRenderObject();
 	
 	//2Dとか？
 	GameObjectManager::ImageRenderObject();
+
+	//シーンのフェードのやつ
+	//最前面に来るように最後に描画
+	_Scenes[_NowScene]->Fade();
 }
 
 Scene* SceneManager::ChangeScene(int key)
 {
+	//フェードが明ける
+	Scene::SetFade(false);
 	//シーンの添え字切り替え
 	_NowScene = key;
 	//オブジェクトリリース
@@ -91,20 +97,16 @@ Scene* SceneManager::ChangeScene(char * Scenename)
 {
 	//クラス名
 	char* classname = new char[128];
-	strcpy_s(classname, Length("class "), "class ");
-	strcat_s(classname, Length(Scenename) + Length(classname), Scenename);
+	strcpy_s(classname, strlen("class ")+1, "class ");
+	strcat_s(classname, strlen(Scenename) + strlen(classname)+1, Scenename);
 	int idx = 0;
 	for each (Scene* s in _Scenes)
 	{
 		//名前の一致
 		if (strcmp(classname, typeid(*s).name()) == 0)
 		{
-			_NowScene = idx;
-			//オブジェクトリリース
-			GameObjectManager::Release();
-			//初期化する
-			SceneManager::StartScene();
-			return _Scenes[_NowScene];
+			//シーン切り替え
+			return ChangeScene(idx);
 		}
 		idx++;
 	}

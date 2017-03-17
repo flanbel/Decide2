@@ -24,13 +24,13 @@ public:
 	static T* AddNew(char* name, int priority)
 	{
 		//—Dæ“x‚ª’´‚¦‚Ä‚é
-		if(priority >= MAX_PRIORITY)
+		if(priority >= System::MAX_PRIORITY)
 		{
-			priority = MAX_PRIORITY - 1;
+			priority = System::MAX_PRIORITY - 1;
 		}
 		if (gameObjects.size() <= 0)
 		{
-			gameObjects.resize(MAX_PRIORITY);
+			gameObjects.resize(System::MAX_PRIORITY);
 		}
 		T* obj = new T(name);
 		gameObjects.at(priority).push_back(obj);

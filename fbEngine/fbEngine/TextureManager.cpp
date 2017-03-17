@@ -21,14 +21,14 @@ TEXTURE* LOADTEXTURE(char* filename)
 {
 	TEXTURE* tex;
 
-	UINT64 hush = MakeHash(filename);
+	UINT64 hush = Support::MakeHash(filename);
 	//一致するものなし
 	if (textureMap[hush] == nullptr)
 	{
 		tex = new TEXTURE();
 		char path[128] = "Asset/Texture/";
 		//パスの作成
-		strcat_s(path, Length(path) + Length(filename), filename);
+		strcat_s(path, strlen(path) + strlen(filename)+1, filename);
 
 		//テクスチャ情報読み込みが成功すれば登録
 		if (SUCCEEDED(SetTexture(*tex,path)))
@@ -89,7 +89,7 @@ HRESULT SetTexture(TEXTURE& tex,char* path)
 		&tex.pTexture);				//作成されたテクスチャへのポインタ
 
 									// テクスチャサイズの取得
-	tex.size = Vector2(info.Width, info.Height);
+	tex.Size = Vector2((float)info.Width, (float)info.Height);
 
 	return hr;
 }

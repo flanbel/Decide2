@@ -108,7 +108,7 @@ void btConeTwistConstraint::getInfo1 (btConstraintInfo1* info)
 
 void btConeTwistConstraint::getInfo1NonVirtual (btConstraintInfo1* info)
 {
-	//always reserve 6 rows: object transform is not available on SPU
+	//always reserve 6 rows: object Transform is not available on SPU
 	info->m_numConstraintRows = 6;
 	info->nub = 0;
 		

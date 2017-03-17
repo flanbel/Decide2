@@ -2,44 +2,44 @@
 #include "Player.h"
 #include <algorithm>
 
-GameRule::GameRule(char * name) :
+GameRule::GameRule(const char * name) :
 	GameObject(name),
-	playerCount(0),
-	DeathCount(0),
-	value(2),
-	time(0.0f)
+	_PlayerCount(0),
+	_DeathCount(0),
+	_Timer(0.0f),
+	_GameState(GameStateE::BEFORE_GAME)
 {
-	SetGameRule(GAMERULE::TIMELIMIT, 2);
+	SetGameRule(GameRuleE::TIMELIMIT, 3);
 }
 
 void GameRule::Awake()
 {
-	
+	_GameState = GameStateE::BEFORE_GAME;
 }
 
 void GameRule::Update()
 {
-	
+	//ゲーム中のみカウントを進める
+	if (_GameState == GameStateE::DURING_GAME)
+	{
+		//制限時間が過ぎたかどうか？
+		_Timer += Time::DeltaTime();
+	}
 }
 
-void GameRule::CreateScore()
-{
-	UpdateRanking();
-}
-
-void GameRule::SetGameRule(GAMERULE rule, int v)
+void GameRule::SetGameRule(const GameRuleE& rule, const int& v)
 {
 	//対応した関数ポインタ設定
 	switch (rule)
 	{
 	case GameRule::STOCK:
-		CheckGameSet = &GameRule::StockGameSet;
+		CheckGameSet = &GameRule::_StockGameSet;
 		break;
 	case GameRule::TIMELIMIT:
-		CheckGameSet = &GameRule::TimeLimitGameSet;
+		CheckGameSet = &GameRule::_TimeLimitGameSet;
 		break;
 	case GameRule::KNOCKOUT:
-		CheckGameSet = &GameRule::KnockOutGameSet;
+		CheckGameSet = &GameRule::_KnockOutGameSet;
 		break;
 	default:
 		//例外ならそのまま終了
@@ -48,103 +48,114 @@ void GameRule::SetGameRule(GAMERULE rule, int v)
 	}
 	//設定
 	_GameRule = rule;
-	this->value = v;
+	this->_Value = v;
 }
 
-GameRule::GAMERULE GameRule::GetGameRule()
+const GameRule::GameRuleE& GameRule::GetGameRule()
 {
 	return _GameRule;
 }
 
-int GameRule::GetValue()
+const int& GameRule::GetValue()
 {
-	return value;
+	return _Value;
 }
 
-int GameRule::GetStock()
+const int& GameRule::GetStock()
 {
-	if (_GameRule == GAMERULE::STOCK)
-		return value;
+	if (_GameRule == GameRuleE::STOCK)
+		return _Value;
 	else
 		return -1;
 }
 
-int GameRule::GetRemainingTime()
+const int& GameRule::GetRemainingTime()
 {
-	return max(0, (value * 60) - time);
+	return max(0, (_Value * 60) - _Timer);
 }
 
-bool GameRule::IsGameSet()
+const GameRule::GameStateE & GameRule::IsGameSet()
 {
-	//ゲームが終了しているか？
 	//何故か this じゃないとエラーが・・・。
-	return	GameSet = (this->*CheckGameSet)();
+	bool gameset = (this->*CheckGameSet)();
+	//ゲーム中かゲーム後か設定
+	_GameState = (gameset) ? GameStateE::AFTER_GAME : GameStateE::DURING_GAME;
+	return	_GameState;
 }
 
-void GameRule::SetPlayer(Player * p, int index)
+const GameRule::GameStateE& GameRule::GetGameState()
 {
-	Players[index] = p;
-	Ranking r = { 1,index,0,0 };
-	rank.push_front(r);
-	playerCount++;
+	return	_GameState;
 }
 
-void GameRule::UpdateScore(int index)
+void GameRule::SetPlayer(Player * p, const int& index)
+{
+	_Players[index] = p;
+	Ranking rank = { 1,index,0,0 };
+	_Ranking.push_front(rank);
+	_PlayerCount++;
+}
+
+void GameRule::UpdateScore(const int& index)
 {
 	//誰かに殺された　&& ゲームセットではない
-	if (index >= 0 && !GameSet)
+	if (index > -1 && _GameState != GameStateE::AFTER_GAME)
 	{
-		Players[index]->AddKillCount();
+		_Players[index]->AddKillCount();
 	}
 	//ランキング更新
-	UpdateRanking();
+	_UpdateRanking();
 }
 
-void GameRule::PlayerDeath(int index)
+void GameRule::PlayerDeath(const int& index)
 {
 	//死んだ数を増やす
-	DeathCount++;
+	_DeathCount++;
 }
 
-list<GameRule::Ranking>& GameRule::GetRank()
+const list<GameRule::Ranking>& GameRule::GetRanking()
 {
-	return rank;
+	return _Ranking;
 }
 
-void GameRule::UpdateRanking()
+void GameRule::_UpdateRanking()
 {
-	//ランキング更新
-	list<Ranking>::iterator it = rank.begin();
-	while (it != rank.end())
+	//情報更新
+	list<Ranking>::iterator it = _Ranking.begin();
+	while (it != _Ranking.end())
 	{
-		Player* p = Players[it->idx];
+		//プレイヤーから情報を取得
+		Player* p = _Players[it->Idx];
 		it->Kill = p->GetKillCount();
 		it->Stock = p->GetStockCount();
 		it++;
 	}
-	//順番にソート
-	if(_GameRule == GAMERULE::STOCK)
+
+	//ルールに沿ったソートをする。
+	if(_GameRule == GameRuleE::STOCK)
 	{
-		rank.sort(Ranking::StockSort());
+		_Ranking.sort(Ranking::StockSort());
 	}
 	else
 	{
-		rank.sort(Ranking::KillSort());
+		_Ranking.sort(Ranking::KillSort());
 	}
+
 	//順位付け
-	it = rank.begin();
-	int r = 1;
+	it = _Ranking.begin();
+	int rank = 1;
 	Ranking Before = { -1,-1,-1,-1 };	//前のやつ
-	while (it != rank.end())
+	//全員分まわす
+	while (it != _Ranking.end())
 	{
-		Player* p = Players[it->idx];
-		if(_GameRule == GAMERULE::STOCK)
+		//順位計算
+		if(_GameRule == GameRuleE::STOCK)
 		{
 			//残機が同じなら
-			if (Before.Stock == it->Stock)
+			if (Before.Stock == it->Stock && it->Stock > 0)
 			{
 				//順位を同じに
-				r = Before.rank;
+				rank = Before.Rank;
 			}
 		}
 		else
@@ -153,48 +164,49 @@ void GameRule::UpdateRanking()
 			if (Before.Kill == it->Kill)
 			{
 				//順位を同じに
-				r = Before.rank;
+				rank = Before.Rank;
 			}
 		}
 		
-		it->rank = r;
+		//順位更新
+		it->Rank = rank;
+		Player* player = _Players[it->Idx];
 		//一位なら
-		if(it->rank == 1)
+		//(一番最初に自殺した場合全員一位になってしまう。)
+		if(it->Rank == 1)
 		{
-			p->No1(true);
+			player->No1(true);
 		}else
 		{
 			//一位じゃない
-			p->No1(false);
+			player->No1(false);
 		}
 		//保持
 		Before = (*it);
-		r++;
+		rank++;
 		it++;
 	}
 }
 
-bool GameRule::StockGameSet()
+bool GameRule::_StockGameSet()
 {
 	//最後の一人かどうか？
-	return ((playerCount - 1) <= DeathCount);
+	return ((_PlayerCount - 1) <= _DeathCount);
 }
 
-bool GameRule::TimeLimitGameSet()
+bool GameRule::_TimeLimitGameSet()
 {
-	//制限時間が過ぎたかどうか？
-	time += Time::DeltaTime();
-	return ((value * 60) <= time);
+	return ((_Value * 60) <= _Timer);
 }
 
-bool GameRule::KnockOutGameSet()
+bool GameRule::_KnockOutGameSet()
 {
 	//特定のプレイヤーの倒した数を見る
 	FOR(PLAYER_NUM)
 	{
-		if (Players[i] == nullptr)
+		if (_Players[i] == nullptr)
 			continue;
-		if(Players[i]->GetKillCount() >= value)
+		if(_Players[i]->GetKillCount() >= _Value)
 		{
 			return true;
 		}

@@ -6,14 +6,18 @@
 Vertex* Sprite::_Vertex = nullptr;
 
 Sprite::Sprite(GameObject * g, Transform * t) :
-	Component(g, t),
+	Component(g, t, typeid(this).name()),
 	_Texture(nullptr),
 	_Pivot(0.5f, 0.5f),
+	_UV(0.0f, 1.0f, 0.0f, 1.0f),
 	_BlendColor(Color::white),
 	_ClipColor(Color::zero),
-	_SpriteEffect(SpriteEffectE::NONE)
+	_FadeTime(10.0f),
+	_FTimer(0.0f),
+	_FadeLine(1.0f),
+	_SpriteEffect(((DWORD)sprite::SpriteEffectE::NONE))
 {
-	name = (char*)typeid(*this).name();
+	
 }
 
 void Sprite::Awake()
@@ -50,24 +54,28 @@ void Sprite::Start()
 			D3DDECL_END()
 		};
 
-		_Vertex->Initialize(PRIMITIVETYPE::TRIANGLESTRIP, 4);
+		_Vertex->Initialize(fbEngine::PRIMITIVETYPE::TRIANGLESTRIP, 4);
 		_Vertex->CreateVertexBuffer(position, 4, sizeof(VERTEX_POSITION), elements[0]);
 		_Vertex->CreateVertexBuffer(texcoord, 4, sizeof(VERTEX_TEXCOORD), elements[1]);
 		_Vertex->CreateDeclaration();
 	}
 }
 
-void Sprite::PreRender()
+void Sprite::Update()
 {
-	
+	Fade();
 }
 
 void Sprite::ImageRender()
 {
+	//テクスチャがないなら描画しない。
 	if (_Texture == nullptr)
 		return;
 
-	if (_SpriteEffect & SpriteEffectE::SHADOW)
+	if (_SpriteEffect & (DWORD)sprite::SpriteEffectE::OUTLINE)
+		_CreateOutLine();
+
+	if (_SpriteEffect & (DWORD)sprite::SpriteEffectE::SHADOW)
 		_CreateShadow();
 
 	//エフェクト読み込み
@@ -77,7 +85,7 @@ void Sprite::ImageRender()
 	//初期化
 	D3DXMatrixIdentity(&matWorld);
 	//画像のサイズを設定
-	D3DXMatrixScaling(&matSize, _Texture->size.x, _Texture->size.y, 1.0f);
+	D3DXMatrixScaling(&matSize, _Texture->Size.x, _Texture->Size.y, 1.0f);
 	//設定されたスケールを設定
 	D3DXMatrixScaling(&matScale, transform->scale.x, transform->scale.y, transform->scale.z);
 	//回転
@@ -117,18 +125,28 @@ void Sprite::ImageRender()
 	_Effect->BeginPass(0);
 
 	//行列
-	_Effect->SetMatrix("wp", &wp);
+	_Effect->SetMatrix("g_WP", &wp);
 
 	//テクスチャ
 	_Effect->SetTexture("g_texture", _Texture->pTexture);
+	//始点と長さ
+	Vector2 uvstart(_UV.x, _UV.z), uvlen(_UV.y - _UV.x, _UV.w - _UV.z);
+	//UV設定
+	_Effect->SetValue("g_UVStart", &uvstart, sizeof(Vector2));
+	_Effect->SetValue("g_UVLength", &uvlen, sizeof(Vector2));
 	//pivot設定(スケーリングや回転の基点)
-	_Effect->SetFloat("pivotx", _Pivot.x);
-	_Effect->SetFloat("pivoty", _Pivot.y);
+	_Effect->SetFloat("g_Pivotx", _Pivot.x);
+	_Effect->SetFloat("g_Pivoty", _Pivot.y);
 
 	//色設定
-	_Effect->SetValue("blendColor",_BlendColor,sizeof(Color));
+	_Effect->SetValue("g_BlendColor",_BlendColor,sizeof(Color));
 	//透明色設定
-	_Effect->SetValue("clipColor", _ClipColor, sizeof(Color));
+	_Effect->SetValue("g_ClipColor", _ClipColor, sizeof(Color));
+	Vector4 flg = { (float)((int)_SpriteEffect & 2),0,0,0 };
+	//フラグ送信
+	_Effect->SetValue("g_EffectFlg", &flg,sizeof(Vector4));
+	//消えるアレボーダーライン的なアレ
+	_Effect->SetFloat("g_FadeLine", _FadeLine);
 
 	//この関数を呼び出すことで、データの転送が確定する。描画を行う前に一回だけ呼び出す。
 	_Effect->CommitChanges();
@@ -144,22 +162,113 @@ void Sprite::ImageRender()
 	(*graphicsDevice()).SetRenderState(D3DRS_DESTBLEND, D3DBLEND_ZERO);
 }
 
+void Sprite::SetEffectFlg(const DWORD& e)
+{
+	_SpriteEffect = e;
+}
+
+bool Sprite::SetEffectFlg(const DWORD& e, bool f)
+{
+	//既に有効かどうか？
+	if ((_SpriteEffect & e) > 0 && f == false)
+	{
+		//無効に
+		_SpriteEffect = _SpriteEffect - e;
+		return true;
+	}
+	else if ((_SpriteEffect & e) == 0 && f == true)
+	{
+		//有効に
+		_SpriteEffect = _SpriteEffect + e;
+		return true;
+	}
+	return false;
+}
+
+void Sprite::Fade()
+{
+	//Fadeかどうか？
+	if((_SpriteEffect & (DWORD)sprite::SpriteEffectE::FADE) > 0)
+	{
+		//タイマー増加
+		_FTimer += Time::DeltaTime();
+		//フェードインかアウトか？
+		int fadein = 1;
+		//一けた目のビットで判定
+		if ((_SpriteEffect & fadein) > 0)
+		{
+			//フェードイン(0.0->1.0)
+			_FadeLine = min(1.0f, (_FTimer / _FadeTime));
+		}
+		else
+		{
+			//フェードアウト(1.0->0.0)
+			_FadeLine = max(0.0f, 1.0f - (_FTimer / _FadeTime));
+		}
+	}
+}
+
 void Sprite::_CreateShadow()
 {
-	//影生成
-	float offset = 7.0f;
-	Color save = _BlendColor;
+	//変更前に値を保存
+	Color colorbuf = _BlendColor;
+	DWORD effectbuf = _SpriteEffect;
+	Vector3 posbuf = transform->position;
 	//色を黒に
 	_BlendColor = Color::black;
-	transform->position.x += offset * transform->scale.x;
-	transform->position.y += offset * transform->scale.y;
-	_SpriteEffect = (SpriteEffectE)(_SpriteEffect - SpriteEffectE::SHADOW);
+	//フラグを消す(通常描画)
+	_SpriteEffect = (DWORD)sprite::SpriteEffectE::NONE;
+	//ずらす量
+	Vector2 offset = Vector2(_Texture->Size.x * 0.05f, _Texture->Size.y * 0.05f);
+	transform->position.x += offset.x * transform->scale.x;
+	transform->position.y += offset.y * transform->scale.y;
 
 	ImageRender();
 
 	//戻す
-	_BlendColor = save;
-	transform->position.x -= offset * transform->scale.x;
-	transform->position.y -= offset * transform->scale.y;
-	_SpriteEffect = (SpriteEffectE)(_SpriteEffect + SpriteEffectE::SHADOW);
+	_BlendColor = colorbuf;
+	_SpriteEffect = effectbuf;
+	transform->position = posbuf;
+}
+
+void Sprite::_CreateOutLine()
+{
+	//変更前に値を保存
+	Color colorbuf = _BlendColor;
+	DWORD effectbuf = _SpriteEffect;
+	Vector3 posbuf = transform->position;
+	//色を黒に
+	_BlendColor = Color::black;
+	//フラグを消す(通常描画)
+	_SpriteEffect = (DWORD)sprite::SpriteEffectE::NONE;
+	//移動量
+	float offset = 1.0f;
+	//上下左右に移動させて描画
+	FOR(4)
+	{
+		switch (i)
+		{
+		case 0:
+			transform->position.x += offset;
+			break;
+		case 1:
+			transform->position.x -= offset;
+			break;
+		case 2:
+			transform->position.y += offset;
+			break;
+		case 3:
+			transform->position.y -= offset;
+			break;
+		default:
+			break;
+		}
+		ImageRender();
+		transform->position = posbuf;
+	}
+
+	//戻す
+	_BlendColor = colorbuf;
+	_SpriteEffect = effectbuf;
+	transform->position = posbuf;
 }

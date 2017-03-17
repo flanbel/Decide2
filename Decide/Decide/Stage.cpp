@@ -12,7 +12,7 @@ void Stage::Awake()
 	SkinModelData* modeldata = new SkinModelData();
 	modeldata->CloneModelData(SkinModelManager::LoadModel("Island.X"));
 	model->SetModelData(modeldata);
-	model->SetSpecular(false);
+	model->SetModelEffect(ModelEffectE::SPECULAR,false);
 	//model->SetReceive(false);
 
 	RigidBody* rigid = AddComponent<RigidBody>();

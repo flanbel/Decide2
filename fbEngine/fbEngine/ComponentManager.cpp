@@ -5,10 +5,10 @@ ComponentManager::~ComponentManager()
 	Release();
 }
 
-void ComponentManager::Start()
+void ComponentManager::Start() const
 {
-	vector<Component*>::iterator it = components.begin();
-	while (it != components.end())
+	vector<Component*>::const_iterator it = _Components.begin();
+	while (it != _Components.end())
 	{
 		if ((*it)->enable)
 		{
@@ -18,12 +18,12 @@ void ComponentManager::Start()
 	}
 }
 
-void ComponentManager::Update()
+void ComponentManager::Update() const
 {
 	
 
-	vector<Component*>::iterator it = components.begin();
-	while (it != components.end())
+	vector<Component*>::const_iterator it = _Components.begin();
+	while (it != _Components.end())
 	{
 		if ((*it)->enable)
 		{
@@ -33,10 +33,10 @@ void ComponentManager::Update()
 	}
 }
 
-void ComponentManager::LateUpdate()
+void ComponentManager::LateUpdate() const
 {
-	vector<Component*>::iterator it = components.begin();
-	while (it != components.end())
+	vector<Component*>::const_iterator it = _Components.begin();
+	while (it != _Components.end())
 	{
 		if ((*it)->enable)
 		{
@@ -46,10 +46,10 @@ void ComponentManager::LateUpdate()
 	}
 }
 
-void ComponentManager::PreRender()
+void ComponentManager::PreRender() const
 {
-	vector<Component*>::iterator it = components.begin();
-	while (it != components.end())
+	vector<Component*>::const_iterator it = _Components.begin();
+	while (it != _Components.end())
 	{
 		if ((*it)->enable)
 		{
@@ -59,10 +59,10 @@ void ComponentManager::PreRender()
 	}
 }
 
-void ComponentManager::Render()
+void ComponentManager::Render() const
 {
-	vector<Component*>::iterator it = components.begin();
-	while (it != components.end())
+	vector<Component*>::const_iterator it = _Components.begin();
+	while (it != _Components.end())
 	{
 		if ((*it)->enable)
 		{
@@ -72,10 +72,10 @@ void ComponentManager::Render()
 	}
 }
 
-void ComponentManager::PostRender()
+void ComponentManager::PostRender() const
 {
-	vector<Component*>::iterator it = components.begin();
-	while (it != components.end())
+	vector<Component*>::const_iterator it = _Components.begin();
+	while (it != _Components.end())
 	{
 		if ((*it)->enable)
 		{
@@ -85,10 +85,10 @@ void ComponentManager::PostRender()
 	}
 }
 
-void ComponentManager::ImageRender()
+void ComponentManager::ImageRender() const
 {
-	vector<Component*>::iterator it = components.begin();
-	while (it != components.end())
+	vector<Component*>::const_iterator it = _Components.begin();
+	while (it != _Components.end())
 	{
 		if ((*it)->enable)
 		{
@@ -98,16 +98,16 @@ void ComponentManager::ImageRender()
 	}
 }
 
-Component* ComponentManager::GetComponent(char * Componentname)
+Component* ComponentManager::GetComponent(const char * Componentname)
 {
 	char classname[64];
-	strcpy_s(classname, Length("class "), "class ");
-	strcat_s(classname, Length(classname) + Length(Componentname), Componentname);
+	strcpy_s(classname, strlen("class ")+1, "class ");
+	strcat_s(classname, strlen(classname) + strlen(Componentname)+1, Componentname);
 
-	vector<Component*>::iterator it = components.begin();
-	while (it != components.end())
+	vector<Component*>::const_iterator it = _Components.begin();
+	while (it != _Components.end())
 	{
-		if (strcmp((*it)->Name(), classname) == 0)
+		if (strcmp((*it)->GetName(), classname) == 0)
 			return *it;
 		it++;
 	}
@@ -117,12 +117,12 @@ Component* ComponentManager::GetComponent(char * Componentname)
 
 void ComponentManager::Release()
 {
-	vector<Component*>::iterator it = components.begin();
-	while (it != components.end())
+	vector<Component*>::iterator it = _Components.begin();
+	while (it != _Components.end())
 	{
 		//メモリ解放
 		SAFE_DELETE(*it);
-		//マップから削除
-		it = components.erase(it);
+		//マップから削除、次に進める
+		it = _Components.erase(it);
 	}
 }

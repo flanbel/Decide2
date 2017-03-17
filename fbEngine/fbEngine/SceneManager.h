@@ -50,11 +50,11 @@ public:
 	}
 	static SceneManager* Instance()
 	{
-		if (instance == nullptr)
+		if (_Instance == nullptr)
 		{
-			instance = new SceneManager();
+			_Instance = new SceneManager();
 		}
-		return instance;
+		return _Instance;
 	}
 	TEXTURE* GetOffScreenTexture();
 private:
@@ -63,7 +63,7 @@ private:
 	ImageObject* _OffScreen;
 	Sprite* _Sprite;
 	RenderTarget* _RT;
-	static SceneManager* instance;
+	static SceneManager* _Instance;
 
 	Bloom _Bloom;
 };

@@ -3,7 +3,7 @@
 
 GostCollision::~GostCollision()
 {
-	if (collisionObject)
+	if (_CollisionObject)
 	{
 		//登録されているので削除
 		PhysicsWorld::Instance()->RemoveCollision(this);
@@ -12,21 +12,21 @@ GostCollision::~GostCollision()
 
 void GostCollision::Create(Collider * shape, int id)
 {
-	//生成
+	//コリジョン生成
 	Collision::Create(new btGhostObject, shape, id);
+	//作業用変数
+	//コリジョンオブジェクト
+	btCollisionObject* coll = this->_CollisionObject.get();
+	//フラグ
+	int flags = coll->getCollisionFlags();
+	//コリジョンに衝突しても物理的挙動をしない(干渉されない。)
 	//ここでトリガー指定しないと物理的に干渉してくる、ゴーストなのに。
-	this->collisionObject.get()->setCollisionFlags(collisionObject.get()->getCollisionFlags() | btCollisionObject::CollisionFlags::CF_NO_CONTACT_RESPONSE);
+	coll->setCollisionFlags(flags | btCollisionObject::CollisionFlags::CF_NO_CONTACT_RESPONSE);
 	//自身を登録
 	PhysicsWorld::Instance()->AddCollision(this);
 }
 
 void GostCollision::Update()
 {
-	//トランスフォーム取得
-	btTransform& worldTrans = collisionObject->getWorldTransform();
-	//位置更新
-	worldTrans.setOrigin(btVector3(transform->position.x, transform->position.y, transform->position.z));
-	//回転
-	worldTrans.setRotation(btQuaternion(transform->rotation.x, transform->rotation.y, transform->rotation.z, transform->rotation.w));
-
+	_UpdateCollisionTrans();
 }

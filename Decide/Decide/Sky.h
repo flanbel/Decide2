@@ -3,7 +3,7 @@
 class Sky :public GameObject
 {
 public:
-	Sky(char* name) :GameObject(name) {}
+	Sky(const char* name) :GameObject(name) {}
 	void Awake()override;
 	void Update()override;
 };

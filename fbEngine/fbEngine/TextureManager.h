@@ -3,7 +3,7 @@
 struct TEXTURE :Noncopyable
 {
 	IDirect3DTexture9* pTexture;	//テクスチャへのポインタ
-	Vector2 size;					//画像サイズ
+	Vector2 Size;					//画像サイズ
 
 	//コンストラクタ
 	TEXTURE::TEXTURE()

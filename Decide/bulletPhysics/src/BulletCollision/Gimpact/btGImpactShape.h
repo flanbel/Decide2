@@ -262,14 +262,14 @@ public:
 	//! Gets the child
 	virtual const btCollisionShape* getChildShape(int index) const = 0;
 
-	//! Gets the children transform
+	//! Gets the children Transform
 	virtual btTransform	getChildTransform(int index) const = 0;
 
-	//! Sets the children transform
+	//! Sets the children Transform
 	/*!
 	\post You must call updateBound() for update the box set.
 	*/
-	virtual void setChildTransform(int index, const btTransform & transform) = 0;
+	virtual void setChildTransform(int index, const btTransform & Transform) = 0;
 
 	//!@}
 
@@ -460,21 +460,21 @@ public:
     }
 
 
-	//! Gets the children transform
+	//! Gets the children Transform
 	virtual btTransform	getChildTransform(int index) const
 	{
 		btAssert(m_childTransforms.size() == m_childShapes.size());
 		return m_childTransforms[index];
 	}
 
-	//! Sets the children transform
+	//! Sets the children Transform
 	/*!
 	\post You must call updateBound() for update the box set.
 	*/
-	virtual void setChildTransform(int index, const btTransform & transform)
+	virtual void setChildTransform(int index, const btTransform & Transform)
 	{
 		btAssert(m_childTransforms.size() == m_childShapes.size());
-		m_childTransforms[index] = transform;
+		m_childTransforms[index] = Transform;
 		postUpdate();
 	}
 
@@ -781,7 +781,7 @@ public:
 		return NULL;
 	}
 
-	//! Gets the children transform
+	//! Gets the children Transform
 	virtual btTransform	getChildTransform(int index) const
 	{
         (void) index;
@@ -789,14 +789,14 @@ public:
 		return btTransform();
 	}
 
-	//! Sets the children transform
+	//! Sets the children Transform
 	/*!
 	\post You must call updateBound() for update the box set.
 	*/
-	virtual void setChildTransform(int index, const btTransform & transform)
+	virtual void setChildTransform(int index, const btTransform & Transform)
 	{
         (void) index;
-        (void) transform;
+        (void) Transform;
 		btAssert(0);
 	}
 
@@ -1114,7 +1114,7 @@ public:
 		return NULL;
 	}
 
-	//! Gets the children transform
+	//! Gets the children Transform
 	virtual btTransform	getChildTransform(int index) const
 	{
         (void) index;
@@ -1122,13 +1122,13 @@ public:
 		return btTransform();
 	}
 
-	//! Sets the children transform
+	//! Sets the children Transform
 	/*!
 	\post You must call updateBound() for update the box set.
 	*/
-	virtual void setChildTransform(int index, const btTransform & transform)
+	virtual void setChildTransform(int index, const btTransform & Transform)
 	{
-        (void) index; (void) transform;
+        (void) index; (void) Transform;
 		btAssert(0);
 	}
 

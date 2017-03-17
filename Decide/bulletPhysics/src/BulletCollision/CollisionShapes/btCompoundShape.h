@@ -105,7 +105,7 @@ public:
 		return m_children[index].m_transform;
 	}
 
-	///set a new transform for a child, and update internal data structures (local aabb and dynamic tree)
+	///set a new Transform for a child, and update internal data structures (local aabb and dynamic tree)
 	void	updateChildTransform(int childIndex, const btTransform& newChildTransform, bool shouldRecalculateLocalAabb = true);
 
 
@@ -155,11 +155,11 @@ public:
 
 	void createAabbTreeFromChildren();
 
-	///computes the exact moment of inertia and the transform from the coordinate system defined by the principal axes of the moment of inertia
-	///and the center of mass to the current coordinate system. "masses" points to an array of masses of the children. The resulting transform
+	///computes the exact moment of inertia and the Transform from the coordinate system defined by the principal axes of the moment of inertia
+	///and the center of mass to the current coordinate system. "masses" points to an array of masses of the children. The resulting Transform
 	///"principal" has to be applied inversely to all children transforms in order for the local coordinate system of the compound
-	///shape to be centered at the center of mass and to coincide with the principal axes. This also necessitates a correction of the world transform
-	///of the collision object by the principal transform.
+	///shape to be centered at the center of mass and to coincide with the principal axes. This also necessitates a correction of the world Transform
+	///of the collision object by the principal Transform.
 	void calculatePrincipalAxisTransform(btScalar* masses, btTransform& principal, btVector3& inertia) const;
 
 	int	getUpdateRevision() const

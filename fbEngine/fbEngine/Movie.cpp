@@ -14,7 +14,7 @@ void Movie::Awake()
 		NULL,
 		CLSCTX_INPROC_SERVER,
 		IID_IGraphBuilder,
-		(void **)(&graphBuilder)
+		(void **)(&_GraphBuilder)
 	);
 
 	CoCreateInstance(
@@ -22,12 +22,12 @@ void Movie::Awake()
 		NULL,
 		CLSCTX_INPROC_SERVER,
 		IID_IBaseFilter,
-		(void**)&baseFilterVMR9);
+		(void**)&_BaseFilterVMR9);
 	//グラフフィルタに追加
-	graphBuilder->AddFilter(baseFilterVMR9, L"VMR9");
+	_GraphBuilder->AddFilter(_BaseFilterVMR9, L"VMR9");
 
 	IVMRFilterConfig *pVMRCfg = NULL;
-	baseFilterVMR9->QueryInterface(IID_IVMRFilterConfig9, (void**)&pVMRCfg);
+	_BaseFilterVMR9->QueryInterface(IID_IVMRFilterConfig9, (void**)&pVMRCfg);
 	//ウィンドウレスモードへ
 	pVMRCfg->SetRenderingMode(VMRMode_Windowless);
 	//とりあえず使わないので破棄
@@ -35,7 +35,7 @@ void Movie::Awake()
 
 	//出力するウィンドウ設定
 	IVMRWindowlessControl *pVMRWndCont = NULL;
-	baseFilterVMR9->QueryInterface(IID_IVMRWindowlessControl9, (void**)&pVMRWndCont);
+	_BaseFilterVMR9->QueryInterface(IID_IVMRWindowlessControl9, (void**)&pVMRWndCont);
 	pVMRWndCont->SetVideoClippingWindow(g_MainWindow);
 	//破棄
 	pVMRWndCont->Release();
@@ -44,7 +44,7 @@ void Movie::Awake()
 	WCHAR wFileName[] = L"Asset/Movie/Bemybaby.avi";
 	IBaseFilter *pSource = NULL;
 	//Source Filterを作成し、フィルタグラフに追加します
-	graphBuilder->AddSourceFilter(wFileName, L"FiltaName", &pSource);
+	_GraphBuilder->AddSourceFilter(wFileName, L"FiltaName", &pSource);
 
 	ICaptureGraphBuilder2 *pCGB2 = NULL;
 	HRESULT hr = CoCreateInstance(
@@ -54,10 +54,10 @@ void Movie::Awake()
 		IID_ICaptureGraphBuilder2,
 		(void**)&pCGB2);
 	//初期化
-	hr = pCGB2->SetFiltergraph(graphBuilder);
+	hr = pCGB2->SetFiltergraph(_GraphBuilder);
 
 	//ソースフィルタをVMR9に接続
-	pCGB2->RenderStream(0, 0, pSource, 0, baseFilterVMR9);
+	pCGB2->RenderStream(0, 0, pSource, 0, _BaseFilterVMR9);
 	//デフォルトオーディオに接続
 	pCGB2->RenderStream(0, &MEDIATYPE_Audio, pSource, 0, 0);
 
@@ -77,42 +77,42 @@ void Movie::Awake()
 
 	// メディアコントロールインターフェイスの取得
 	//フィルタグラフの流れを管理
-	hRes = graphBuilder->QueryInterface(IID_IMediaControl, (void**)(&mediaControl));
+	hRes = _GraphBuilder->QueryInterface(IID_IMediaControl, (void**)(&_MediaControl));
 	if (FAILED(hRes))
 		return;
 
 	// メディアイベントインターフェイスの取得
 	//再生や停止の際にその乗法をイベントとして通知
-	hRes = graphBuilder->QueryInterface(IID_IMediaEvent, (void **)(&mediaEvent));
+	hRes = _GraphBuilder->QueryInterface(IID_IMediaEvent, (void **)(&_MediaEvent));
 	if (FAILED(hRes))
 		return;
 
 	//動画の再生時間の取得(秒単位)
 	REFTIME length;
 	IMediaPosition *pMediaPosition;
-	graphBuilder->QueryInterface(IID_IMediaPosition,
+	_GraphBuilder->QueryInterface(IID_IMediaPosition,
 		(LPVOID *)&pMediaPosition);
 	pMediaPosition->get_Duration(&length);
 	SAFE_RELEASE(pMediaPosition);
 
 	// メディア再生
-	if (FAILED(hRes = mediaControl->Run()))
+	if (FAILED(hRes = _MediaControl->Run()))
 		return ;
 
 	// 待機時間の設定(ミリ秒)
 	long pEvCode;
-	hRes = mediaEvent->WaitForCompletion(length*1000, &pEvCode);
+	hRes = _MediaEvent->WaitForCompletion(length*1000, &pEvCode);
 
 	//グラフフィルタ停止
-	mediaControl->Stop();
+	_MediaControl->Stop();
 
 	//インターフェースをリリース
 	//作ったときと逆順に解放
-	SAFE_RELEASE(mediaEvent);
-	SAFE_RELEASE(mediaControl);
-	SAFE_RELEASE(baseFilterVMR9);
+	SAFE_RELEASE(_MediaEvent);
+	SAFE_RELEASE(_MediaControl);
+	SAFE_RELEASE(_BaseFilterVMR9);
 	SAFE_RELEASE(pCGB2);
-	//SAFE_RELEASE(graphBuilder);
+	//SAFE_RELEASE(_GraphBuilder);
 	CoUninitialize();
 }
 

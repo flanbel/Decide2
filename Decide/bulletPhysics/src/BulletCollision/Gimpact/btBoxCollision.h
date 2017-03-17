@@ -216,7 +216,7 @@ public:
 		calc_absolute_matrix();
 	}
 
-	SIMD_FORCE_INLINE btVector3 transform(const btVector3 & point) const
+	SIMD_FORCE_INLINE btVector3 Transform(const btVector3 & point) const
 	{
         return point.dot3( m_R1to0[0], m_R1to0[1], m_R1to0[2] ) + m_T1to0;
 	}
@@ -354,7 +354,7 @@ public:
 		m_max[2] += margin;
 	}
 
-	//! Apply a transform to an AABB
+	//! Apply a Transform to an AABB
 	SIMD_FORCE_INLINE void appy_transform(const btTransform & trans)
 	{
 		btVector3 center = (m_max+m_min)*0.5f;
@@ -371,13 +371,13 @@ public:
 	}
 
 
-	//! Apply a transform to an AABB
+	//! Apply a Transform to an AABB
 	SIMD_FORCE_INLINE void appy_transform_trans_cache(const BT_BOX_BOX_TRANSFORM_CACHE & trans)
 	{
 		btVector3 center = (m_max+m_min)*0.5f;
 		btVector3 extends = m_max - center;
 		// Compute new center
-		center = trans.transform(center);
+		center = trans.Transform(center);
 
         btVector3 textends = extends.dot3(trans.m_R1to0.getRow(0).absolute(), 
                                           trans.m_R1to0.getRow(1).absolute(), 

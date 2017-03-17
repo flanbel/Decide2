@@ -337,10 +337,10 @@ public:
 
 	//! returns the indices of the primitives in the m_primitive_manager
 	SIMD_FORCE_INLINE bool boxQueryTrans(const GIM_AABB & box,
-		 const btTransform & transform, gim_array<GUINT> & collided_results) const
+		 const btTransform & Transform, gim_array<GUINT> & collided_results) const
 	{
 		GIM_AABB transbox=box;
-		transbox.appy_transform(transform);
+		transbox.appy_transform(Transform);
 		return boxQuery(transbox,collided_results);
 	}
 
@@ -495,7 +495,7 @@ protected:
 	{
 		if(node0_has_triangle) return;
 		m_boxset0->getNodeTriangle(node0,m_tri0);
-		//transform triangle
+		//Transform triangle
 		m_tri0.m_vertices[0] = trans_cache_0to1(m_tri0.m_vertices[0]);
 		m_tri0.m_vertices[1] = trans_cache_0to1(m_tri0.m_vertices[1]);
 		m_tri0.m_vertices[2] = trans_cache_0to1(m_tri0.m_vertices[2]);
@@ -508,10 +508,10 @@ protected:
 	{
 		if(node1_has_triangle) return;
 		m_boxset1->getNodeTriangle(node1,m_tri1);
-		//transform triangle
-		m_tri1.m_vertices[0] = trans_cache_1to0.transform(m_tri1.m_vertices[0]);
-		m_tri1.m_vertices[1] = trans_cache_1to0.transform(m_tri1.m_vertices[1]);
-		m_tri1.m_vertices[2] = trans_cache_1to0.transform(m_tri1.m_vertices[2]);
+		//Transform triangle
+		m_tri1.m_vertices[0] = trans_cache_1to0.Transform(m_tri1.m_vertices[0]);
+		m_tri1.m_vertices[1] = trans_cache_1to0.Transform(m_tri1.m_vertices[1]);
+		m_tri1.m_vertices[2] = trans_cache_1to0.Transform(m_tri1.m_vertices[2]);
 		m_tri1.get_plane(m_tri1_plane);
 
 		node1_has_triangle = true;

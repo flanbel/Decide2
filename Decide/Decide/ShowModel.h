@@ -6,27 +6,27 @@ class Animation;
 class ShowModel:public GameObject
 {
 public:
-	ShowModel(char* name) :GameObject(name) {}
+	ShowModel(const char* name) :GameObject(name) {}
 	~ShowModel();
 	void Awake()override;
 	void Update()override;
 	void SetModel(SkinModel* m)
 	{
-		model = m;
+		_Model = m;
 	}
 	void SetAnim(Animation* a)
 	{
-		anim = a;
+		_Anim = a;
 	}
 	SkinModel* GetModel()
 	{
-		return model;
+		return _Model;
 	}
 	Animation* GetAnim()
 	{
-		return anim;
+		return _Anim;
 	}
 private:
-	SkinModel* model;
-	Animation* anim;
+	SkinModel* _Model;
+	Animation* _Anim;
 };

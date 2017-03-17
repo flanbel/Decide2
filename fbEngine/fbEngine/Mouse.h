@@ -1,6 +1,6 @@
 #pragma once
 //マウスの入力値？
-enum MouseIn
+enum MouseInE
 {
 	L_CLICK = 0,//左クリック
 	R_CLICK,	//右クリック
@@ -16,7 +16,7 @@ public:
 	HRESULT Initialize(LPDIRECTINPUT8 Dinput);
 	void Update();
 	//値を取得
-	int GetValue(MouseIn m);
+	int GetValue(MouseInE m);
 	Vector2 GetCursorPosition();
 private:
 	// DirectInputデバイス

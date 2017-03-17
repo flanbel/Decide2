@@ -4,18 +4,18 @@
 class Movie:public GameObject
 {
 public:
-	Movie(char* name) :GameObject(name) {}
+	Movie(const char* name) :GameObject(name) {}
 
 	void Awake()override;
 	void Start()override;
 	void Update()override;
 private:
 	//GraphBuilderインターフェース
-	IGraphBuilder* graphBuilder;
+	IGraphBuilder* _GraphBuilder;
 	//レンダリングを担当するVMR9フィルタ
-	IBaseFilter* baseFilterVMR9;
+	IBaseFilter* _BaseFilterVMR9;
 	//メディアコントローラー
-	IMediaControl* mediaControl;
+	IMediaControl* _MediaControl;
 	//メディアイベント
-	IMediaEvent* mediaEvent;
+	IMediaEvent* _MediaEvent;
 };

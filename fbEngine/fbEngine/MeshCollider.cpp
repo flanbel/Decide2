@@ -5,7 +5,7 @@
 
 
 MeshCollider::MeshCollider(GameObject* g, Transform* t) :
-	Collider(g,t),
+	Collider(g,t, typeid(this).name()),
 	stridingMeshInterface(NULL)
 {
 }

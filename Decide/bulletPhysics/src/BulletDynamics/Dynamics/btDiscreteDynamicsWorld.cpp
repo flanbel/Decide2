@@ -357,7 +357,7 @@ void	btDiscreteDynamicsWorld::synchronizeSingleMotionState(btRigidBody* body)
 	if (body->getMotionState() && !body->isStaticOrKinematicObject())
 	{
 		//we need to call the update at least once, even for sleeping objects
-		//otherwise the 'graphics' transform never updates properly
+		//otherwise the 'graphics' Transform never updates properly
 		///@todo: add 'dirty' flag
 		//if (body->getActivationState() != ISLAND_SLEEPING)
 		{

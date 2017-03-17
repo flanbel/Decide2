@@ -5,20 +5,28 @@ class GameRule:public GameObject
 {
 public:
 	//ゲームルール
-	enum GAMERULE
+	enum GameRuleE
 	{
 		STOCK,			//ストック制	最後まで生き残った者の勝ち。
 		TIMELIMIT,		//時間制限		時間内でより多く倒した者の価値。
 		KNOCKOUT,		//ノックアウト　先に一定数倒した者の勝ち。
 		NUM,
 	};
+	//試合の状態
+	enum GameStateE
+	{
+		BEFORE_GAME = 0,	//試合前
+		DURING_GAME,		//試合中
+		AFTER_GAME,			//試合後
+	};
+	//
 	//ランキング(仮)
 	struct Ranking {
 	public:
-		int rank;//順位
-		int idx;  // プレイヤーの添え字
-		int Kill; // 倒した数
-		int Stock;
+		int Rank;	//順位
+		int Idx;	//プレイヤーの添え字
+		int Kill;	//倒した数
+		int Stock;	//残機
 
 		//キル数でのソート
 		struct KillSort
@@ -31,7 +39,7 @@ public:
 					return true;
 				}
 				//同数なら添え字の小さいほうを上に
-				else if (left.Kill == right.Kill && left.idx < right.idx)
+				else if (left.Kill == right.Kill && left.Idx < right.Idx)
 				{
 					return true;
 				}
@@ -56,64 +64,63 @@ public:
 	};
 
 	
-	GameRule(char* name);
+	GameRule(const char* name);
 	void Awake()override;
 	void Update()override;
-	//スコア生成こいつの仕事か？
-	void CreateScore();
 	//ゲームルール設定
 	//第二引数はそれぞれのルールに対応したもの（ストック数,制限時間(分),KO数）
-	void SetGameRule(GAMERULE rule,int value);
+	void SetGameRule(const GameRuleE& rule,const int& value);
 	//ルール取得
-	GameRule::GAMERULE GetGameRule();
+	const GameRule::GameRuleE& GetGameRule();
 	//値取得
-	int GetValue();
+	const int& GetValue();
 	//ストック数取得
-	int GetStock();
+	const int& GetStock();
 	//残り時間取得
-	int GetRemainingTime();
-	//ゲームが終了しているか否か
-	bool IsGameSet();
-
+	const int& GetRemainingTime();
+	//試合が終了したかチェック
+	const GameStateE& IsGameSet();
+	//試合のステート取得
+	const GameStateE& GetGameState();
 
 	//プレイヤーセット
-	void SetPlayer(Player* p,int index);
+	void SetPlayer(Player* p,const int& index);
 	//プレイヤーのスコア更新
-	void UpdateScore(int index);
+	void UpdateScore(const int& index);
 	//プレイヤー完全に死んだ通知を受け取る
-	void PlayerDeath(int index);
-	list<Ranking>& GetRank();
+	void PlayerDeath(const int& index);
+	//ランキング取得
+	const list<Ranking>& GetRanking();
 private:
 	//ランキング更新
-	void UpdateRanking();
-	
+	void _UpdateRanking();
+	//ストック制のゲーム終了チェック
+	bool _StockGameSet();
+	//時間制限制のゲーム終了チェック
+	bool _TimeLimitGameSet();
+	//ノックアウト制のゲーム終了チェック
+	bool _KnockOutGameSet();
 private:
 	//プレイヤー達を管理？
-	Player* Players[PLAYER_NUM];
+	Player* _Players[PLAYER_NUM];
 	//何人ﾌﾟﾚｲしているか？
-	int playerCount;
+	int _PlayerCount;
 	//何人死んだか？
-	int DeathCount;
+	int _DeathCount;
 	//順位
-	list<Ranking> rank;
+	list<Ranking> _Ranking;
 
-	bool GameSet;
+	//ゲームのステート
+	GameStateE _GameState;
 	//ゲームルール
-	GAMERULE _GameRule;
+	GameRuleE _GameRule;
 	//ストック、制限時間、KO数のいずれかが入る。
-	int value;
-	//大変不本意ではあるがtimeを計る用の変数
-	float time;
+	int _Value;
+	//時間を計る用の変数
+	float _Timer;
 
 
 	//関数ポインタ
 	//GameRuleクラスの関数ポインタを受け取るようにする。
 	bool(GameRule::*CheckGameSet)();
-
-	//ストック制のゲーム終了チェック
-	bool StockGameSet();
-	//時間制限制のゲーム終了チェック
-	bool TimeLimitGameSet();
-	//ノックアウト制のゲーム終了チェック
-	bool KnockOutGameSet();
 };

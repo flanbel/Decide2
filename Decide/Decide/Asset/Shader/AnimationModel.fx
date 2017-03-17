@@ -1,7 +1,7 @@
 /*!
  * @brief	スキンモデルシェーダー。(4ボーンスキニング)
  */
-#include "../../../../fbEngine/fbEngine/System.h"
+#define MAX_LIGHTNUM 4
 bool Texflg;							//テクスチャ
 bool Spec;								//スペキュラ
 bool ReceiveShadow;						//影を写す
@@ -29,6 +29,8 @@ float4  g_blendcolor;//混ぜる色
 
 float4x4 g_LVP;					//ライトからみたビュープロジェクション行列
 
+float2 g_TexelSize;				//テクセルサイズ(深度バッファの)
+
 float4  g_Textureblendcolor;	//テクスチャに混ぜる色
 texture g_diffuseTexture;		//ディフューズテクスチャ。
 sampler g_diffuseTextureSampler = 
@@ -42,14 +44,26 @@ sampler_state
 	AddressV = Wrap;
 };
 
-texture g_Shadow;				//深度テクスチャ
+texture g_Depth;				//メインカメラから見た深度テクスチャ
+sampler g_DepthSampler =
+sampler_state
+{
+	Texture = <g_Depth>;
+	MipFilter = NONE;
+	MinFilter = LINEAR;
+	MagFilter = LINEAR;
+	AddressU = CLAMP;
+	AddressV = CLAMP;
+};
+
+texture g_Shadow;				//影テクスチャ
 sampler g_ShadowSampler_0 =
 sampler_state
 {
 	Texture = <g_Shadow>;
 	MipFilter = NONE;
-	MinFilter = NONE;
-	MagFilter = NONE;
+	MinFilter = LINEAR;
+	MagFilter = LINEAR;
 	AddressU = CLAMP;
 	AddressV = CLAMP;
 };
@@ -60,12 +74,12 @@ sampler_state
  */
 struct VS_INPUT
 {
-    float4  Pos             : POSITION;
-    float4  BlendWeights    : BLENDWEIGHT;
-    float4  BlendIndices    : BLENDINDICES;
-    float3  normal          : NORMAL;
-	float4	color			: COLOR0;
-    float2  uv            : TEXCOORD0;
+    float4  _Pos             : POSITION;
+    float4  _BlendWeights    : BLENDWEIGHT;
+    float4  _BlendIndices    : BLENDINDICES;
+    float3  _Normal          : NORMAL;
+	float4	_Color			: COLOR0;
+    float2  _UV            : TEXCOORD0;
 };
 
 /*!
@@ -73,12 +87,13 @@ struct VS_INPUT
  */
 struct VS_OUTPUT
 {
-	float4  Pos     : POSITION;
-	float4	color	: COLOR0;
-    float3  normal	: TEXCOORD0;
-    float2  uv		: TEXCOORD1;
-	float4  world	: TEXCOORD2;
-	float4  lvp		: TEXCOORD3;
+	float4  _Pos    : POSITION;
+	float4	_Color	: COLOR0;
+    float3  _Normal	: TEXCOORD0;
+    float2  _UV		: TEXCOORD1;
+	float4  _World	: TEXCOORD2;	//ワールド座標
+	float4  _LVP	: TEXCOORD3;	//ライト(影用カメラ)からみた行列
+	float4  _WVP	: TEXCOORD4;	//カメラから見た行列
 };
 
 VS_OUTPUT VSMain( VS_INPUT In )
@@ -86,44 +101,44 @@ VS_OUTPUT VSMain( VS_INPUT In )
 	VS_OUTPUT o = (VS_OUTPUT)0;
 	
 	//ブレンドするボーンのインデックス。
-	int4 IndexVector = D3DCOLORtoUBYTE4(In.BlendIndices);
+	int4 IndexVector = D3DCOLORtoUBYTE4(In._BlendIndices);
 	
 	//ブレンドレート。
-	float BlendWeightsArray[4] = (float[4])In.BlendWeights;
+	float BlendWeightsArray[4] = (float[4])In._BlendWeights;
     int   IndexArray[4]        = (int[4])IndexVector;
     float LastWeight = 0.0f;
-    float3 Pos = 0.0f;
+    float3 pos = 0.0f;
     float3 normal = 0.0f;
 	//ボーン数ループ?
     for (int iBone = 0; iBone < g_numBone-1; iBone++)
     {
         LastWeight = LastWeight + BlendWeightsArray[iBone];
         
-        Pos += mul(In.Pos, g_mWorldMatrixArray[IndexArray[iBone]]) * BlendWeightsArray[iBone];
-        normal += mul(In.normal, g_mWorldMatrixArray[IndexArray[iBone]]) * BlendWeightsArray[iBone];
+        pos += mul(In._Pos, g_mWorldMatrixArray[IndexArray[iBone]]) * BlendWeightsArray[iBone];
+        normal += mul(In._Normal, g_mWorldMatrixArray[IndexArray[iBone]]) * BlendWeightsArray[iBone];
     }
     LastWeight = 1.0f - LastWeight; 
 
     //？？
-	Pos += (mul(In.Pos, g_mWorldMatrixArray[IndexArray[g_numBone-1]]) * LastWeight);
-    normal += (mul(In.normal, g_mWorldMatrixArray[IndexArray[g_numBone-1]]) * LastWeight);
+	pos += (mul(In._Pos, g_mWorldMatrixArray[IndexArray[g_numBone-1]]) * LastWeight);
+    normal += (mul(In._Normal, g_mWorldMatrixArray[IndexArray[g_numBone-1]]) * LastWeight);
 
-	o.world = float4(Pos.xyz, 1.0f);
-	o.lvp = mul(o.world, g_LVP);				//ライトの目線によるワールドビュー射影変換をする
+	o._World = float4(pos.xyz, 1.0f);
+	o._LVP = mul(o._World, g_LVP);				//ライトの目線によるワールドビュー射影変換をする
 
 	//ワールド行列
-	//Pos = mul(float4(Pos.xyz, 1.0f), g_worldMatrix);
+	//_Pos = mul(float4(_Pos.xyz, 1.0f), g_worldMatrix);
 	//ビュー行列
-	Pos = mul(float4(Pos.xyz, 1.0f), g_viewMatrix);
+	pos = mul(float4(pos.xyz, 1.0f), g_viewMatrix);
 	//プロジェクション行列
-	o.Pos = mul(float4(Pos.xyz, 1.0f), g_projectionMatrix);
+	o._WVP = o._Pos = mul(float4(pos.xyz, 1.0f), g_projectionMatrix);
 
 	//法線
-	//o.normal = mul(normal, g_rotationMatrix);	//法線を回す。
-	o.normal = normal;
+	//o._Normal = mul(normal, g_rotationMatrix);	//法線を回す。
+	o._Normal = normal;
 
-    o.uv = In.uv;
-	o.color = In.color;
+    o._UV = In._UV;
+	o._Color = In._Color;
 
 	return o;
 }
@@ -135,19 +150,44 @@ float4 PSMain( VS_OUTPUT In ):COLOR0
 {
 	float4 color = (float4)0;	//最終的に出力するカラー
 	float4 diff = (float4)0;	//メッシュのマテリアル
-	float3 normal = normalize(In.normal);
+	float3 normal = normalize(In._Normal);
 	//カラー
 	if (Texflg)
 	{
-		diff = tex2D(g_diffuseTextureSampler, In.uv) * g_Textureblendcolor;
+		diff = tex2D(g_diffuseTextureSampler, In._UV) * g_Textureblendcolor;
 	}
 	else
 	{
 		diff = g_diffuseMaterial;
 	}
+	diff *= g_blendcolor;
 	color = diff;
 
 	float4 light = 0.0f;
+
+	//エッジ抽出
+	if(false)
+	{
+		float4 WVP = In._WVP;
+		WVP.xyz /= WVP.w;		//深度計算
+		float2 shadowMapUV = float2(0.5f, -0.5f) * WVP.xy + float2(0.5f, 0.5f);
+		//近傍4ピクセルの色
+		float4 depth,depth1, depth2, depth3, depth4;
+		depth = tex2D(g_ShadowSampler_0, shadowMapUV);	//元
+		depth1 = tex2D(g_ShadowSampler_0, float2(shadowMapUV.x + g_TexelSize.x, shadowMapUV.y));	//右
+		depth2 = tex2D(g_ShadowSampler_0, float2(shadowMapUV.x - g_TexelSize.x, shadowMapUV.y));	//左
+		depth3 = tex2D(g_ShadowSampler_0, float2(shadowMapUV.x, shadowMapUV.y + g_TexelSize.y));	//下
+		depth4 = tex2D(g_ShadowSampler_0, float2(shadowMapUV.x, shadowMapUV.y - g_TexelSize.y));	//上
+
+		//差異がしきい値を超えたなら
+		if (abs(depth.x - depth1.x) > 0.15f ||
+			abs(depth.x - depth2.x) > 0.15f ||
+			abs(depth.x - depth3.x) > 0.15f ||
+			abs(depth.x - depth4.x) > 0.15f)
+		{
+			return 1;
+		}
+	}
 
 	//デフューズライトを計算。
 	for (int i = 0; i < g_LightNum; i++)
@@ -161,7 +201,7 @@ float4 PSMain( VS_OUTPUT In ):COLOR0
 	if(true)
 	{
 		float3 spec = 0.0f;
-		float3 toEyeDir = normalize(g_cameraPos.xyz - In.world);
+		float3 toEyeDir = normalize(g_cameraPos.xyz - In._World);
 		float3 R = -toEyeDir + 2.0f * dot(normal, toEyeDir) * normal;
 		for (int i = 0; i < g_LightNum; i++)
 		{
@@ -174,6 +214,7 @@ float4 PSMain( VS_OUTPUT In ):COLOR0
 		light.xyz += spec.xyz;
 	}
 
+	//影
 	if (ReceiveShadow)
 	{
 		sampler texSampler[3];
@@ -182,7 +223,7 @@ float4 PSMain( VS_OUTPUT In ):COLOR0
 		texSampler[2] = g_ShadowSampler_0;
 
 		for (int i = 0; i < 1; i++) {
-			float4 posInLVP = In.lvp;
+			float4 posInLVP = In._LVP;
 			posInLVP.xyz /= posInLVP.w;
 			//uv座標に変換。
 			float2 shadowMapUV = float2(0.5f, -0.5f) * posInLVP.xy + float2(0.5f, 0.5f);
@@ -192,7 +233,7 @@ float4 PSMain( VS_OUTPUT In ):COLOR0
 				shadow_val = tex2D(texSampler[i], shadowMapUV).rg;
 				float depth = min(posInLVP.z, 1.0f);
 				//バリアンスシャドウマップのフラグ
-				if (false) {
+				if (true) {
 					if (depth > shadow_val.r) {
 						// σ^2
 						float depth_sq = shadow_val.r * shadow_val.r;
@@ -203,6 +244,7 @@ float4 PSMain( VS_OUTPUT In ):COLOR0
 					}
 				}
 				else {
+					//影なら
 					if (depth > shadow_val.r + 0.006f) {
 						//色半減
 						light.rgb *= 0.5f;
@@ -212,11 +254,8 @@ float4 PSMain( VS_OUTPUT In ):COLOR0
 			}
 		}
 	}
-	//影になっていない。
-	//カラーにライトを掛ける
-	color.xyz *= light.xyz;
-	//元の色×アンビエントライトを足す
-	color.xyz += diff.xyz * g_ambientLight.xyz;
+	//
+	color.rgb *= light.rgb + g_ambientLight.rgb;
 	return color;
 }
 
@@ -236,8 +275,8 @@ technique NormalRender
 
 struct VS_ShadowIN {
 	float4  pos             : POSITION;
-	float4  BlendWeights    : BLENDWEIGHT;
-	float4  BlendIndices    : BLENDINDICES;
+	float4  _BlendWeights    : BLENDWEIGHT;
+	float4  _BlendIndices    : BLENDINDICES;
 };
 
 struct VS_ShadowOUT {
@@ -250,10 +289,10 @@ VS_ShadowOUT VSShadow(VS_ShadowIN In)
 	VS_ShadowOUT Out = (VS_ShadowOUT)0;
 
 	//ブレンドするボーンのインデックス。
-	int4 IndexVector = D3DCOLORtoUBYTE4(In.BlendIndices);
+	int4 IndexVector = D3DCOLORtoUBYTE4(In._BlendIndices);
 
 	//ブレンドレート。
-	float BlendWeightsArray[4] = (float[4])In.BlendWeights;
+	float BlendWeightsArray[4] = (float[4])In._BlendWeights;
 	int   IndexArray[4] = (int[4])IndexVector;
 	float LastWeight = 0.0f;
 	float3 pos = 0.0f;
@@ -285,7 +324,6 @@ float4 PSShadow(VS_ShadowOUT In) : COLOR0	//レンダーターゲット0に出力
 	depth = In.shadow.z / In.shadow.w;
 
 	return float4(depth.xyz, 1.0f);
-	//return float4(1, 0, 0, 1);
 }
 
 technique Shadow

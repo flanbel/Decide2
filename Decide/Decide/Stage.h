@@ -3,7 +3,7 @@
 class Stage:public GameObject
 {
 public:
-	Stage(char* name) :GameObject(name) {}
+	Stage(const char* name) :GameObject(name) {}
 	void Awake()override;
 	void Update()override;
 };

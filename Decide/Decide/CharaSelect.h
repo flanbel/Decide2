@@ -5,13 +5,15 @@
 class ImageObject;
 class TextObject;
 class ShowModel;
+class SkinModel;
+class Animation;
 struct RenderTarget;
 class SoundSource;
 
 class CharaSelect:public GameObject
 {
 public:
-	CharaSelect(char* name) :GameObject(name) {}
+	CharaSelect(const char* name) :GameObject(name) {}
 	void Awake()override;
 	void Start()override;
 	void Update()override;
@@ -20,11 +22,11 @@ public:
 	{
 		_PlayerIdx = idx;
 	}
-	void SetColor(Color c)
+	void SetColor(const Color& c)
 	{
 		_PlayerColor = c;
 	}
-	Color GetColor()
+	const Color& GetColor()
 	{
 		return _PlayerColor;
 	}
@@ -55,6 +57,8 @@ private:
 	CharacterInfo* _Info;
 	CharacterInfo* _Old;
 	ShowModel* _ShowModel;
+	Animation* _ShowAnim;
+	SkinModel* _ShowSkinModel;
 	RenderTarget* _Render;
 	SoundSource *_Sound;
 };

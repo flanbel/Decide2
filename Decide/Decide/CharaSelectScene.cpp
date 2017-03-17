@@ -15,78 +15,78 @@
 
 #include "fbEngine/CircleCollision.h"
 #include "fbEngine/Sprite.h"
+
+namespace
+{
+	//各キャラクターの名前
+	const wchar_t* name[] = {
+		L"TVman",
+		L""
+	};
+	//各キャラクターのモデルファイル名	 \Asset/Xfile から先のパス
+	const char* path[] = {
+		"TV/TVman1.X",
+		""
+	};
+	//キャラクターのパラメーター
+	const CharacterParam param[] =
+	{
+		{ 130.0f,2.0f,1.2f,1.0f },
+		{ 0.0f,0.0f,0.0f,0.0f },
+	};
+}
+
 void CharaSelectScene::Start()
 {
 	GameObjectManager::AddNew<SelectCamera>("camera", 0);
 	GameObjectManager::AddNew<GameLight>("GameLight", 0);
 	GameObjectManager::AddNew<GameShadowCamera>("GameShadowCamera", 0);
-
-	gameRule = GameObjectManager::AddNew<GameRule>("GameRule", 0);
-	gameRule->Discard(false);
-	displayGameRule = GameObjectManager::AddNew<TextObject>("DisplayGameRule", 1);
-	displayGameRule->Initialize(L"GameRule:TimeLimit 2", 40.0f, Color::white, SpriteEffectE::SHADOW, "HGS明朝E");
-	displayGameRule->transform->localPosition = Vector3(50, 100, 0);
-
+	//ゲームルール
+	_GameRule = GameObjectManager::AddNew<GameRule>("GameRule", 0);
+	_GameRule->Discard(false);
+	//ゲームルール表示用テキスト
+	_DisplayGameRule = GameObjectManager::AddNew<TextObject>("DisplayGameRule", 1);
+	_DisplayGameRule->Initialize(L"GameRule:TimeLimit 2", 40.0f, Color::white, sprite::SpriteEffectE::SHADOW, "HGS明朝E",TEXT::TextFormatE::LEFT);
+	_DisplayGameRule->transform->localPosition = Vector3(50, 100, 0);
+	//背景画像
 	ImageObject* backGround = GameObjectManager::AddNew<ImageObject>("Back",0);
 	backGround->SetTexture(LOADTEXTURE("SelectBack.png"));
 	backGround->SetPivot(0.0f, 0.0f);
+	//レディファイト
+	_ReadyFight = GameObjectManager::AddNew<ImageObject>("ReadyToFight", 4);
+	_ReadyFight->SetTexture(LOADTEXTURE("ReadyToStart.png"));
+	_ReadyFight->transform->localPosition = Vector3(WindowW/2, WindowH/2, 0);
+	_ReadyFight->SetActive(false);
 
-	readyFight = GameObjectManager::AddNew<ImageObject>("ReadyToFight", 1);
-	readyFight->SetTexture(LOADTEXTURE("ReadyToStart.png"));
-	readyFight->SetPivot(0.0f, 0.5f);
-	readyFight->transform->localPosition = Vector3(0, 250, 0);
-	readyFight->SetActive(false);
-	wchar_t* name[] = {
-		L"TV",
-		L"" 
-	};
-	//\Asset/Xfile から先のパス
-	char* path[] = {
-		"TV/TVman1.X",
-		"" 
-	};
-	//キャラクターのパラメーター
-	CharacterParam Param[] =
+	//キャラクターフレーム作成
+	_CreateCharaFrame(name, path, param);
+	
+	//各プレイヤーの色
+	const Color playercolor[PLAYER_NUM] =
 	{
-		{3.0f,2.0f,1.2f,1.0f},
+		Color::red,		//1P
+		Color::blue,	//2P
+		Color::yellow,	//3P
+		Color::green	//4P
 	};
-	//キャラクタ数分作成
-	for(short j = 0;j<CHARACTER_NUM;j++)
-	{
-		ringArray[j] = GameObjectManager::AddNew<CharaRingFrame>("frame", 0);
-		ringArray[j]->transform->localPosition = Vector3(WindowW / 2, 100, 0);
-		//プレイヤ数分情報作成
-		FOR(PLAYER_NUM)
-		{
-			//このへんメモリリーク注意
-			Animation* anim = new Animation(nullptr, nullptr);
-			SkinModelData* data = new SkinModelData();
-			data->CloneModelData(SkinModelManager::LoadModel(path[j]), anim);
-			CharacterInfo* info = new CharacterInfo(name[j], path[j], Param[j], data, anim);
-			ringArray[j]->SetInfo(info,i);
-		}
-	}
-	//プレイヤーのやつの色
-	Color playercolor[PLAYER_NUM] =
-	{
-		Color::red,
-		Color::blue,
-		Color::yellow,
-		Color::green
-	};
+
 	//選択のやつを生成
 	FOR(PLAYER_NUM)
 	{
-		selectArray[i] = GameObjectManager::AddNew<CharaSelect>("Select", 0);
-		selectArray[i]->SetIdx(i);
-		selectArray[i]->SetColor(playercolor[i]);
-		selectArray[i]->transform->localPosition = Vector3(i*290+70, 270, 0);
+		_SelectArray[i] = GameObjectManager::AddNew<CharaSelect>("Select", 0);
+		_SelectArray[i]->SetIdx(i);
+		_SelectArray[i]->SetColor(playercolor[i]);
+		float Space = 300.0f;
+		_SelectArray[i]->transform->localPosition = Vector3(190.0f+(i*Space), 450.0f, 0);
 	}
+
+	//シーン切り替えフラグ初期化
+	_ChangeScene = false;
 }
 
 void CharaSelectScene::Update()
 {
-	//キャラクター選択
+	//キャラクター選択(こいつがするの？？？？？？)
 	FOR(PLAYER_NUM)
 	{
 		//jはキャラクター数
@@ -94,37 +94,126 @@ void CharaSelectScene::Update()
 		for(;j<CHARACTER_NUM;j++)
 		{
 			//各カーソルと重なっているか判定
-			if(ringArray[j]->Judgment(selectArray[i]->GetCursorPos()))
+			if(_RingArray[j]->Judgment(_SelectArray[i]->GetCursorPos()))
 			{
 				//リングの情報セット
-				selectArray[i]->SetInfo(ringArray[j]->GetInfo(i));
+				_SelectArray[i]->SetInfo(_RingArray[j]->GetInfo(i));
 				
 				break;
 			}
 		}
 		//何もセットしない
-		if(j == CHARACTER_NUM && selectArray[i]->GetDecision() == false)
+		if(j == CHARACTER_NUM && _SelectArray[i]->GetDecision() == false)
 		{
-			selectArray[i]->SetInfo(nullptr);
+			_SelectArray[i]->SetInfo(nullptr);
 		}
 	}
-	//現在のルール取得
-	GameRule::GAMERULE rule = gameRule->GetGameRule();
-	int value = gameRule->GetValue();
-	bool change = false;
-	//ゲームルール選択
-	if(KeyBoardInput->isPush(DIK_UP))
+	//ゲームルール更新
+	_UpdateGameRule();
+	
+
+	//決定しているプレイヤー数カウント
+	int count = 0;
+	FOR(4)
 	{
-		rule = (GameRule::GAMERULE)((rule + 1) % GameRule::GAMERULE::NUM);
+		if (_SelectArray[i]->GetDecision())
+			count++;
+	}
+
+	//二人以上選択されている
+	if (count >= 2)
+	{
+		//スタートボタンの押下確認
+		bool flag = INSTANCE(InputManager)->IsPushButtonAll(XINPUT_GAMEPAD_START);
+
+		//ReadyToFight表示
+		_ReadyFight->SetActive(true);
+		//戦闘シーンへ移行
+		if (KeyBoardInput->isPush(DIK_RETURN) || flag && !_ChangeScene)
+		{
+			_ChangeScene = true;
+			SetFade(true);
+		}
+	}else
+	{
+		_ReadyFight->SetActive(false);
+	}
+
+	//シーン切り替え
+	if(_ChangeScene && !_IsFade)
+	{
+		vector<Player*> Array;
+		FOR(PLAYER_NUM)
+		{
+			//選択されているなら
+			if (_SelectArray[i]->GetDecision())
+			{
+				//プレイヤー生成
+				Player* p = GameObjectManager::AddNew<Player>("Player", 1);
+				p->SetIdx(i);
+				p->SetInfo(_SelectArray[i]->GetInfo());
+				p->SetColor(_SelectArray[i]->GetColor());
+				//シーン切り替えしても破棄しないように設定
+				p->Discard(false);
+				Array.push_back(p);
+				//ゲームルールの方にプレイヤーの情報をセット
+				_GameRule->SetPlayer(p, i);
+			}
+		}
+		//選択のやつ解放
+		FOR(PLAYER_NUM)
+		{
+			_SelectArray[i]->Release();
+		}
+		//切り替え
+		INSTANCE(SceneManager)->ChangeScene("BattleScene");
+		return;
+	}
+}
+
+void CharaSelectScene::_CreateCharaFrame(const wchar_t ** nameArray,const char ** pathArray,const CharacterParam* paramArray)
+{
+	//キャラクタ数分フレーム作成
+	for (short j = 0; j<CHARACTER_NUM; j++)
+	{
+		_RingArray[j] = GameObjectManager::AddNew<CharaRingFrame>("Frame", 0);
+		//今は一体しかいないので場所は適当
+		_RingArray[j]->transform->localPosition = Vector3(WindowW / 2, 100, 0);
+		//プレイヤ数分情報作成
+		FOR(PLAYER_NUM)
+		{
+			//このへんメモリリーク注意
+			Animation* anim = new Animation(nullptr, nullptr);
+			SkinModelData* data = new SkinModelData();
+			data->CloneModelData(SkinModelManager::LoadModel(pathArray[j]), anim);
+			CharacterInfo* info = new CharacterInfo(nameArray[j], pathArray[j], &paramArray[j], data, anim);
+			_RingArray[j]->SetInfo(info, i);
+		}
+	}
+}
+
+void CharaSelectScene::_UpdateGameRule()
+{
+	//現在のルール取得
+	GameRule::GameRuleE rule = _GameRule->GetGameRule();
+	//設定されている値取得
+	int value = _GameRule->GetValue();
+	//変更されたか？
+	bool change = false;
+	//ゲームルール変更
+	if (KeyBoardInput->isPush(DIK_UP))
+	{
+		rule = (GameRule::GameRuleE)((rule + 1) % GameRule::GameRuleE::NUM);
 		value = 3;
 		change = true;
 	}
 	if (KeyBoardInput->isPush(DIK_DOWN))
 	{
-		rule = (GameRule::GAMERULE)((rule - 1) < 0 ? (GameRule::GAMERULE::NUM -1) : (rule - 1));
+		rule = (GameRule::GameRuleE)((rule - 1) < 0 ? (GameRule::GameRuleE::NUM - 1) : (rule - 1));
 		value = 3;
 		change = true;
 	}
+	//値変更
 	if (KeyBoardInput->isPush(DIK_RIGHT))
 	{
 		value = min(value + 1, 99);
@@ -138,11 +227,12 @@ void CharaSelectScene::Update()
 	//変更されているなら
 	if (change)
 	{
-		gameRule->SetGameRule(rule, value);
-		
-		wchar_t display[128];
-		wchar_t *ruleW = NULL;
-		wchar_t valueW[5] = {L'0'};
+		//ゲームルール更新
+		_GameRule->SetGameRule(rule, value);
+		//表示用テキスト更新
+		wchar_t display[128];			//最終的な
+		wchar_t *ruleW = NULL;			//ゲームルール
+		wchar_t valueW[5] = { L'0' };	//値
 		switch (rule)
 		{
 		case GameRule::STOCK:
@@ -155,73 +245,17 @@ void CharaSelectScene::Update()
 			ruleW = L"KnockOut ";
 			break;
 		default:
+			ruleW = L"Unknown ";
 			break;
 		}
-		InttoString(value, valueW);
+		//文字列に変換
+		Support::ToString(value, valueW);
 		//文字列コピー
-		wcscpy_s(display, wcslen(L"GameRule:")+1, L"GameRule:");
+		wcscpy_s(display, wcslen(L"GameRule:") + 1, L"GameRule:");
 		//文字列追加
-		wcscat_s(display, wcslen(display) + wcslen(ruleW)+1, ruleW);
-		wcscat_s(display, wcslen(display) + wcslen(valueW)+1, valueW);
+		wcscat_s(display, wcslen(display) + wcslen(ruleW) + 1, ruleW);
+		wcscat_s(display, wcslen(display) + wcslen(valueW) + 1, valueW);
 		//表示更新
-		displayGameRule->SetString(display);
-	}
-	
-
-	//決定しているプレイヤー数カウント
-	int count = 0;
-	FOR(4)
-	{
-		if (selectArray[i]->GetDecision())
-			count++;
-	}
-	//二人以上選択されている
-	if (count >= 2)
-	{
-		bool flag = false;
-		FOR(PLAYER_NUM)
-		{
-			if (XboxInput(i)->isPushButton(XINPUT_GAMEPAD_START))
-			{
-				flag = true;
-				break;
-			}
-		}
-
-		//ReadyToFight表示
-		readyFight->SetActive(true);
-		//戦闘シーンへ移行
-		if (KeyBoardInput->isPush(DIK_RETURN) || flag)
-		{
-			vector<Player*> Array;
-			FOR(PLAYER_NUM)
-			{
-				//選択されているなら
-				if (selectArray[i]->GetDecision())
-				{
-					//プレイヤー生成
-					Player* p = GameObjectManager::AddNew<Player>("Player", 1);
-					p->SetIdx(i);
-					p->SetInfo(selectArray[i]->GetInfo());
-					p->SetColor(selectArray[i]->GetColor());
-					//シーン切り替えしても破棄しないように設定
-					p->Discard(false);
-					Array.push_back(p);
-					//ゲームルールの方にプレイヤーの情報をセット
-					gameRule->SetPlayer(p, i);
-				}
-			}
-			//選択のやつ解放
-			FOR(PLAYER_NUM)
-			{
-				selectArray[i]->Release();
-			}
-			//切り替え
-			INSTANCE(SceneManager)->ChangeScene("BattleScene");
-			return;
-		}
-	}else
-	{
-		readyFight->SetActive(false);
+		_DisplayGameRule->SetString(display);
 	}
 }

@@ -143,13 +143,17 @@
     <ClInclude Include="Assert.h" />
     <ClInclude Include="Bloom.h" />
     <ClInclude Include="CircleCollision.h" />
+    <ClInclude Include="ComponentManager.h" />
+    <ClInclude Include="Effect.h" />
     <ClInclude Include="GostCollision.h" />
     <ClInclude Include="InputManager.h" />
     <ClInclude Include="KeyBoard .h" />
+    <ClInclude Include="Material.h" />
     <ClInclude Include="ModelOject.h" />
     <ClInclude Include="Mouse.h" />
     <ClInclude Include="Movie.h" />
     <ClInclude Include="Particle.h" />
+    <ClInclude Include="PhysicsCallback.h" />
     <ClInclude Include="Vertex.h" />
     <ClInclude Include="ShadowCamera.h" />
     <ClInclude Include="SoundEngine.h" />
@@ -166,8 +170,6 @@
     <ClInclude Include="CollisionObject.h" />
     <ClInclude Include="Color.h" />
     <ClInclude Include="Component.h" />
-    <ClInclude Include="ComponentManager.h" />
-    <ClInclude Include="Effect.h" />
     <ClInclude Include="EffectManager.h" />
     <ClInclude Include="FontManager.h" />
     <ClInclude Include="FPS.h" />
@@ -234,6 +236,7 @@
     <ClCompile Include="InputManager.cpp" />
     <ClCompile Include="KeyBoard .cpp" />
     <ClCompile Include="Light.cpp" />
+    <ClCompile Include="Material.cpp" />
     <ClCompile Include="MeshCollider.cpp" />
     <ClCompile Include="ModelOject.cpp" />
     <ClCompile Include="Mouse.cpp" />

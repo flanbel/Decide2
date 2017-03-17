@@ -7,21 +7,20 @@ class Camera;
 class Light;
 class ShadowCamera;
 
-//影を落とすか
-enum CastShadow
+//エフェクトをかけるか？
+enum ModelEffectE
 {
-	Off,	//落とさない
-	On,		//落とす
-	//ShadowOnly
+	NONE = 0,				//なし
+	CAST_SHADOW = 1,		//影を作る
+	RECEIVE_SHADOW = 2,		//影を落とす
+	SPECULAR = 4,			//鏡面反射
+	TOON = 8,				//トゥーン
 };
 
 //モデルの描画を行うクラス
 class SkinModel:public Component{
 public:
-	SkinModel::SkinModel(GameObject* g, Transform* t) :Component(g, t)
-	{
-		name = (char*)typeid(*this).name();
-	}
+	SkinModel::SkinModel(GameObject* g, Transform* t);
 	~SkinModel();
 
 	void Awake()override;
@@ -31,75 +30,81 @@ public:
 
 	void SetCamera(Camera* c) 
 	{
-		camera = c;
+		_Camera = c;
 	}
 	void SetLight(Light* l)
 	{
-		light = l;
+		_Light = l;
 	}
 
 	//モデルデータへアクセスするためのポインタ設定
 	void SetModelData(SkinModelData* pD)
 	{
-		modelDate = pD;
+		_ModelDate = pD;
 	}
 	//メッシュコライダー作るときに
 	LPD3DXMESH GetOrgMeshFirst() const
 	{
-		return modelDate->GetOrgMeshFirst();
-	}
-	void SetReceive(bool f)
-	{
-		receiveShadow = f;
-	}
-	void SetSpecular(bool f)
-	{
-		Specular = f;
+		return _ModelDate->GetOrgMeshFirst();
 	}
 	void SetSky(bool f)
 	{
-		SkyBox = f;
+		_SkyBox = f;
 	}
-	void SetTextureBlend(Color c)
+	void SetTextureBlend(const Color& c)
 	{
-		TextureBlend = c;
+		_TextureBlend = c;
 	}
-
-	void SetAllBlend(Color c)
+	void SetAllBlend(const Color& c)
 	{
-		AllBlend = c;
+		_AllBlend = c;
+	}
+	
+	//上書きセット
+	void SkinModel::SetModelEffect(const ModelEffectE& e)
+	{
+		_ModelEffect = e;
+	}
+	//今の状態に加算、減算
+	void SkinModel::SetModelEffect(const ModelEffectE& e, const bool& f)
+	{
+		//既に有効かどうか？
+		if ((_ModelEffect & e) > 0 && f == false)
+		{
+			//無効に
+			_ModelEffect = ModelEffectE(_ModelEffect - e);
+		}
+		else if ((_ModelEffect & e) == 0 && f == true)
+		{
+			//有効に
+			_ModelEffect = ModelEffectE(_ModelEffect + e);
+		}
 	}
 private:
-	//エフェクトへの参照
-	Effect* effect;
-	//モデルデータへアクセスするためのポインタ保持
-	SkinModelData* modelDate;
-	Camera* camera;
-	Light* light = nullptr;
-	ShadowCamera* shadowCamera;
-	//ブレンドする色
-	Color TextureBlend, AllBlend;
-
-	//影を生成するときの設定
-	CastShadow castShadow;
-	//影を受けるかどうかの設定
-	bool receiveShadow;
-	//スペキュラライトフラグ
-	bool Specular;
-	//スカイボックスかどうか(正直どうかと思うが・・・。)
-	bool SkyBox = false;
-
-	//プライベート関数
-
 	//子とか兄弟も一括で描画するための再帰関数
 	void DrawFrame(LPD3DXFRAME pFrame);
-	
+
 	//モデル描画
 	void SkinModel::DrawMeshContainer(
 		D3DXMESHCONTAINER_DERIVED* pMeshContainerBase,
 		LPD3DXFRAME pFrameBase
-		);
-	
+	);
+
 	//影作成
 	void CreateShadow(D3DXMESHCONTAINER_DERIVED* pMeshContainer, D3DXFRAME_DERIVED* pFrame);
+private:
+	//エフェクトへの参照
+	Effect* _Effect;
+	//モデルデータへアクセスするためのポインタ保持
+	SkinModelData* _ModelDate;
+	Camera* _Camera;
+	Light* _Light;
+	ShadowCamera* _ShadowCamera;
+	//ブレンドする色
+	Color _TextureBlend, _AllBlend;
+
+	//エフェクトを描けるかどうかのフラグ
+	ModelEffectE _ModelEffect;
+	//スカイボックスかどうか(いつか直す)
+	bool _SkyBox;
 };

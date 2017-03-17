@@ -343,13 +343,13 @@ public:
 	btRotationalLimitMotor2* getRotationalLimitMotor(int index) { return &m_angularLimits[index]; }
 	btTranslationalLimitMotor2* getTranslationalLimitMotor() { return &m_linearLimits; }
 
-	// Calculates the global transform for the joint offset for body A an B, and also calculates the angle differences between the bodies.
+	// Calculates the global Transform for the joint offset for body A an B, and also calculates the angle differences between the bodies.
 	void calculateTransforms(const btTransform& transA,const btTransform& transB);
 	void calculateTransforms();
 
-	// Gets the global transform of the offset for body A
+	// Gets the global Transform of the offset for body A
 	const btTransform & getCalculatedTransformA() const { return m_calculatedTransformA; }
-	// Gets the global transform of the offset for body B
+	// Gets the global Transform of the offset for body B
 	const btTransform & getCalculatedTransformB() const { return m_calculatedTransformB; }
 
 	const btTransform & getFrameOffsetA() const { return m_frameInA; }

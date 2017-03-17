@@ -30,15 +30,15 @@ subject to the following restrictions:
 
 
 SIMD_FORCE_INLINE btVector3 gim_inertia_add_transformed(
-	const btVector3 & source_inertia, const btVector3 & added_inertia, const btTransform & transform)
+	const btVector3 & source_inertia, const btVector3 & added_inertia, const btTransform & Transform)
 {
-	btMatrix3x3  rotatedTensor = transform.getBasis().scaled(added_inertia) * transform.getBasis().transpose();
+	btMatrix3x3  rotatedTensor = Transform.getBasis().scaled(added_inertia) * Transform.getBasis().transpose();
 
-	btScalar x2 = transform.getOrigin()[0];
+	btScalar x2 = Transform.getOrigin()[0];
 	x2*= x2;
-	btScalar y2 = transform.getOrigin()[1];
+	btScalar y2 = Transform.getOrigin()[1];
 	y2*= y2;
-	btScalar z2 = transform.getOrigin()[2];
+	btScalar z2 = Transform.getOrigin()[2];
 	z2*= z2;
 
 	btScalar ix = rotatedTensor[0][0]*(y2+z2);

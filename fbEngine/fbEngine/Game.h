@@ -21,5 +21,5 @@ LPCWSTR     lpszMenuName,
 LPCWSTR     lpszClassName,
 HICON       hIconSm);
 //インスタンス初期化
-extern BOOL InitInstance(HINSTANCE hinstance,
+extern BOOL InitInstance(HINSTANCE h_Instance,
 	int cmd);

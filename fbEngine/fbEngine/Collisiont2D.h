@@ -4,8 +4,13 @@
 class Collison2D:public Component
 {
 public:
-	Collison2D(GameObject* g, Transform* t) : Component(g, t)
+	Collison2D(GameObject* g, Transform* t) : Component(g, t, typeid(this).name())
 	{
-		name = (char*)typeid(*this).name();
+		
 	}
+	Collison2D(GameObject* g, Transform* t,const char* classname) : Component(g, t,classname)
+	{
+
+	}
+	virtual ~Collison2D() {};
 };

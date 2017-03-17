@@ -13,139 +13,145 @@
 #include "Item.h"
 #include "GameRule.h"
 
-Player::Player(char * name) :
+namespace
+{
+	const ParicleParameter parm[2] =
+	{
+		{
+			"SmokeBall.png",	//パス
+			Vector3(0,00,0),		//初速
+			Vector2(70,70),		//サイズ
+			0.5f,				//寿命
+			0.08f,				//発生時間
+			Vector3(30,0,30),	//ポジションランダム
+			Vector3(0,0,0),		//初速度ランダム
+			Vector3(0,0,0),		//速度ランダム
+			Vector3::zero,		//重力
+			true,				//フェード
+			0.3f,				//フェード時間
+			0.5f,				//初期α
+			true,				//ビルボード
+			1.0f,				//ブライト
+			0,					//αブレンド
+			Color(1.5f,1.5f,1.5f,1.0f)	//乗算カラー
+		},
+		{
+			"Fire1.png",	//パス
+			Vector3(0,40,0),		//初速
+			Vector2(30,30),		//サイズ
+			1.0f,				//寿命
+			0.01f,				//発生時間
+			Vector3(30,0,30),	//ポジションランダム
+			Vector3(5,5,5),		//初速度ランダム
+			Vector3(0,0,0),		//速度ランダム
+			Vector3::zero,		//重力
+			true,				//フェード
+			0.3f,				//フェード時間
+			1.0f,				//初期α
+			true,				//ビルボード
+			1.0f,				//ブライト
+			1,					//αブレンド
+			Color(2.5f,2.5f,1.0f,1.0f)	//乗算カラー
+		}
+	};
+
+}
+
+Player::Player(const char * name) :
 	GameObject(name),
-	damage(0),
-	stock(1),
-	lastAttack(-1),
-	jump(false),
-	isAction(false)
+	_Damage(0),
+	_Stock(1),
+	_LastAttack(-1),
+	_Jump(false),
+	_IsAction(false),
+	_Gravity(0)
 	/*StayState(this),
 	RunState(this),
 	WalkState(this),
 	JumpState(this),
 	FallState(this)*/
 {
-	
+
 }
 
 void Player::Awake()
 {
 	//各コンポーネント追加
-	model = AddComponent<SkinModel>();
-	rigid = AddComponent<RigidBody>();
+	_Model = AddComponent<SkinModel>();
+	_Rigid = AddComponent<RigidBody>();
 	BoxCollider* coll = AddComponent<BoxCollider>();
-	anim = AddComponent<Animation>();
+	_Anim = AddComponent<Animation>();
 
-	coll->Create(Vector3(25, 100, 25));
-	rigid->Create(1, coll, 5, Vector3::zero, Vector3(0, 50, 0));
-	rb = (btRigidBody*)rigid->GetCollisonObj();
-	//スリープさせない
-	rb->setSleepingThresholds(0, 0);
+	_Height = 100;
+	coll->Create(Vector3(25, _Height, 25));
+	_Rigid->Create(1, coll, Collision_ID::PLAYER, Vector3::zero, Vector3(0, _Height / 2, 0));
+	_RB = (btRigidBody*)_Rigid->GetCollisonObj();
+	//RigidBodyの上下の移動量を消す
+	_RB->setGravity(btVector3(0.0f, 0.0f, 0.0f));
+	//スリープさせない(必要かどうかわからない。)
+	_RB->setSleepingThresholds(0, 0);
 	//ゲームルール取得
-	gameRule = (GameRule*)GameObjectManager::FindObject("GameRule");
+	_GameRule = (GameRule*)GameObjectManager::FindObject("GameRule");
 	//ストック数取得
-	stock = gameRule->GetStock();
+	_Stock = _GameRule->GetStock();
 
 	//パラメータ生成
-	Pparameter = GameObjectManager::AddNew<PlayerParameter>("Pparameter", 0);
-	Pparameter->SetStock(stock);
-	Pparameter->SetDamage(damage);
-	Pparameter->Discard(false);
+	_Pparameter = GameObjectManager::AddNew<PlayerParameter>("_Pparameter", 0);
+	_Pparameter->SetStock(_Stock);
+	_Pparameter->SetDamage(_Damage);
+	_Pparameter->Discard(false);
 	//プレート生成
-	idxPlate = GameObjectManager::AddNew<PlatePrimitive>("plate", 4);
-	idxPlate->Discard(false);
+	_IdxPlate = GameObjectManager::AddNew<PlatePrimitive>("plate", 4);
+	_IdxPlate->Discard(false);
 	//王冠生成
-	CrownPlate = GameObjectManager::AddNew<PlatePrimitive>("Crown", 4);
-	CrownPlate->transform->SetParent(idxPlate->transform);
-	CrownPlate->transform->localPosition = Vector3(10, 60, 0);
-	CrownPlate->SetTexture(LOADTEXTURE("Crown.png"));
-	CrownPlate->Discard(false);
-	
+	_CrownPlate = GameObjectManager::AddNew<PlatePrimitive>("Crown", 4);
+	_CrownPlate->transform->SetParent(_IdxPlate->transform);
+	_CrownPlate->transform->localPosition = Vector3(10, 60, 0);
+	_CrownPlate->SetTexture(LOADTEXTURE("Crown.png"));
+	_CrownPlate->Discard(false);
 
-	isAction = false;
-	jumpCount = 1;
-	blown = Vector3::zero;
-	ChangeState(PState::STAY);
-	CharagePower = 0.0f;
-	playerColor = Color::white;
-	//初期ポジ(適当)
-	transform->localPosition.y = 200;
+	_PlayerColor = Color::white;
+	//いろいろなパラメータ初期化
+	_Reset();
 
 
-	ParicleParameter parm[2] =
-	{
-	{
-		"SmokeBall.png",	//パス
-		Vector3(0,00,0),		//初速
-		Vector2(70,70),		//サイズ
-		0.5f,				//寿命
-		0.08f,				//発生時間
-		Vector3(30,0,30),	//ポジションランダム
-		Vector3(0,0,0),		//初速度ランダム
-		Vector3(0,0,0),		//速度ランダム
-		Vector3::zero,		//重力
-		true,				//フェード
-		0.3f,				//フェード時間
-		0.5f,				//初期α
-		true,				//ビルボード
-		1.0f,				//ブライト
-		0,					//αブレンド
-		Color(1.5f,1.5f,1.5f,1.0f)	//乗算カラー
-	},
-	{
-		"Fire1.png",	//パス
-		Vector3(0,40,0),		//初速
-		Vector2(30,30),		//サイズ
-		1.0f,				//寿命
-		0.01f,				//発生時間
-		Vector3(30,0,30),	//ポジションランダム
-		Vector3(5,5,5),		//初速度ランダム
-		Vector3(0,0,0),		//速度ランダム
-		Vector3::zero,		//重力
-		true,				//フェード
-		0.3f,				//フェード時間
-		1.0f,				//初期α
-		true,				//ビルボード
-		1.0f,				//ブライト
-		1,					//αブレンド
-		Color(1.5f,1.5f,1.5f,1.0f)	//乗算カラー
-	}
-	};
-	smoke = GameObjectManager::AddNew<ParticleEmitter>("SmokeEmit", 2);
-	smoke->Discard(false);
-	smoke->transform->SetParent(transform);
-	smoke->Init(parm[0]);
-	smoke->Emit(false);
 
-	fire = GameObjectManager::AddNew<ParticleEmitter>("FireEmit", 2);
-	fire->Discard(false);
-	fire->transform->SetParent(transform);
-	fire->Init(parm[1]);
-	fire->Emit(false);
+	_Smoke = GameObjectManager::AddNew<ParticleEmitter>("SmokeEmit", 2);
+	_Smoke->Discard(false);
+	_Smoke->transform->SetParent(transform);
+	_Smoke->Init(parm[0]);
+	_Smoke->SetEmitFlg(false);
+
+	_Fire = GameObjectManager::AddNew<ParticleEmitter>("FireEmit", 2);
+	_Fire->Discard(false);
+	_Fire->transform->SetParent(transform);
+	_Fire->Init(parm[1]);
+	_Fire->SetEmitFlg(false);
 }
 
 void Player::Start()
 {
 	//パンチの効果音を鳴らすオブジェクト
 	//オブジェクトっておかしくね？
-	PunchSound = GameObjectManager::AddNew<SoundSource>("PunchSound", 0);
-	PunchSound->Init("Asset/Sound/punch.wav");
+	_PunchSound = GameObjectManager::AddNew<SoundSource>("PunchSound", 0);
+	_PunchSound->Init("Asset/Sound/punch.wav");
 
-	Pparameter->transform->localPosition = Vector3(100 +(playeridx) * 300, 550, 0);
-	model->SetCamera(GameObjectManager::mainCamera);
-	model->SetLight(GameObjectManager::mainLight);
+	float space = 300.0f;
+	_Pparameter->transform->localPosition = Vector3(180.0f + (_Playeridx * space), 600.0f, 0.0f);
+	_Model->SetCamera(GameObjectManager::mainCamera);
+	_Model->SetLight(GameObjectManager::mainLight);
 
 	char path[10];
-	InttoString(playeridx + 1, path);
+	Support::ToString(_Playeridx + 1, path);
 	strcat_s(path, strlen(path) + strlen("P.png") + 1, "P.png");
-	idxPlate->SetTexture(LOADTEXTURE(path));
-	idxPlate->SetBlendColor(playerColor);
-	CrownPlate->Start();
-	CrownPlate->SetActive(false);
-	
-	Pparameter->SetColor(playerColor);
-	model->SetTextureBlend(playerColor);
+	_IdxPlate->SetTexture(LOADTEXTURE(path));
+	_IdxPlate->SetBlendColor(_PlayerColor);
+	_CrownPlate->Start();
+	_CrownPlate->SetBlendColor((Color)Color::yellow * 4.0f);
+	_CrownPlate->SetActive(false);
+
+	_Pparameter->SetColor(_PlayerColor);
+	_Model->SetTextureBlend(_PlayerColor * 8.0f);
 }
 
 #include "DamageCollision.h"
@@ -153,148 +159,78 @@ void Player::Start()
 #include "fbEngine/Camera.h"
 void Player::Update()
 {
-	UpdateStateMachine();
-
-	ItemAction();
-	move = Vector3::zero;
-	if (!isAction)
+	//開始前じゃないなら
+	if (_GameRule->GetGameState() != GameRule::GameStateE::BEFORE_GAME)
 	{
+		//UpdateStateMachine();
+
+		ItemAction();
 		Move();
-	}else
-	{
-		//滑る？
-		if (jumpCount > 0)
-			dir.Scale(0.97f);
-		else
-			dir.Scale(0.93f);
-		move.Add(dir);
-	}
 
-	//n割り再生したら遷移開始
-	if (state == PState::KICK &&
-		anim->GetTimeRatio() > 0.7f)
-	{
-		ChangeState(PState::STAY);
-	}
-
-	if (state == PState::PUNCH &&
-		anim->GetTimeRatio() > 0.7f)
-	{
-		ChangeState(PState::STAY);
-	}
-
-	if (state == PState::SLASH)
-	{
-		move.Add(transform->Direction(Vector3(0, 0, 5.0f)));
-		if (anim->GetTimeRatio() > 0.8f)
+		//n割り再生したら遷移開始
+		//ステートパターン実装したい。
+		if (_IsAction)
 		{
-			ChangeState(PState::STAY);
-		}
-	}
-
-	Attack();
-	Damage();
-
-	Jump();
-	Blown();
-
-	//移動
-	if (move.Length() > 0)
-	{
-		transform->localPosition.Add(move);
-		transform->UpdateTransform();
-		rigid->Update();
-	}
-	
-	//重力が発生している
-	if(jumpCount > 0)
-	{
-		//地面との判定
-		Vector3 start, end;
-		//コリジョンの中心
-		start = transform->position + Vector3(0, 50, 0);
-		
-		btVector3 v = rb->getLinearVelocity() * Time::DeltaTime();
-		if ((move.y + v.y()) <= 0)
-			//{
-			//	if (v.y() > 0)
-			//	{
-			//		//上昇中
-			//		end = transform->position - Vector3(0, v.y()*0.01f, 0);
-			//	}
-			//	else
-			//	{
-			//		end = transform->position - Vector3(0, 0.0001f, 0);
-			//	}
-			//}
-			//else
-		{
-			//下降中
-			if (v.y() > 0)
+			float normalTime;
+			normalTime = 0.7f;
+			if (_State == PStateE::KICK &&
+				_Anim->GetTimeRatio() > normalTime)
 			{
-				end = transform->position + Vector3(0, v.y(), 0);
-			}
-			else
-			{
-				end = transform->position + Vector3(0, v.y() + 0.01f, 0);
+				ChangeState(PStateE::STAY);
 			}
 
-			if (!isAction)
-				ChangeState(PState::FALL);
-
-
-			//ステージ(地面)とのあたり判定
-			const bool isHit = (const DamageCollision*)PhysicsWorld::Instance()->FindOverlappedStage(rb, start, end);
-			//着地した
-			if (isHit)
+			if (_State == PStateE::PUNCH &&
+				_Anim->GetTimeRatio() > normalTime)
 			{
-				jump = false;
-				jumpCount = 0;
-				if (!isAction)
+				ChangeState(PStateE::STAY);
+			}
+
+			normalTime = 0.8f;
+			if (_State == PStateE::SLASH)
+			{
+				//前に移動(適当)
+				_Move.Add(transform->Direction(Vector3(0, 0, 5.0f)));
+				if (_Anim->GetTimeRatio() > normalTime)
 				{
-					if (dir.Length() != 0)
-					{
-						//ダッシュ
-						if (XboxInput(playeridx)->IsPressButton(XINPUT_GAMEPAD_LEFT_SHOULDER)
-#ifdef _DEBUG
-							|| KeyBoardInput->isPressed(DIK_LSHIFT)
-#endif // _DEBUG
-							)
-						{
-							ChangeState(PState::DASH);
-						}
-						else
-						{
-							ChangeState(PState::WALK);
-						}
-					}
-					else
-					{
-						ChangeState(PState::STAY);
-					}
+					ChangeState(PStateE::STAY);
 				}
 			}
 		}
+
+		Attack();
+		Damage();
+
+		Jump();
+		Blown();
 	}
+
+	//Y軸の移動量保存
+	float moveY = _Move.y;
+	//Y軸移動はしない
+	_Move.y = 0.0f;
+	if (_Move.Length() > 0)
+	{
+		//XZ軸の移動
+		transform->localPosition.Add(_Move);
+		transform->UpdateTransform();
+	}
+
+	_GravityCheck(moveY);
 
 	AnimationControl();
 
-	//テスト用
-	//transform->localAngle.y++;
-	
-
 	//場外にでたときの処理。
 	Death();
-
 }
 
 void Player::LateUpdate()
 {
-	idxPlate->transform->localPosition = transform->LocalPos(Vector3(-50, 150, 0));
-	idxPlate->transform->Update();
-	idxPlate->transform->LockAt(GameObjectManager::mainCamera->gameObject);
+	//頭の上あたり
+	_IdxPlate->transform->localPosition = transform->LocalPos(Vector3(-50, 150, 0));
+	_IdxPlate->transform->Update();
+	_IdxPlate->transform->LockAt(GameObjectManager::mainCamera->gameObject);
 
-	CrownPlate->transform->LockAt(GameObjectManager::mainCamera->gameObject);
+	_CrownPlate->transform->LockAt(GameObjectManager::mainCamera->gameObject);
 }
 
 void Player::UpdateStateMachine()
@@ -306,7 +242,7 @@ void Player::UpdateStateMachine()
 	//}
 }
 
-void Player::ChangeState(PState next)
+void Player::ChangeState(PStateE next)
 {
 	//if(currentState != nullptr)
 	//{
@@ -315,77 +251,77 @@ void Player::ChangeState(PState next)
 	//}
 	//switch (next)
 	//{
-	//case PState::STAY:
+	//case PStateE::STAY:
 	//	currentState = &StayState;
 	//	break;
-	//case PState::WALK:
+	//case PStateE::WALK:
 	//	currentState = &WalkState;
 	//	break;
-	//case PState::DASH:
+	//case PStateE::DASH:
 	//	currentState = &RunState;
 	//	break;
-	//case PState::JUMP:
+	//case PStateE::JUMP:
 	//	currentState = &JumpState;
 	//	break;
-	//case PState::FALL:
+	//case PStateE::FALL:
 	//	currentState = &FallState;
 	//	break;
-	//case PState::PUNCH:
+	//case PStateE::PUNCH:
 	//	currentState = &StayState;
 	//	break;
-	//case PState::KICK_CHARGE:
+	//case PStateE::KICK_CHARGE:
 	//	currentState = &StayState;
 	//	break;
-	//case PState::KICK:
+	//case PStateE::KICK:
 	//	currentState = &StayState;
 	//	break;
-	//case PState::SLASH:
+	//case PStateE::SLASH:
 	//	currentState = &StayState;
 	//	break;
-	//case PState::DAMAGE:
+	//case PStateE::DAMAGE:
 	//	currentState = &StayState;
 	//	break;
-	//case PState::BLOW:
+	//case PStateE::BLOW:
 	//	currentState = &StayState;
 	//	break;
 	//default:
 	//	//エラー
 	//	break;
 	//}
-	//state = next;
+	//_State = next;
 	//currentState->Enter();
 
 	//今のステートを抜けるときの処理
-	switch (state)
+	switch (_State)
 	{
-	case PState::STAY:
+	case PStateE::STAY:
 		break;
-	case PState::WALK:
+	case PStateE::WALK:
 		break;
-	case PState::DASH:
-		smoke->Emit(false);
+	case PStateE::DASH:
+		_Smoke->SetEmitFlg(false);
 		break;
-	case PState::JUMP:
+	case PStateE::JUMP:
 		break;
-	case PState::FALL:
+	case PStateE::FALL:
 		break;
-	case PState::PUNCH:
-		isAction = false;
+	case PStateE::PUNCH:
+		_IsAction = false;
 		break;
-	case PState::KICK_CHARGE:
-		isAction = false;
-		fire->Emit(false);
+	case PStateE::KICK_CHARGE:
+		_IsAction = false;
+		_Fire->SetEmitFlg(false);
 		break;
-	case PState::KICK:
-		isAction = false;
+	case PStateE::KICK:
+		_IsAction = false;
 		break;
-	case PState::SLASH:
-		isAction = false;
+	case PStateE::SLASH:
+		_IsAction = false;
 		break;
-	case PState::DAMAGE:
+	case PStateE::DAMAGE:
 		break;
-	case PState::BLOW:
-		smoke->Emit(false);
+	case PStateE::BLOW:
+		_Smoke->SetEmitFlg(false);
 		break;
 	default:
 		break;
@@ -393,91 +329,91 @@ void Player::ChangeState(PState next)
 	//次のステートに切り替わるときの処理
 	switch (next)
 	{
-	case PState::STAY:
+	case PStateE::STAY:
 		break;
-	case PState::WALK:
+	case PStateE::WALK:
 		break;
-	case PState::DASH:
-		smoke->Emit(true);
+	case PStateE::DASH:
+		_Smoke->SetEmitFlg(true);
 		break;
-	case PState::JUMP:
+	case PStateE::JUMP:
 		break;
-	case PState::FALL:
+	case PStateE::FALL:
 		break;
-	case PState::PUNCH:
-		isAction = true;
+	case PStateE::PUNCH:
+		_IsAction = true;
 		break;
-	case PState::KICK_CHARGE:
-		isAction = true;
+	case PStateE::KICK_CHARGE:
+		_IsAction = true;
 		break;
-	case PState::KICK:
-		isAction = true;
+	case PStateE::KICK:
+		_IsAction = true;
 		break;
-	case PState::SLASH:
-		isAction = true;
+	case PStateE::SLASH:
+		_IsAction = true;
 		break;
-	case PState::DAMAGE:
+	case PStateE::DAMAGE:
 		break;
-	case PState::BLOW:
-		smoke->Emit(true);
+	case PStateE::BLOW:
+		_Smoke->SetEmitFlg(true);
 		break;
 	default:
 		break;
 	}
-	state = next;
+	_State = next;
 }
 
 void Player::PlayAnimation(int idx, float time, int loop)
 {
 	//異なるアニメーションの時のみ再生
-	if(anim->GetPlayAnimNo() != idx)
+	if (_Anim->GetPlayAnimNo() != idx)
 	{
-		anim->PlayAnimation(idx, time, loop);
+		_Anim->PlayAnimation(idx, time, loop);
 	}
 }
 
 void Player::AnimationControl()
 {
-	switch (state)
+	switch (_State)
 	{
-	case PState::STAY:
+	case PStateE::STAY:
 		//待機モーション
 		PlayAnimation(0, 0.2f);
 		break;
-	case PState::WALK:
+	case PStateE::WALK:
 		PlayAnimation(1, 0.2f);
 		break;
-	case PState::DASH:
+	case PStateE::DASH:
 		PlayAnimation(2, 0.2f);
 		break;
-	case PState::JUMP:
+	case PStateE::JUMP:
 		//NONE
 		break;
-	case PState::FALL:
+	case PStateE::FALL:
 		//降下中モーション
 		PlayAnimation(9, 0.2f);
 		break;
-	case PState::PUNCH:
+	case PStateE::PUNCH:
 		//パンチ再生
 		PlayAnimation(3, 0.2f, 1);
-		anim->SetAnimeSpeed(2.0f);
+		_Anim->SetAnimeSpeed(2.0f);
 		break;
-	case PState::KICK_CHARGE:
+	case PStateE::KICK_CHARGE:
 		//蹴りため開始
 		PlayAnimation(4, 0.2f, 1);
 		break;
-	case PState::KICK:
+	case PStateE::KICK:
 		PlayAnimation(5, 0.1f, 1);
 		break;
-	case PState::SLASH:
+	case PStateE::SLASH:
 		//武器振り再生
 		PlayAnimation(8, 0.2f, 1);
-		anim->SetAnimeSpeed(1.5f);
+		_Anim->SetAnimeSpeed(1.5f);
 		break;
-	case PState::DAMAGE:
+	case PStateE::DAMAGE:
 		PlayAnimation(6, 0.2f, 1);
 		break;
-	case PState::BLOW:
+	case PStateE::BLOW:
 		PlayAnimation(7, 0.2f, 1);
 		break;
 	default:
@@ -487,63 +423,63 @@ void Player::AnimationControl()
 
 void Player::Attack()
 {
-	if (!isAction)
+	if (!_IsAction)
 	{
 		//Bボタン
-		if ((KeyBoardInput->isPush(DIK_Z) || XboxInput(playeridx)->isPushButton(XINPUT_GAMEPAD_B)))
+		if ((KeyBoardInput->isPush(DIK_Z) || XboxInput(_Playeridx)->IsPushButton(XINPUT_GAMEPAD_B)))
 		{
 			//アイテムを持っている
-			if (haveItem)
+			if (_HaveItem)
 			{
-				ChangeState(PState::SLASH);
+				ChangeState(PStateE::SLASH);
 			}
 			//パンチ
 			else
 			{
-				ChangeState(PState::PUNCH);
+				ChangeState(PStateE::PUNCH);
 			}
 		}
 
 		//Aボタン
-		if ((KeyBoardInput->isPush(DIK_SPACE) || XboxInput(playeridx)->isPushButton(XINPUT_GAMEPAD_A)))
+		if ((KeyBoardInput->isPush(DIK_SPACE) || XboxInput(_Playeridx)->IsPushButton(XINPUT_GAMEPAD_A)))
 		{
-			ChangeState(PState::KICK_CHARGE);
+			ChangeState(PStateE::KICK_CHARGE);
 		}
 	}
 
 	//チャージ中
-	if (state == PState::KICK_CHARGE)
+	if (_State == PStateE::KICK_CHARGE)
 	{
 		//フルチャージ
-		if (anim->GetPlaying() == false)
+		if (_Anim->GetPlaying() == false)
 		{
-			fire->Emit(true);
+			_Fire->SetEmitFlg(true);
 		}
 		//ボタンが離された
-		if (!KeyBoardInput->isPressed(DIK_SPACE) && !XboxInput(playeridx)->IsPressButton(XINPUT_GAMEPAD_A))
+		if (!KeyBoardInput->isPressed(DIK_SPACE) && !XboxInput(_Playeridx)->IsPressButton(XINPUT_GAMEPAD_A))
 		{
-			float rate = anim->GetTimeRatio();
+			double rate = _Anim->GetTimeRatio();
 			//フルチャージなら1.5倍
-			CharagePower = (rate >= 1.0f) ? 1.5f : rate;
-			ChangeState(PState::KICK);
+			_CharagePower = (rate >= 1.0f) ? 1.5f : rate;
+			ChangeState(PStateE::KICK);
 		}
 	}
 
 
-	if (isAction)
+	if (_IsAction)
 	{
 		//現在のフレーム取得
-		int frame = anim->NowFrame();
+		const int nowFrame = _Anim->NowFrame();
 
 		//移動量が吹き飛び値の補正になる
-		Vector3 V = dir;
-		V.Scale(0.3f);
+		Vector3 V = _Dir;
+		V.Scale(0.4f);
 
 		//パンチの攻撃判定
-		if (state == PState::PUNCH &&
-			frame == 8)
+		if (_State == PStateE::PUNCH &&
+			nowFrame == 8)
 		{
-			PunchSound->Play(false);
+			_PunchSound->Play(false);
 			//あたり判定を出す
 			AttackCollision* obj = GameObjectManager::AddNew<AttackCollision>("panch", 1);
 			Transform* t = obj->GetComponent<Transform>();
@@ -554,20 +490,21 @@ void Player::Attack()
 
 			DamageCollision::DamageCollisonInfo info;
 			//攻撃力補正
-			info.damage = Random::Range(2, 3) * Cparameter.power;
-			info.blown = transform->Direction(Vector3(0.0f, 0.5f, 2.0f) + V);
+			info.Damage = Random::Range(2, 3) * _Cparameter->Power;
+			info.Blown = transform->Direction(Vector3(0.0f, 60.0f, 60.0f) + V);
 			//吹き飛ばし補正
-			info.blown.Scale(Cparameter.blowCorrection);
-			info.rigor = 0.2f;
-			info.stoptime = 5;
-			obj->Initialize(playeridx, 0.2f, Vector3(50, 50, 50), info);
+			info.Blown.Scale(_Cparameter->BlowCorrection);
+			info.Rigor = 0.2f;
+			info.StopTime = 5;
+			float life = 0.2f;
+			obj->Create(_Playeridx, life, Vector3(50, 50, 50), info);
 		}
 
 		//キックの攻撃判定
-		if (state == PState::KICK &&
-			frame == 15)
+		if (_State == PStateE::KICK &&
+			nowFrame == 15)
 		{
-			PunchSound->Play(false);
+			_PunchSound->Play(false);
 			//あたり判定を出す
 			AttackCollision* obj = GameObjectManager::AddNew<AttackCollision>("kick", 1);
 			Transform* t = obj->GetComponent<Transform>();
@@ -581,18 +518,19 @@ void Player::Attack()
 
 			DamageCollision::DamageCollisonInfo info;
 			//攻撃力補正
-			info.damage = (Random::Range(7, 10) * (CharagePower + 0.2f)) * Cparameter.power;
-			info.blown = transform->Direction(Vector3(0.0f, 2.0f, 3.0f) + V);
+			info.Damage = (Random::Range(7, 10) * (_CharagePower + 0.2f)) * _Cparameter->Power;
+			info.Blown = transform->Direction(Vector3(0.0f, 120.0f, 180.0f) + V);
 			//吹き飛ばし補正
-			info.blown.Scale(Cparameter.blowCorrection * (CharagePower + 0.5f));
-			info.rigor = 0.6f;
-			info.stoptime = 10;
-			obj->Initialize(playeridx, 0.2f, size, info);
+			info.Blown.Scale(_Cparameter->BlowCorrection * (_CharagePower + 0.5f));
+			info.Rigor = 0.6f;
+			info.StopTime = 10;
+			float life = 0.2f;
+			obj->Create(_Playeridx, life, size, info);
 		}
 
 		//剣の攻撃判定
-		if (state == PState::SLASH &&
-			frame <= 30 && (frame % 5) == 0)
+		if (_State == PStateE::SLASH &&
+			nowFrame <= 30 && (nowFrame % 5) == 0)
 		{
 			//あたり判定を出す
 			AttackCollision* obj = GameObjectManager::AddNew<AttackCollision>("sword", 1);
@@ -607,13 +545,14 @@ void Player::Attack()
 
 			DamageCollision::DamageCollisonInfo info;
 			//攻撃力補正
-			info.damage = Random::Range(1, 2) * Cparameter.power;
-			info.blown = transform->Direction(Vector3(1.0f, 1.5f, 0.0f) + V);
+			info.Damage = Random::Range(1, 2) * _Cparameter->Power;
+			info.Blown = transform->Direction(Vector3(60.0f, 90.0f, 0.0f) + V);
 			//吹き飛ばし補正
-			info.blown.Scale(Cparameter.blowCorrection);
-			info.rigor = 0.1f;
-			info.stoptime = 1;
-			obj->Initialize(playeridx, 0.01f, size, info);
+			info.Blown.Scale(_Cparameter->BlowCorrection);
+			info.Rigor = 0.1f;
+			info.StopTime = 1;
+			float life = 0.01f;
+			obj->Create(_Playeridx, life, size, info);
 		}
 	}
 }
@@ -624,14 +563,14 @@ void Player::Damage()
 	FOR(PLAYER_NUM)
 	{
 		//自分のあたり判定はしない
-		if (i == playeridx)
+		if (i == _Playeridx)
 			continue;
 
-		const DamageCollision *co = (const DamageCollision*)PhysicsWorld::Instance()->FindOverlappedDamageCollision(rb, i);
+		const DamageCollision *co = (const DamageCollision*)PhysicsWorld::Instance()->FindOverlappedDamageCollision(_RB, i);
 		if (co)
 		{
 			//吹き飛ぶ方向
-			Vector3 vec = co->info.blown;
+			Vector3 vec = co->info.Blown;
 			//反対を向く
 			vec.Scale(-1);
 			vec.y = 0;
@@ -644,33 +583,30 @@ void Player::Damage()
 
 			//最後に攻撃してきたとしてやつ保存
 			//とりあえず永続
-			lastAttack = i;
+			_LastAttack = i;
 			//ダメージ加算(999が最大)
-			damage = min(999, damage + co->info.damage);
+			_Damage = min(999, _Damage + co->info.Damage);
 			//テキストのダメージ更新
-			Pparameter->SetDamage(damage);
+			_Pparameter->SetDamage(_Damage);
 			//タイマー初期化
-			rigortimer = 0;
+			_RigorTimer = 0;
 			//硬直時間受け取り
-			rigor = co->info.rigor;
+			_Rigor = co->info.Rigor;
 			//吹き飛び力受け取り
-			blown = co->info.blown;
+			_Blown = co->info.Blown;
 			//吹き飛び補正
-			blown.Scale(Cparameter.toBlowCorrection);
+			_Blown.Scale(_Cparameter->ToBlowCorrection);
 			//更にダメージによる吹き飛び補正
-			blown.Scale(1.0f + (float)damage / 30.0f);
+			_Blown.Scale(1.0f + (float)_Damage / 30.0f);
 
-			//重力を0に
-			btVector3 v = rb->getLinearVelocity();
-			//下方向のやつを消す
-			rb->setLinearVelocity(btVector3(v.x(), max(0.0f, v.y()), v.z()));
+
 			//吹き飛ばし力があるなら
-			if (blown.Length() > 0)
+			if (_Blown.Length() > 0)
 			{
 				//コントローラ振動
-				XboxInput(playeridx)->Vibration(20000, 20000);
+				XboxInput(_Playeridx)->Vibration(20000, 20000);
 				//吹き飛んだのでジャンプ回数を1に
-				jumpCount = 1;
+				_JumpCount = 1;
 			}
 		}
 	}
@@ -680,130 +616,141 @@ void Player::Damage()
 void Player::Blown()
 {
 	//吹き飛ばし力があるのなら。
-	if (blown.Length() > 0)
+	if (_Blown.Length() > 0)
 	{
 		//前フレームとの時間の差
-		float delta = Time::DeltaTime();
+		const float delta = Time::DeltaTime();
 		//ぶっ飛び計算
-		rigortimer += delta;
+		_RigorTimer += delta;
 		//硬直時間以下
-		if (rigortimer <= rigor)
+		if (_RigorTimer <= _Rigor)
 		{
 			//吹き飛び
-			move.Add(blown);
-			ChangeState(PState::BLOW);
+			_Move.Add(_Blown * delta);
+			ChangeState(PStateE::BLOW);
 		}
 		else
 		{
 			//超過した時間
-			float overtime = rigortimer - rigor;
+			float overtime = _RigorTimer - _Rigor;
 			//失われし時
 			float losttime = delta - overtime;
 			//吹き飛ばし
-			blown.Scale(losttime);
-			move.Add(blown);
+			_Blown.Scale(losttime);
+			_Move.Add(_Blown);
 			//吹き飛ばしを0に
-			blown = Vector3::zero;
+			_Blown = Vector3::zero;
 
 			//コントローラ振動を止める
-			XboxInput(playeridx)->Vibration(0, 0);
-			ChangeState(PState::STAY);
+			XboxInput(_Playeridx)->Vibration(0, 0);
+			ChangeState(PStateE::STAY);
 		}
 	}
 }
 
 void Player::Move()
 {
-	float s = Cparameter.speed;
-	dir = Vector3::zero;
-	//コントローラー移動
-	dir.x = (XboxInput(playeridx)->GetAnalog(AnalogInput::L_STICK).x / 32767.0f)*s;
-	dir.z = (XboxInput(playeridx)->GetAnalog(AnalogInput::L_STICK).y / 32767.0f)*s;
+	//初期化
+	_Move = Vector3::zero;
+	if (!_IsAction)
+	{
+		const float speed = _Cparameter->Speed;
+		_Dir = Vector3::zero;
+		//コントローラー移動
+		_Dir.x = (XboxInput(_Playeridx)->GetAnalog(AnalogInputE::L_STICK).x / 32767.0f)*speed;
+		_Dir.z = (XboxInput(_Playeridx)->GetAnalog(AnalogInputE::L_STICK).y / 32767.0f)*speed;
 #ifdef _DEBUG
-	//キーボード(デバッグ用)
-	if (KeyBoardInput->isPressed(DIK_W))
-	{
-		dir.z += s;
-	}
-	if (KeyBoardInput->isPressed(DIK_S))
-	{
-		dir.z -= s;
-	}
-	if (KeyBoardInput->isPressed(DIK_A))
-	{
-		dir.x -= s;
-	}
-	if (KeyBoardInput->isPressed(DIK_D))
-	{
-		dir.x += s;
-	}
+		//キーボード(デバッグ用)
+		if (KeyBoardInput->isPressed(DIK_W))
+		{
+			_Dir.z += speed;
+		}
+		if (KeyBoardInput->isPressed(DIK_S))
+		{
+			_Dir.z -= speed;
+		}
+		if (KeyBoardInput->isPressed(DIK_A))
+		{
+			_Dir.x -= speed;
+		}
+		if (KeyBoardInput->isPressed(DIK_D))
+		{
+			_Dir.x += speed;
+		}
 #endif // _DEBUG
 
-	//移動したか
-	if (dir.Length() != 0)
-	{
-		//ダッシュ
-		if (XboxInput(playeridx)->IsPressButton(XINPUT_GAMEPAD_LEFT_SHOULDER)
-#ifdef _DEBUG
-			|| KeyBoardInput->isPressed(DIK_LSHIFT)
-#endif // _DEBUG
-			)
+		//移動したか
+		if (_Dir.Length() != 0)
 		{
-			//はやくする
-			dir.Scale(2.0f);
-			if (state != PState::FALL)
-				ChangeState(PState::DASH);
+			//ダッシュ
+			if (XboxInput(_Playeridx)->IsPressButton(XINPUT_GAMEPAD_LEFT_SHOULDER)
+#ifdef _DEBUG
+				|| KeyBoardInput->isPressed(DIK_LSHIFT)
+#endif // _DEBUG
+				)
+			{
+				//はやくする
+				_Dir.Scale(2.0f);
+				if (_State != PStateE::FALL)
+					ChangeState(PStateE::DASH);
+			}
+			else
+			{
+				//普通の歩き
+				if (_State != PStateE::FALL)
+					ChangeState(PStateE::WALK);
+			}
+
+			//カメラからみた向きに変換
+			Camera* c = GameObjectManager::mainCamera;
+			_Dir = c->transform->Direction(_Dir)*Time::DeltaTime();
+			//Yの移動量を消す
+			_Move = Vector3(_Dir.x, 0.0f, _Dir.z);
+
+			Vector3 vec = _Move;
+			//正規化
+			vec.Normalize();
+			//ベクトルから角度を求める
+			float rot = D3DXToRadian(360) - atan2f(vec.z, vec.x);
+			//回転
+			transform->localAngle.y = D3DXToDegree(rot + D3DXToRadian(90));
 		}
+		//移動していない
+		else if (_State == PStateE::WALK || _State == PStateE::DASH)
+		{
+			//待機
+			ChangeState(PStateE::STAY);
+		}
+	}
+	else
+	{
+		//滑る処理
+		if (_JumpCount > 0)
+			_Dir.Scale(0.97f);
 		else
-		{
-			//普通の歩き
-			if (state != PState::FALL)
-				ChangeState(PState::WALK);
-		}
-
-		//カメラからみた向きに変換
-		Camera* c = GameObjectManager::mainCamera;
-		dir = c->transform->Direction(dir);
-		//Yの移動量を消す
-		dir.y = 0.0f;
-		move = Vector3(dir.x, dir.y, dir.z);
-
-		Vector3 vec = dir;
-		//正規化
-		vec.Normalize();
-		//ベクトルから角度を求める
-		float rot = D3DXToRadian(360) - atan2f(vec.z, vec.x);
-		//回転
-		transform->localAngle.y = D3DXToDegree(rot + D3DXToRadian(90));
-	}
-	//移動していない
-	else if(state == PState::WALK || state == PState::DASH)
-	{
-		//待機
-		ChangeState(PState::STAY);
+			_Dir.Scale(0.93f);
+		_Move.Add(_Dir);
 	}
 }
 
 void Player::Jump()
 {
 	//ジャンプ
-	if (isAction == false &&
-		(KeyBoardInput->isPush(DIK_J) || XboxInput(playeridx)->isPushButton(XINPUT_GAMEPAD_Y)))
+	if (_IsAction == false &&
+		(KeyBoardInput->isPush(DIK_J) || XboxInput(_Playeridx)->IsPushButton(XINPUT_GAMEPAD_Y)))
 	{
-		if (jumpCount < 2)
+		if (_JumpCount < 2)
 		{
-			jump = true;
-			btVector3 v = rb->getLinearVelocity();
-			//下方向のやつを消す
-			rb->setLinearVelocity(btVector3(v.x(), max(0.0f, v.y()), v.z()));
-			jumpCount++;
+			_Jump = true;
+			_Gravity = 0;
+			_JumpCount++;
 		}
 	}
-	if (jump)
+	if (_Jump)
 	{
-		float jumpPower = 9.0f;
+		float jumpPower = 350.0f * Time::DeltaTime();
 		//上に移動
-		move.y += jumpPower;
+		_Move.y += jumpPower;
 	}
 }
 
@@ -813,45 +760,26 @@ void Player::Death()
 	if (transform->localPosition.y < -200)
 	{
 		//ストックを減らす？
-		if (stock > 0)
+		if (_Stock > 0)
 		{
-			stock--;
+			_Stock--;
 			//UIの数値更新
-			Pparameter->SetStock(stock);
+			_Pparameter->SetStock(_Stock);
 		}
 
 		//スコア更新
-		gameRule->UpdateScore(lastAttack);
+		_GameRule->UpdateScore(_LastAttack);
 
-		lastAttack = -1;
-		damage = 0;
-		Pparameter->SetDamage(damage);
-		blown = Vector3::zero;
-		move = Vector3::zero;
-		dir = Vector3::zero;
-		rigor = 0;
-		jumpCount = 1;
-		jump = true;
-		//btVector3 v = rb->getLinearVelocity();
-		//剛体の移動量も消す
-		rb->setLinearVelocity(btVector3(0.0f, 0.0f, 0.0f));
-		ChangeState(PState::STAY);
+		_Reset();
 
-		//残機が0じゃないなら(負数なら残機無限)
-		if (stock != 0)
+		//残機が0なら(負数なら残機無限)
+		if (_Stock == 0)
 		{
-			//スタートポジションに移動
-			transform->localPosition = Vector3(0, 200, 0);
-			transform->localAngle = Vector3::zero;
-		}
-		else
-		{
-			//死
 			//死を伝える
-			gameRule->PlayerDeath(playeridx);
+			_GameRule->PlayerDeath(_Playeridx);
 			this->SetActive(false);
-			idxPlate->SetActive(false);
-			CrownPlate->SetActive(false);
+			_IdxPlate->SetActive(false);
+			_CrownPlate->SetActive(false);
 		}
 	}
 }
@@ -860,28 +788,34 @@ void Player::Death()
 
 void Player::ItemAction()
 {
-	if(haveItem)
+	if (_HaveItem)
 	{
-		//離す
-		if (KeyBoardInput->isPush(DIK_X) || XboxInput(playeridx)->isPushButton(XINPUT_GAMEPAD_RIGHT_SHOULDER))
+		if (KeyBoardInput->isPush(DIK_X) || XboxInput(_Playeridx)->IsPushButton(XINPUT_GAMEPAD_RIGHT_SHOULDER))
 		{
-			haveItem->ToSeparate();
-			haveItem = nullptr;
+			//アイテムを離す
+			_HaveItem->ToSeparate(transform->GetWorldMatrix());
+			_HaveItem = nullptr;
 		}
 	}
 	//アイテムを持ってない
 	else
 	{
 		//アイテム(ID:6)と当たっているか？
-		const Collision *coll = (const Collision*)PhysicsWorld::Instance()->FindOverlappedDamageCollision(rb, 6);
+		const Collision *coll = (const Collision*)PhysicsWorld::Instance()->FindOverlappedDamageCollision(_RB, 6);
 		//当たっている
 		if (coll)
 		{
-			if (KeyBoardInput->isPush(DIK_Z) || XboxInput(playeridx)->isPushButton(XINPUT_GAMEPAD_B))
+			//ボタンが押された
+			if (KeyBoardInput->isPush(DIK_Z) || XboxInput(_Playeridx)->IsPushButton(XINPUT_GAMEPAD_B))
 			{
-				haveItem = (Item*)coll->gameObject;
+				//アイテムオブジェクト取得
+				Item* item = (Item*)coll->gameObject;
 				//アイテムを持つ
-				haveItem->ToHave(&handFrame->CombinedTransformationMatrix);
+				if (item->ToHave(&_HandFrame->CombinedTransformationMatrix))
+				{
+					//持てたならアドレス保持
+					_HaveItem = item;
+				}
 			}
 		}
 	}
@@ -890,38 +824,126 @@ void Player::ItemAction()
 void Player::SetInfo(CharacterInfo * info)
 {
 	SkinModelData* modeldata = new SkinModelData();
-	modeldata->CloneModelData(SkinModelManager::LoadModel(info->path), anim);
-	Pparameter->SetName(info->name);
-	model->SetModelData(modeldata);
+	modeldata->CloneModelData(SkinModelManager::LoadModel(info->Path), _Anim);
+	_Pparameter->SetName(info->Name);
+	_Model->SetModelData(modeldata);
 	//持ち手のフレーム取得
-	handFrame = (D3DXFRAME_DERIVED*)D3DXFrameFind(modeldata->GetFrameRoot(), "Item");
+	_HandFrame = (D3DXFRAME_DERIVED*)D3DXFrameFind(modeldata->GetFrameRoot(), "Item");
 	//値コピー
-	Cparameter = info->parameter;
+	_Cparameter = info->Parameter;
 }
 
 void Player::AddKillCount()
 {
-	killCount++;
-	Pparameter->SetKill(killCount);
+	_KillCount++;
+	_Pparameter->SetKill(_KillCount);
 }
 
 int Player::GetKillCount()
 {
-	return killCount;
+	return _KillCount;
 }
 
 int Player::GetStockCount()
 {
-	return stock;
+	return _Stock;
 }
 
 void Player::No1(bool f)
 {
-	if (active == true);
-	CrownPlate->SetActive(f);
+	if (_Active == true)
+		_CrownPlate->SetActive(f);
 }
 
 const Vector3 Player::GetDir()
 {
-	return dir;
+	return _Dir;
+}
+
+void Player::_Reset()
+{
+	ChangeState(PStateE::STAY);
+	_IsAction = false;
+	_Jump = true;
+	_JumpCount = 1;
+	_Gravity = 0;
+	_LastAttack = -1;
+	_CharagePower = 0.0f;
+	_Damage = 0;
+	_Rigor = 0;
+	_Pparameter->SetDamage(_Damage);
+	_Blown = Vector3::zero;
+	_Move = Vector3::zero;
+	_Dir = Vector3::zero;
+
+	//スタートポジションに移動(適当)
+	transform->localPosition = Vector3(0, 200, 0);
+	transform->localAngle = Vector3::zero;
+}
+
+void Player::_GravityCheck(const float & movey)
+{
+	//加速度
+	const float addGravity = -9.8f * Time::DeltaTime();
+	//重力加速
+	_Gravity += addGravity;
+	float MoveY = movey + _Gravity;
+	//重力が発生している
+	if (MoveY < 0.0f)
+	{
+		//地面との判定
+		Vector3 start, end;
+		//コリジョンの中心
+		start = transform->position + Vector3(0, (_Height / 2), 0);
+		//終点(落下先)
+		end = start + Vector3(0, MoveY, 0);
+
+		//ステージ(地面)とのあたり判定
+		const SweepResultGround hit = PhysicsWorld::Instance()->FindOverlappedStage(_RB, start, end);
+		//地面と当たった
+		if (hit.isHit)
+		{
+			//ヒットした位置に着地
+			transform->localPosition.y = hit.hitPos.y;
+			_Jump = false;
+			_JumpCount = 0;
+			_Gravity = 0;
+			if (!_IsAction)
+			{
+				if (_Dir.Length() != 0)
+				{
+					//ダッシュ
+					if (XboxInput(_Playeridx)->IsPressButton(XINPUT_GAMEPAD_LEFT_SHOULDER)
+#ifdef _DEBUG
+						|| KeyBoardInput->isPressed(DIK_LSHIFT)
+#endif // _DEBUG
+						)
+					{
+						ChangeState(PStateE::DASH);
+					}
+					else
+					{
+						ChangeState(PStateE::WALK);
+					}
+				}
+				else
+				{
+					ChangeState(PStateE::STAY);
+				}
+			}
+		}
+		else
+		{
+			//落下
+			transform->localPosition.y += MoveY;
+			//空中？
+			if (!_IsAction)
+				ChangeState(PStateE::FALL);
+		}
+	}
+	else
+	{
+		//上昇
+		transform->localPosition.y += MoveY;
+	}
 }

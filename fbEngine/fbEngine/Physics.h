@@ -1,4 +1,5 @@
 #pragma once
+#include "PhysicsCallback.h"
 
 class Collision;
 class RigidBody;
@@ -32,8 +33,8 @@ public:
 	}
 	void AddCollision(Collision* coll);
 	void RemoveCollision(Collision* coll);
-	const Collision* FindOverlappedDamageCollision(btCollisionObject * colliObject,int id) const;
-	const bool FindOverlappedStage(btCollisionObject * colliObject,Vector3 start,Vector3 end) const;
+	const Collision* FindOverlappedDamageCollision(btCollisionObject * colliObject,const int& id) const;
+	const SweepResultGround FindOverlappedStage(btCollisionObject * colliObject,const Vector3& start,const Vector3& end) const;
 
 	static PhysicsWorld* Instance();
 private:
@@ -43,5 +44,5 @@ private:
 	std::unique_ptr<btSequentialImpulseConstraintSolver>	constraintSolver;		//!<コンストレイントソルバー。拘束条件の解決処理。
 	std::unique_ptr<btDiscreteDynamicsWorld>				dynamicWorld;			//!<ワールド。
 
-	static PhysicsWorld* instance;
+	static PhysicsWorld* _Instance;
 };

@@ -56,7 +56,7 @@ enum	btRigidBodyFlags
 ///There are 3 types of rigid bodies: 
 ///- A) Dynamic rigid bodies, with positive mass. Motion is controlled by rigid body dynamics.
 ///- B) Fixed objects with zero mass. They are not moving (basically collision objects)
-///- C) Kinematic objects, which are objects without mass, but the user can move them. There is on-way interaction, and Bullet calculates a velocity based on the timestep and previous and current world transform.
+///- C) Kinematic objects, which are objects without mass, but the user can move them. There is on-way interaction, and Bullet calculates a velocity based on the timestep and previous and current world Transform.
 ///Bullet automatically deactivates dynamic rigid bodies, when the velocity is below a threshold for a given time.
 ///Deactivated (sleeping) rigid bodies don't take any processing time, except a minor broadphase collision detection impact (to allow active objects to activate/wake up sleeping objects)
 class btRigidBody  : public btCollisionObject
@@ -87,7 +87,7 @@ class btRigidBody  : public btCollisionObject
 	btScalar		m_linearSleepingThreshold;
 	btScalar		m_angularSleepingThreshold;
 
-	//m_optionalMotionState allows to automatic synchronize the world transform for active objects
+	//m_optionalMotionState allows to automatic synchronize the world Transform for active objects
 	btMotionState*	m_optionalMotionState;
 
 	//keep track of typed constraints referencing this rigid body, to disable collision between linked bodies
@@ -113,14 +113,14 @@ public:
 
 	///The btRigidBodyConstructionInfo structure provides information to create a rigid body. Setting mass to zero creates a fixed (non-dynamic) rigid body.
 	///For dynamic objects, you can use the collision shape to approximate the local inertia tensor, otherwise use the zero vector (default argument)
-	///You can use the motion state to synchronize the world transform between physics and graphics objects. 
-	///And if the motion state is provided, the rigid body will initialize its initial world transform from the motion state,
+	///You can use the motion state to synchronize the world Transform between physics and graphics objects. 
+	///And if the motion state is provided, the rigid body will initialize its initial world Transform from the motion state,
 	///m_startWorldTransform is only used when you don't provide a motion state.
 	struct	btRigidBodyConstructionInfo
 	{
 		btScalar			m_mass;
 
-		///When a motionState is provided, the rigid body will initialize its world transform from the motion state
+		///When a motionState is provided, the rigid body will initialize its world Transform from the motion state
 		///In this case, m_startWorldTransform is ignored.
 		btMotionState*		m_motionState;
 		btTransform	m_startWorldTransform;
@@ -467,7 +467,7 @@ public:
 		m_broadphaseHandle = broadphaseProxy;
 	}
 
-	//btMotionState allows to automatic synchronize the world transform for active objects
+	//btMotionState allows to automatic synchronize the world Transform for active objects
 	btMotionState*	getMotionState()
 	{
 		return m_optionalMotionState;

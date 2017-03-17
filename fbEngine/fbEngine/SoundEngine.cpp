@@ -6,7 +6,7 @@
 #include "WaveFile.h"
 #include "SoundSource.h"
 
-SoundEngine* SoundEngine::instance = nullptr;
+SoundEngine* SoundEngine::_Instance = nullptr;
 
 #define NUM_PRESETS 30
 
@@ -220,11 +220,11 @@ IXAudio2SourceVoice* SoundEngine::CreateXAudio2SourceVoice(WaveFile* waveFile, b
 }
 SoundEngine* SoundEngine::Instance()
 {
-	if (instance == nullptr) 
+	if (_Instance == nullptr) 
 	{
-		instance = new SoundEngine();
+		_Instance = new SoundEngine();
 	}
-	return instance;
+	return _Instance;
 }
 /*!
 * @brief	çXêVÅB

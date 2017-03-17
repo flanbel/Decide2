@@ -1,26 +1,32 @@
 #include "RenderTargetManager.h"
 
-RenderTargetManager*  RenderTargetManager::instance;
+RenderTargetManager*  RenderTargetManager::_Instance;
 
 RenderTarget::RenderTarget()
 {
 	texture = new TEXTURE();
 }
 
-void RenderTarget::Create(Vector2 size)
+void RenderTarget::Create(Vector2 size, _D3DFORMAT colorfmt)
 {
+	//前のテクスチャがあるなら
+	if(texture->pTexture)
+	{
+		//削除
+		SAFE_DELETE(texture->pTexture);
+	}
 	//テクスチャ作成
 	HRESULT hr = (*graphicsDevice()).CreateTexture(
 		size.x, size.y,
 		1,
 		D3DUSAGE_RENDERTARGET,
-		D3DFMT_A8R8G8B8,
+		colorfmt,
 		D3DPOOL_DEFAULT,
 		&texture->pTexture,
 		NULL);
 
 	//画像サイズを画面サイズに
-	texture->size = size;
+	texture->Size = size;
 
 	//ビューポート設定
 	viewport = { 0, 0, (DWORD)size.x, (DWORD)size.y, 0.0f, 1.0f };
@@ -29,49 +35,53 @@ void RenderTarget::Create(Vector2 size)
 	texture->pTexture->GetSurfaceLevel(0, &buffer);
 
 	//深度バッファ作成
-	(*graphicsDevice()).CreateDepthStencilSurface(
+	hr = (*graphicsDevice()).CreateDepthStencilSurface(
 		size.x, size.y,
-		D3DFMT_D16,
+		D3DFMT_D24S8,
 		D3DMULTISAMPLE_NONE,
 		0,
 		TRUE,
 		&depth,
 		NULL);
+
+	int a = 0;
 }
 
 RenderTargetManager::RenderTargetManager()
 {
-	if (backBuffer == nullptr)
+	if (_BackBuffer == nullptr)
 	{
-		backBuffer = new RenderTarget();
+		_BackBuffer = new RenderTarget();
 
 		//バックバッファ(レンダリングターゲット)保持
 		//参照カウンタがあがる
-		(*graphicsDevice()).GetRenderTarget(0, &backBuffer->buffer);
+		(*graphicsDevice()).GetRenderTarget(0, &_BackBuffer->buffer);
 		//深度バッファ保持
-		(*graphicsDevice()).GetDepthStencilSurface(&backBuffer->depth);
+		(*graphicsDevice()).GetDepthStencilSurface(&_BackBuffer->depth);
 		//ビューポート保持
-		(*graphicsDevice()).GetViewport(&backBuffer->viewport);
+		(*graphicsDevice()).GetViewport(&_BackBuffer->viewport);
 		//参照カウンタを下げる
-		//backBuffer->buffer->Release();
+		//_BackBuffer->buffer->Release();
 
 		//レンダリングターゲット数取得
 		D3DCAPS9 Caps;
 		(*graphicsDevice()).GetDeviceCaps(&Caps);
 		DWORD MaxRT = Caps.NumSimultaneousRTs;
-		RenderTargetNum = MaxRT;
+		_MaxRTNum = MaxRT;
 
-		FOR(RenderTargetNum)
+		FOR(_MaxRTNum)
 		{
 			RenderTarget* ren = new RenderTarget();
+			//とりあえず浮動小数点バッファで作ってみる(絶対無駄がある)
 			ren->Create(g_WindowSize*2);
-			SetRenderTarget(i, ren);
-			renderTargerList.push_back(ren);
+			ren->texture->Size = g_WindowSize;
+			SetRT(i, ren);
+			_RTList.push_back(ren);
 		}
 	}
 }
 
-void RenderTargetManager::ReSetRenderTarget(DWORD Index, RenderTarget* renderTarget, Color color)
+void RenderTargetManager::ReSetRT(DWORD Index, RenderTarget* renderTarget, Color color)
 {
 	//テクスチャをレンダリングターゲットに
 	(*graphicsDevice()).SetRenderTarget(Index, renderTarget->buffer);
@@ -90,7 +100,15 @@ void RenderTargetManager::ReSetRenderTarget(DWORD Index, RenderTarget* renderTar
 		0);
 }
 
-void RenderTargetManager::SetRenderTarget(DWORD Index, RenderTarget* renderTarget)
+void RenderTargetManager::ReSetRT()
+{
+	FOR(_MaxRTNum)
+	{
+		ReSetRT(i, _RTList[i]);
+	}
+}
+
+void RenderTargetManager::SetRT(DWORD Index, RenderTarget* renderTarget)
 {
 	//テクスチャをレンダリングターゲットに
 	(*graphicsDevice()).SetRenderTarget(Index, renderTarget->buffer);
@@ -100,55 +118,39 @@ void RenderTargetManager::SetRenderTarget(DWORD Index, RenderTarget* renderTarge
 	(*graphicsDevice()).SetViewport(&renderTarget->viewport);
 }
 
-void RenderTargetManager::SetRenderTarget(DWORD Index, int idx)
+void RenderTargetManager::SetRT(DWORD Index, int idx)
 {
 	//テクスチャをレンダリングターゲットに
-	(*graphicsDevice()).SetRenderTarget(Index, renderTargerList[idx]->buffer);
+	(*graphicsDevice()).SetRenderTarget(Index, _RTList[idx]->buffer);
 	//テクスチャ用の深度バッファ作成
-	(*graphicsDevice()).SetDepthStencilSurface(renderTargerList[idx]->depth);
+	(*graphicsDevice()).SetDepthStencilSurface(_RTList[idx]->depth);
 	//ビューポートを変更に
-	(*graphicsDevice()).SetViewport(&renderTargerList[idx]->viewport);
+	(*graphicsDevice()).SetViewport(&_RTList[idx]->viewport);
 }
 
-void RenderTargetManager::ReSetRenderTarget()
-{
-	FOR(RenderTargetNum)
-	{
-		ReSetRenderTarget(i, renderTargerList[i]);
-	}
-}
-
-void RenderTargetManager::BeforeRenderTarget()
-{
-	//0～最大数のレンダーターゲットを退避
-	for(short i = 0;i < RenderTargetNum;i++)
-	{
-		RemoveRenderTarget(i);
-	}
-	//元に戻す
-	SetRenderTarget(0, backBuffer);
-}
-
-TEXTURE* RenderTargetManager::GetRenderTargetTexture(DWORD idx)
-{
-	return renderTargerList[idx]->texture;
-}
-
-RenderTarget* RenderTargetManager::GetRenderTarget(DWORD idx)
-{
-	return renderTargerList[idx];
-}
-
-//void RenderTargetManager::CopyTexture(DWORD Idx,TEXTURE* tex)
-//{
-//	TEXTURE* me = renderTargerList[Idx]->texture;
-//	//テクスチャの値をコピー
-//	//memcpy_s(tex->pTexture, sizeof(IDirect3DTexture9), me->pTexture, sizeof(IDirect3DTexture9));
-//	tex->pTexture = me->pTexture;
-//	tex->size = me->size;
-//}
-
-void RenderTargetManager::RemoveRenderTarget(DWORD idx)
+void RenderTargetManager::RemoveRT(DWORD idx)
 {
 	(*graphicsDevice()).SetRenderTarget(idx, NULL);
+	(*graphicsDevice()).SetDepthStencilSurface(NULL);
+}
+
+void RenderTargetManager::BeforeRT()
+{
+	//0～最大数のレンダーターゲットを退避
+	for (short i = 0; i < _MaxRTNum; i++)
+	{
+		RemoveRT(i);
+	}
+	//元に戻す
+	SetRT(0, _BackBuffer);
+}
+
+TEXTURE* RenderTargetManager::GetRTTextureFromList(DWORD idx)
+{
+	return _RTList[idx]->texture;
+}
+
+RenderTarget* RenderTargetManager::GetRTFromList(DWORD idx)
+{
+	return _RTList[idx];
 }

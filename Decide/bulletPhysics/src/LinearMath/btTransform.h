@@ -74,7 +74,7 @@ public:
 	}
 
 
-  /**@brief Set the current transform as the value of the product of two transforms
+  /**@brief Set the current Transform as the value of the product of two transforms
    * @param t1 Transform 1
    * @param t2 Transform 2
    * This = Transform1 * Transform2 */
@@ -90,19 +90,19 @@ public:
 		}
 		*/
 
-/**@brief Return the transform of the vector */
+/**@brief Return the Transform of the vector */
 	SIMD_FORCE_INLINE btVector3 operator()(const btVector3& x) const
 	{
         return x.dot3(m_basis[0], m_basis[1], m_basis[2]) + m_origin;
 	}
 
-  /**@brief Return the transform of the vector */
+  /**@brief Return the Transform of the vector */
 	SIMD_FORCE_INLINE btVector3 operator*(const btVector3& x) const
 	{
 		return (*this)(x);
 	}
 
-  /**@brief Return the transform of the btQuaternion */
+  /**@brief Return the Transform of the btQuaternion */
 	SIMD_FORCE_INLINE btQuaternion operator*(const btQuaternion& q) const
 	{
 		return getRotation() * q;
@@ -176,7 +176,7 @@ public:
 	}
 
   /**@brief Multiply this Transform by another(this = this * another) 
-   * @param t The other transform */
+   * @param t The other Transform */
 	btTransform& operator*=(const btTransform& t) 
 	{
 		m_origin += m_basis * t.m_origin;
@@ -184,22 +184,22 @@ public:
 		return *this;
 	}
 
-  /**@brief Return the inverse of this transform */
+  /**@brief Return the inverse of this Transform */
 	btTransform inverse() const
 	{ 
 		btMatrix3x3 inv = m_basis.transpose();
 		return btTransform(inv, inv * -m_origin);
 	}
 
-  /**@brief Return the inverse of this transform times the other transform
-   * @param t The other transform 
+  /**@brief Return the inverse of this Transform times the other Transform
+   * @param t The other Transform 
    * return this.inverse() * the other */
 	btTransform inverseTimes(const btTransform& t) const;  
 
-  /**@brief Return the product of this transform and the other */
+  /**@brief Return the product of this Transform and the other */
 	btTransform operator*(const btTransform& t) const;
 
-  /**@brief Return an identity transform */
+  /**@brief Return an identity Transform */
 	static const btTransform&	getIdentity()
 	{
 		static const btTransform identityTransform(btMatrix3x3::getIdentity());

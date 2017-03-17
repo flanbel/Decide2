@@ -219,7 +219,7 @@ public:
 	///Preliminary serialization test for Bullet 2.76. Loading those files requires a separate parser (see Bullet/Demos/SerializeDemo)
 	virtual	void	serialize(btSerializer* serializer);
 
-	///Interpolate motion state between previous and current transform, instead of current and next transform.
+	///Interpolate motion state between previous and current Transform, instead of current and next Transform.
 	///This can relieve discontinuities in the rendering, due to penetrations
 	void setLatencyMotionStateInterpolation(bool latencyInterpolation )
 	{

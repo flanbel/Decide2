@@ -5,7 +5,11 @@ class Object : Noncopyable
 public:
 	Object()
 	{
-		name = (char*)typeid(this).name();
+		_Name = "Empty";
+	}
+	Object(const char* name)
+	{
+		_Name = name;
 	}
 	virtual ~Object() {};
 
@@ -33,11 +37,11 @@ public:
 	//イメージ(2D)描画
 	virtual void ImageRender(){};
 
-	char* Name()
+	const char* GetName() const
 	{
-		return name;
+		return _Name;
 	}
 protected:
 	//オブジェクトの名前
-	char* name;
+	const char* _Name;
 };

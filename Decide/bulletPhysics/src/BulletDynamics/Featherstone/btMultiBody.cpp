@@ -422,13 +422,13 @@ btVector3 btMultiBody::localPosToWorld(int i, const btVector3 &local_pos) const
 {
     btVector3 result = local_pos;
     while (i != -1) {
-        // 'result' is in frame i. transform it to frame parent(i)
+        // 'result' is in frame i. Transform it to frame parent(i)
         result += getRVector(i);
         result = quatRotate(getParentToLocalRot(i).inverse(),result);
         i = getParent(i);
     }
 
-    // 'result' is now in the base frame. transform it to world frame
+    // 'result' is now in the base frame. Transform it to world frame
     result = quatRotate(getWorldToBaseRot().inverse() ,result);
     result += getBasePos();
 
@@ -441,7 +441,7 @@ btVector3 btMultiBody::worldPosToLocal(int i, const btVector3 &world_pos) const
         // world to base
         return quatRotate(getWorldToBaseRot(),(world_pos - getBasePos()));
     } else {
-        // find position in parent frame, then transform to current frame
+        // find position in parent frame, then Transform to current frame
         return quatRotate(getParentToLocalRot(i),worldPosToLocal(getParent(i), world_pos)) - getRVector(i);
     }
 }
@@ -476,7 +476,7 @@ void btMultiBody::compTreeLinkVelocities(btVector3 *omega, btVector3 *vel) const
     for (int i = 0; i < num_links; ++i) {
         const int parent = m_links[i].m_parent;
 
-        // transform parent vel into this frame, store in omega[i+1], vel[i+1]
+        // Transform parent vel into this frame, store in omega[i+1], vel[i+1]
         SpatialTransform(btMatrix3x3(m_links[i].m_cachedRotParentToThis), m_links[i].m_cachedRVector,
                          omega[parent+1], vel[parent+1],
                          omega[i+1], vel[i+1]);
@@ -720,7 +720,7 @@ void btMultiBody::computeAccelerationsArticulatedBodyAlgorithmMultiDof(btScalar 
 	static btSpatialMotionVector result;							//holds results of the SolveImatrix op; it is a spatial motion vector (accel)
 	static btScalar Y_minus_hT_a[6];							//Y - h^{T} * a; it's dofx1 for each body so a single 6x1 temp is enough	
 	static btSpatialForceVector spatForceVecTemps[6];				//6 temporary spatial force vectors
-	static btSpatialTransformationMatrix fromParent;				//spatial transform from parent to child
+	static btSpatialTransformationMatrix fromParent;				//spatial Transform from parent to child
 	static btSymmetricSpatialDyad dyadTemp;						//inertia matrix temp
 	static btSpatialTransformationMatrix fromWorld;
 	fromWorld.m_trnVec.setZero();
@@ -786,7 +786,7 @@ void btMultiBody::computeAccelerationsArticulatedBodyAlgorithmMultiDof(btScalar 
 
 		fromParent.m_rotMat = rot_from_parent[i+1]; fromParent.m_trnVec = m_links[i].m_cachedRVector;
 		fromWorld.m_rotMat = rot_from_world[i+1];
-		fromParent.transform(spatVel[parent+1], spatVel[i+1]);
+		fromParent.Transform(spatVel[parent+1], spatVel[i+1]);
 
 		// now set vhat_i to its true value by doing
         // vhat_i += qidot * shat_i			
@@ -1024,7 +1024,7 @@ void btMultiBody::computeAccelerationsArticulatedBodyAlgorithmMultiDof(btScalar 
         const int parent = m_links[i].m_parent;
 		fromParent.m_rotMat = rot_from_parent[i+1]; fromParent.m_trnVec = m_links[i].m_cachedRVector;
 
-		fromParent.transform(spatAcc[parent+1], spatAcc[i+1]);
+		fromParent.Transform(spatAcc[parent+1], spatAcc[i+1]);
 		
 		for(int dof = 0; dof < m_links[i].m_dofCount; ++dof)
 		{
@@ -1087,7 +1087,7 @@ void btMultiBody::computeAccelerationsArticulatedBodyAlgorithmMultiDof(btScalar 
 
     }
 
-    // transform base accelerations back to the world frame.
+    // Transform base accelerations back to the world frame.
     btVector3 omegadot_out = rot_from_parent[0].transpose() * spatAcc[0].getAngular();
 	output[0] = omegadot_out[0];
 	output[1] = omegadot_out[1];
@@ -1164,7 +1164,7 @@ void btMultiBody::computeAccelerationsArticulatedBodyAlgorithmMultiDof(btScalar 
 			fromWorld.m_rotMat = rot_from_world[i+1];			
         
 			// vhat_i = i_xhat_p(i) * vhat_p(i)		
-			fromParent.transform(spatVel[parent+1], spatVel[i+1]);
+			fromParent.Transform(spatVel[parent+1], spatVel[i+1]);
 			//nice alternative below (using operator *) but it generates temps
 			/////////////////////////////////////////////////////////////
 
@@ -1416,7 +1416,7 @@ void btMultiBody::calcAccelerationDeltasMultiDof(const btScalar *force, btScalar
         const int parent = m_links[i].m_parent;
 		fromParent.m_rotMat = rot_from_parent[i+1]; fromParent.m_trnVec = m_links[i].m_cachedRVector;
 
-		fromParent.transform(spatAcc[parent+1], spatAcc[i+1]);
+		fromParent.Transform(spatAcc[parent+1], spatAcc[i+1]);
 		
 		for(int dof = 0; dof < m_links[i].m_dofCount; ++dof)
 		{
@@ -1432,7 +1432,7 @@ void btMultiBody::calcAccelerationDeltasMultiDof(const btScalar *force, btScalar
 			spatAcc[i+1] += m_links[i].m_axes[dof] * joint_accel[m_links[i].m_dofOffset + dof];      
     }
 
-    // transform base accelerations back to the world frame.
+    // Transform base accelerations back to the world frame.
     btVector3 omegadot_out;
     omegadot_out = rot_from_parent[0].transpose() * spatAcc[0].getAngular();
 	output[0] = omegadot_out[0];
@@ -1653,7 +1653,7 @@ void btMultiBody::fillConstraintJacobianMultiDof(int link,
         // calculate required normals & positions in the local frames.
         for (int i = 0; i < num_links; ++i) {
 
-            // transform to local frame
+            // Transform to local frame
             const int parent = m_links[i].m_parent;
             const btMatrix3x3 mtx(m_links[i].m_cachedRotParentToThis);
             rot_from_world[i+1] = mtx * rot_from_world[parent+1];

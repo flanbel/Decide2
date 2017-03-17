@@ -21,38 +21,38 @@ public:
 	void Init(const ParicleParameter& param,Vector3& emitPosition);
 	/*!
 	*@brief	パーティクルに力を加える。
-	*@param[in]	applyForce		乱数生成に使用する乱数生成機。
+	*@param[in]	_ApplyForce		乱数生成に使用する乱数生成機。
 	*/
-	void ApplyForce(Vector3& applyForce)
+	void ApplyForce(Vector3& _ApplyForce)
 	{
-		this->applyForce = applyForce;
+		this->_ApplyForce = _ApplyForce;
 	}
 	bool IsDead()
 	{
-		return isDead;
+		return _IsDead;
 	}
 private:		
 	static Vertex* _Vertex;						//頂点
 
 
-	TEXTURE*		texture;
-	Effect*			shaderEffect;				//!<シェーダーエフェクト。
-	Camera*	camera;						//!<カメラ。
-	float			life;						//!<ライフ。
-	float			timer;						//!<タイマー。
-	Vector3			velocity;					//!<速度。
-	Vector3			gravity;					//!<重力。
-	float			rotateZ;					//!<Z軸周りの回転。
-	Vector3			addVelocityRandomMargih;	//!<速度の積分のときのランダム幅。
-	bool			isDead;						//!<死亡フラグ。
-	bool			isFade;						//!<死ぬときにフェードアウトする？
-	float			fadeTIme;					//!<フェードの時間。
-	eState			state;						//!<状態。
-	float			initAlpha;					//!<初期アルファ。
-	float			alpha;						//!<アルファ。
-	bool			isBillboard;				//!<ビルボード？
-	Vector3			applyForce;					//!<外部から加わる力。
-	float			brightness;					//!<輝度。ブルームが有効になっているとこれを強くすると光が溢れます。
-	int				alphaBlendMode;				//!<0半透明合成、1加算合成。
-	Color			mulColor;					//!<乗算カラー。
+	TEXTURE*		_Texture;					//画像
+	Effect*			_Effect;					//シェーダーエフェクト。
+	Camera*			_Camera;					//カメラ。
+	float			_Life;						//ライフ。
+	float			_Timer;						//タイマー。
+	Vector3			_Velocity;					//速度。
+	Vector3			_Gravity;					//重力。
+	float			_RotateZ;					//Z軸周りの回転。
+	Vector3			_AddVelocityRandomMargih;	//速度の積分のときのランダム幅。
+	bool			_IsDead;					//死亡フラグ。
+	bool			_IsFade;					//死ぬときにフェードアウトする？
+	float			_FadeTIme;					//フェードの時間。
+	eState			_State;						//状態。
+	float			_InitAlpha;					//初期アルファ。
+	float			_Alpha;						//アルファ。
+	bool			_IsBillboard;				//ビルボード？
+	Vector3			_ApplyForce;				//外部から加わる力。
+	float			_Brightness;				//輝度。ブルームが有効になっているとこれを強くすると光が溢れます。
+	int				_AlphaBlendMode;			//0半透明合成、1加算合成。
+	Color			_MulColor;					//乗算カラー。
 };

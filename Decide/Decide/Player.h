@@ -22,11 +22,11 @@ struct D3DXFRAME_DERIVED;
 class Item;
 class GameRule;
 //プレイヤークラス
-class Player:public GameObject
+class Player :public GameObject
 {
 public:
 	//プレイヤーのステート
-	enum PState
+	enum PStateE
 	{
 		STAY,			//待機
 		WALK,			//歩き
@@ -40,14 +40,14 @@ public:
 		DAMAGE,			//ダメージ
 		BLOW,			//吹き飛び
 	};
-	Player(char* name);
+	Player(const char* name);
 	void Awake()override;
 	void Start()override;
 	void Update()override;
 	void LateUpdate()override;
 
 	void UpdateStateMachine();	//ステートマシン更新
-	void ChangeState(PState s);		//ステート切り替え
+	void ChangeState(PStateE s);		//ステート切り替え
 	void PlayAnimation(int idx, float time, int loop = -1);
 	void AnimationControl();		//ステートによって再生するアニメーションを指定
 	void Attack();
@@ -61,15 +61,15 @@ public:
 
 	void SetIdx(int idx)
 	{
-		playeridx = idx;
+		_Playeridx = idx;
 	}
 	int GetIdx()
 	{
-		return playeridx;
+		return _Playeridx;
 	}
 	void SetColor(Color c)
 	{
-		playerColor = c;
+		_PlayerColor = c;
 	}
 	//キャラクターの情報受け取り
 	void SetInfo(CharacterInfo* info);
@@ -81,6 +81,10 @@ public:
 
 	const Vector3 GetDir();
 private:
+	//初期化
+	void _Reset();
+	//重力処理
+	void _GravityCheck(const float& movey);
 	//PlayerState* currentState = nullptr;	//現在のステート.
 	//PlayerStateStay StayState;				//待機ステート.
 	//PlayerStateWalk WalkState;				//歩きステート.
@@ -89,54 +93,58 @@ private:
 	//PlayerStateFall FallState;
 private:
 	//コンポーネントとかアドレスの保持が必要なものたち
-	SkinModel* model;
-	Animation* anim;
-	RigidBody* rigid;
-	btRigidBody* rb;
-	PlayerParameter* Pparameter;
-	CharacterParam Cparameter;
-	D3DXFRAME_DERIVED* handFrame;
-	Item* haveItem;
+	SkinModel* _Model;
+	Animation* _Anim;
+	RigidBody* _Rigid;
+	btRigidBody* _RB;
+	PlayerParameter* _Pparameter;
+	const CharacterParam* _Cparameter;
+	D3DXFRAME_DERIVED* _HandFrame;
+	Item* _HaveItem;
+	//リジットボディの高さ
+	float _Height;
 	//ゲームルール
-	GameRule* gameRule;
+	GameRule* _GameRule;
 	//蓄積しているダメージ
-	int damage;
+	int _Damage;
 	//残機
-	int stock;
+	int _Stock;
 	//倒した数
-	int killCount;
+	int _KillCount;
 	//(死んだとき)最期に攻撃を与えてきたPlayerの添え字
-	int lastAttack;
+	int _LastAttack;
 	//プレイヤーの添え字0~3
-	int playeridx;
+	int _Playeridx;
 	//アクション中かどうか(攻撃とか)
-	bool isAction;
+	bool _IsAction;
 	//ジャンプ中か否か
-	bool jump;
+	bool _Jump;
 	//ジャンプ数
-	int jumpCount;
+	int _JumpCount;
 	//チャージ率
-	double CharagePower;
+	double _CharagePower;
 	//ステート
-	PState state;
+	PStateE _State;
 	//表示用プレート
-	PlatePrimitive *idxPlate, *CrownPlate;
+	PlatePrimitive *_IdxPlate, *_CrownPlate;
 	//プレイヤーの色
-	Color playerColor;
+	Color _PlayerColor;
 	//パーティクル
-	ParticleEmitter *smoke,*fire;
-	
+	ParticleEmitter *_Smoke, *_Fire;
+
 	//最終的な移動量
-	Vector3 move;
+	Vector3 _Move;
+	//重力
+	float _Gravity;
 	//進行
-	Vector3 dir;
+	Vector3 _Dir;
 	//吹き飛び
-	Vector3 blown;
+	Vector3 _Blown;
 	//硬直
-	float rigor;
+	float _Rigor;
 	//硬直のタイマー
-	float rigortimer;
+	float _RigorTimer;
 
 	//各効果音　
-	SoundSource *PunchSound;
+	SoundSource *_PunchSound;
 };

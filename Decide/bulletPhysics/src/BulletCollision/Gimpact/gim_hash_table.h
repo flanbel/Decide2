@@ -484,7 +484,7 @@ protected:
 
     //! Insert in position ordered
     /*!
-    Also checks if it is needed to transform this container to a hash table, by calling check_for_switching_to_hashtable
+    Also checks if it is needed to Transform this container to a hash table, by calling check_for_switching_to_hashtable
     */
     inline void _insert_in_pos(GUINT hashkey, const T & value, GUINT pos)
     {

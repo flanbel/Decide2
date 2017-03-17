@@ -65,7 +65,7 @@ void btBU_Simplex1to4::getAabb(const btTransform& t,btVector3& aabbMin,btVector3
 	aabbMin.setValue(BT_LARGE_FLOAT,BT_LARGE_FLOAT,BT_LARGE_FLOAT);
 	aabbMax.setValue(-BT_LARGE_FLOAT,-BT_LARGE_FLOAT,-BT_LARGE_FLOAT);
 
-	//just transform the vertices in worldspace, and take their AABB
+	//just Transform the vertices in worldspace, and take their AABB
 	for (int i=0;i<m_numVertices;i++)
 	{
 		btVector3 worldVertex = t(m_vertices[i]);

@@ -54,7 +54,7 @@ subject to the following restrictions:
  * The Dependencies can be seen in this documentation under Directories
  * 
  * @subsection step4 Step 4: Integrating in your application, full Rigid Body and Soft Body simulation
- * Check out BasicDemo how to create a btDynamicsWorld, btRigidBody and btCollisionShape, Stepping the simulation and synchronizing your graphics object transform.
+ * Check out BasicDemo how to create a btDynamicsWorld, btRigidBody and btCollisionShape, Stepping the simulation and synchronizing your graphics object Transform.
  * Check out SoftDemo how to use soft body dynamics, using btSoftRigidDynamicsWorld.
  * @subsection step5 Step 5 : Integrate the Collision Detection Library (without Dynamics and other Extras)
  * Bullet Collision Detection can also be used without the Dynamics/Extras.
@@ -265,7 +265,7 @@ public:
 				m_hitNormalWorld = rayResult.m_hitNormalLocal;
 			} else
 			{
-				///need to transform normal into worldspace
+				///need to Transform normal into worldspace
 				m_hitNormalWorld = m_collisionObject->getWorldTransform().getBasis()*rayResult.m_hitNormalLocal;
 			}
 			m_hitPointWorld.setInterpolate3(m_rayFromWorld,m_rayToWorld,rayResult.m_hitFraction);
@@ -300,7 +300,7 @@ public:
 				hitNormalWorld = rayResult.m_hitNormalLocal;
 			} else
 			{
-				///need to transform normal into worldspace
+				///need to Transform normal into worldspace
 				hitNormalWorld = m_collisionObject->getWorldTransform().getBasis()*rayResult.m_hitNormalLocal;
 			}
 			m_hitNormalWorld.push_back(hitNormalWorld);
@@ -399,7 +399,7 @@ public:
 				m_hitNormalWorld = convexResult.m_hitNormalLocal;
 			} else
 			{
-				///need to transform normal into worldspace
+				///need to Transform normal into worldspace
 				m_hitNormalWorld = m_hitCollisionObject->getWorldTransform().getBasis()*convexResult.m_hitNormalLocal;
 			}
 			m_hitPointWorld = convexResult.m_hitPointLocal;

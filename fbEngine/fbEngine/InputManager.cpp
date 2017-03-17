@@ -1,6 +1,6 @@
 #include "InputManager.h"
 
-InputManager* InputManager::instance = nullptr;
+InputManager* InputManager::_Instance = nullptr;
 
 HRESULT InputManager::Initialize()
 {
@@ -8,31 +8,31 @@ HRESULT InputManager::Initialize()
 		GetModuleHandle(NULL),	// インスタンス ハンドル
 		DIRECTINPUT_VERSION,	// DirectInputのバージョン
 		IID_IDirectInput8,		// 取得インターフェイスのタイプ
-		(VOID**)&Dinput,		// インターフェイスポインタ
+		(VOID**)&_Dinput,		// インターフェイスポインタ
 		NULL)))					// 使わない
 	{
 		return false;
 	}
 	//キーボード初期化
-	keyBoard = new KeyBoard();
-	if (FAILED(keyBoard->Initialize(Dinput)))
+	_KeyBoard = new KeyBoard();
+	if (FAILED(_KeyBoard->Initialize(_Dinput)))
 	{
-		SAFE_DELETE(keyBoard);
+		SAFE_DELETE(_KeyBoard);
 		return false;
 	}
 
 	//マウス初期化
-	mouse = new Mouse();
-	if (FAILED(mouse->Initialize(Dinput)))
+	_Mouse = new Mouse();
+	if (FAILED(_Mouse->Initialize(_Dinput)))
 	{
-		SAFE_DELETE(mouse);
+		SAFE_DELETE(_Mouse);
 		return false;
 	}
 
 	FOR(4)
 	{
-		xinput[i] = new XInput;
-		xinput[i]->Initialize(i);
+		_Xinput[i] = new XInput;
+		_Xinput[i]->Initialize(i);
 	}
 
 	return D3D_OK;
@@ -40,33 +40,45 @@ HRESULT InputManager::Initialize()
 
 void InputManager::Update()
 {
-	keyBoard->Update();
-	mouse->Update();
+	_KeyBoard->Update();
+	_Mouse->Update();
 	FOR(4)
-		xinput[i]->Update();
+		_Xinput[i]->Update();
 }
 
 KeyBoard * InputManager::GetKeyBoard()
 {
-	return keyBoard;
+	return _KeyBoard;
 }
 
 Mouse * InputManager::GetMouse()
 {
-	return mouse;
+	return _Mouse;
 }
 
 XInput * InputManager::GetXInput(int idx)
 {
-	return xinput[idx];
+	return _Xinput[idx];
+}
+
+bool InputManager::IsPushButtonAll(int in)
+{
+	FOR(XBOX_CONTROLLER_NUM)
+	{
+		if (GetXInput(i)->IsPushButton(in))
+		{
+			return true;
+		}
+	}
+	return false;
 }
 
 InputManager* InputManager::Instance()
 {
-	if(instance == nullptr)
+	if(_Instance == nullptr)
 	{
-		instance = new InputManager();
+		_Instance = new InputManager();
 	}
 
-	return instance;
+	return _Instance;
 }

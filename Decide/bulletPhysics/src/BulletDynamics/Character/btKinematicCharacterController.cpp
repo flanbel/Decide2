@@ -88,7 +88,7 @@ public:
 			hitNormalWorld = convexResult.m_hitNormalLocal;
 		} else
 		{
-			///need to transform normal into worldspace
+			///need to Transform normal into worldspace
 			hitNormalWorld = convexResult.m_hitCollisionObject->getWorldTransform().getBasis()*convexResult.m_hitNormalLocal;
 		}
 

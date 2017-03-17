@@ -17,19 +17,19 @@ public:
 	void SetPivot(float x, float y);
 	void SetBlendColor(Color c);
 private:
-	Effect* effect;
+	Effect* _Effect;
 	//大きさ
-	Vector2 size;
+	Vector2 _Size;
 	//ピボット
-	Vector2 pivot;
+	Vector2 _Pivot;
 	//テクスチャー
-	LPDIRECT3DTEXTURE9 texture;
+	LPDIRECT3DTEXTURE9 _Texture;
 	//カメラ
-	Camera* camera;
+	Camera* _Camera;
 	//ライト
-	Light* light;
+	Light* _Light;
 	//混ぜる色
-	Color blendColor;
+	Color _BlendColor;
 
 	static Vertex* _Vertex;	//頂点
 };

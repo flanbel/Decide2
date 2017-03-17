@@ -10,14 +10,13 @@ class Transform;
 class Component : public Object
 {
 public:
-	Component(GameObject* g, Transform* t):Object()
+	Component(GameObject* g, Transform* t,const char* classname):Object(classname)
 	{
 		enable = true;
 		gameObject = g;
 		transform = t;
-		name = (char*)typeid(this).name();
 	}
-	~Component() {};
+	virtual ~Component() {};
 	
 
 	/*virtual void Awake() {};

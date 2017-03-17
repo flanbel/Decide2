@@ -122,3 +122,13 @@ extern Vector2 g_WindowSize;
 #define VK_X 0x58
 #define VK_Y 0x59
 #define VK_Z 0x5A
+
+namespace TEXT
+{
+	enum TextFormatE
+	{
+		LEFT,		//¶‘µ‚¦
+		CENTER,		//’†‰›‘µ‚¦
+		RIGHT		//‰E‘µ‚¦
+	};
+}

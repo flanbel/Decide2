@@ -17,10 +17,15 @@ WaveFile::~WaveFile()
 void WaveFile::Open(const char* fileName)
 {
 	m_filePath = fileName;
-	m_filePathHash = MakeHash((char*)fileName);
+	m_filePathHash = Support::MakeHash((char*)fileName);
 	m_hmmio = mmioOpen(const_cast<char*>(fileName), NULL, MMIO_ALLOCBUF | MMIO_READ);
 	if (m_hmmio == NULL) {
-		//TK_LOG("Failed mmioOpen");
+		//ファイルが見つからなかった。
+		char text[256];
+		strcpy(text, "ファイル名:");
+		strcat(text, fileName);
+		strcat(text, "\nファイルが見つかりませんでした。");
+		MessageBoxA(NULL, text, "音楽ファイル読み込みエラー", MB_OK);
 		return;
 	}
 	MMCKINFO ckIn;           // chunk info. for general use.

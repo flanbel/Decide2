@@ -184,7 +184,7 @@ public:
 		calc_absolute_matrix();
 	}
 
-	SIMD_FORCE_INLINE btVector3 transform(const btVector3 & point)
+	SIMD_FORCE_INLINE btVector3 Transform(const btVector3 & point)
 	{
         return point.dot3(m_R1to0[0], m_R1to0[1], m_R1to0[2]) + m_T1to0;
 	}
@@ -322,7 +322,7 @@ public:
 		m_max[2] += margin;
 	}
 
-	//! Apply a transform to an AABB
+	//! Apply a Transform to an AABB
 	SIMD_FORCE_INLINE void appy_transform(const btTransform & trans)
 	{
 		btVector3 center = (m_max+m_min)*0.5f;

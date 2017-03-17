@@ -14,7 +14,7 @@ void CharaRingFrame::Awake()
 	ring->SetClipColor(Color::red);
 
 	circle = ring->AddComponent<CircleCollision>();
-	circle->SetRadius(ringtex->size.x/2);
+	circle->SetRadius(ringtex->Size.x/2);
 
 	icon->SetTexture(LOADTEXTURE("nico.png"));
 	icon->transform->SetParent(ring->transform);

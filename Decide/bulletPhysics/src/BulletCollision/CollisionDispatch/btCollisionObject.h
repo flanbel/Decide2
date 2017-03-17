@@ -54,7 +54,7 @@ protected:
 	btTransform	m_worldTransform;
 
 	///m_interpolationWorldTransform is used for CCD and interpolation
-	///it can be either previous or future (predicted) transform
+	///it can be either previous or future (predicted) Transform
 	btTransform	m_interpolationWorldTransform;
 	//those two are experimental: just added for bullet time effect, so you can still apply impulses (directly modifying velocities) 
 	//without destroying the continuous interpolated motion (which uses this interpolation velocities)

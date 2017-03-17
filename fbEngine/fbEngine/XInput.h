@@ -1,6 +1,6 @@
 #pragma once
 
-enum Analog {
+enum AnalogE {
 	L_TRIGGER,	//左ﾄﾘｶﾞｰ
 	R_TRIGGER,	//右ﾄﾘｶﾞｰ
 	L_STICKR,	//左スティック右
@@ -13,7 +13,7 @@ enum Analog {
 	R_STICKD,	//右スティック下
 };
 
-enum AnalogInput
+enum AnalogInputE
 {
 	TRIGGER,	//トリガー
 	L_STICK,	//左スティック
@@ -32,25 +32,25 @@ public:
 	//接続確認
 	bool IsConnected();
 	//ボタンの瞬間的な押下
-	bool isPushButton(int in);
+	bool IsPushButton(int in);
 	//ボタンの継続的な押下
 	bool IsPressButton(int in);
 	//アナログスティック、トリガーが瞬間的に入力されているか
-	bool IsPushAnalog(Analog a);
+	bool IsPushAnalog(AnalogE a);
 	//トリガーやスティックの値が欲しいときにどうぞ。
 	//スティックは-32768 ～ 32767(65536)
 	//トリガーは0 ～ 255
-	Vector2 GetAnalog(AnalogInput in);
+	Vector2 GetAnalog(AnalogInputE in);
 	//モーターを振動させる
 	//第一引数：int 右モーターの振動数
 	//第二引数：int 左モーターの振動数
 	void Vibration(int Rmoter, int Lmoter);
 private:
 	//丸める
-	void Rounding();
+	void _Rounding();
 
-	int userIndex;			//コントローラーのナンバー(0~3)
-	bool Connect;			//接続されているかどうか
-	XINPUT_STATE state;
-	XINPUT_STATE before;	//一つ前のステート
+	int _UserIndex;			//コントローラーのナンバー(0~3)
+	bool _IsConnect;			//接続されているかどうか
+	XINPUT_STATE _State;		//現在の入力情報
+	XINPUT_STATE _BeforeState;	//1フレーム前のステート
 };

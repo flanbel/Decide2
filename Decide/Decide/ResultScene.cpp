@@ -23,22 +23,21 @@ void ResultScene::Start()
 	//ゲームルール取得
 	_GameRule = (GameRule*)GameObjectManager::FindObject("GameRule");
 	//ランキング作成
-	_CreateRanking(_GameRule->GetRank());
+	_CreateRanking(_GameRule->GetRanking());
 }
 
 void ResultScene::Update()
 {
-	bool flag = false;
-	FOR(PLAYER_NUM)
+	//誰かがスタートボタンを押したら
+	bool start = INSTANCE(InputManager)->IsPushButtonAll(XINPUT_GAMEPAD_START);
+
+	if(KeyBoardInput->isPush(DIK_RETURN) || start && !_ChangeScene)
 	{
-		//誰かがスタートボタンを押したら
-		if (XboxInput(i)->isPushButton(XINPUT_GAMEPAD_START))
-		{
-			flag = true;
-			break;
-		}
+		_ChangeScene = true;
+		SetFade(true);
 	}
-	if(KeyBoardInput->isPush(DIK_RETURN) || flag)
+
+	if(_ChangeScene && !_IsFade)
 	{
 		//シーン切り替え
 		INSTANCE(SceneManager)->ChangeScene("CharaSelectScene");
@@ -46,7 +45,7 @@ void ResultScene::Update()
 	}
 }
 
-void ResultScene::_CreateRanking(list<GameRule::Ranking> ranking)
+void ResultScene::_CreateRanking(const list<GameRule::Ranking>& ranking)
 {
 	int idx = 0;
 	//一つ前のやつのを保存
@@ -54,36 +53,29 @@ void ResultScene::_CreateRanking(list<GameRule::Ranking> ranking)
 	//1位から最後まで
 	for each (GameRule::Ranking rank in ranking)
 	{
-		TextObject* rt = GameObjectManager::AddNew<TextObject>("rt", 0);
-		rt->transform->localPosition = Vector3(300, 150 * idx + 150, 0);
-		rt->Initialize(L"", 80.0f, Color::white, SpriteEffectE::SHADOW, "HGS明朝E");
+		TextObject* rtext = GameObjectManager::AddNew<TextObject>("RankingText", 0);
+		float space = 150.0f;
+		rtext->transform->localPosition = Vector3(WindowW/2, 200.0f+(space * idx), 0.0f);
+		rtext->Initialize(L"", 80.0f, Color::white, sprite::SpriteEffectE::SHADOW, "HGS明朝E");
 		//文字作成
 		wchar_t display[128];
 		//順位
-		int r = idx;
-		//ストック以外は順位が被る場合がある。
-		if(_GameRule->GetGameRule() != GameRule::GAMERULE::STOCK)
-		{
-			//倒した数が同じなら
-			if (beforeRank.Kill == rank.Kill)
-				//順位を同じに
-				r = beforeRank.rank;
-		}
-		wchar_t junni[2] = { 48 + (r + 1),0 };
-		wcscpy_s(display, 2, junni);
+		wchar_t junni[2] = { 48 + (rank.Rank),0 };
+		wcscpy(display, junni);
 		wcscat_s(display, 128, L"位Player");
 		//添え字を文字に
-		wchar_t idxW[2] = { 48 + (rank.idx + 1),0 };
+		wchar_t idxW[2] = { 48 + (rank.Idx + 1),0 };
 		wcscat_s(display, 128, idxW);
 		wcscat_s(display, 128, L"     KILL:");
+		//倒した数
 		wchar_t killW[4];
-		InttoString(rank.Kill, killW);
+		Support::ToString(rank.Kill, killW);
 		wcscat_s(display, 128, killW);
-		rt->SetString(display);
+		//テキストセット
+		rtext->SetString(display);
 
-		idx++;
 		//順位を保存しておく
-		beforeRank.rank = r;
-		beforeRank.Kill = rank.Kill;
+		beforeRank = rank;
+		idx++;
 	}
 }

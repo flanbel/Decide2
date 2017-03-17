@@ -4,9 +4,13 @@
 class Camera :public Component
 {
 public:
-	Camera(GameObject* g, Transform* t) :Component(g, t)
+	Camera(GameObject* g, Transform* t) :Component(g, t, typeid(this).name())
 	{
-		name = (char*)typeid(*this).name();
+		
+	}
+	Camera(GameObject* g, Transform* t,const char* classname) :Component(g, t, classname)
+	{
+
 	}
 	void Awake();
 	void Start();

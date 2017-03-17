@@ -37,40 +37,40 @@ void Particle::Awake()
 			D3DDECL_END()
 		};
 
-		_Vertex->Initialize(PRIMITIVETYPE::TRIANGLESTRIP, 4);
+		_Vertex->Initialize(fbEngine::PRIMITIVETYPE::TRIANGLESTRIP, 4);
 		_Vertex->CreateVertexBuffer(position, 4, sizeof(VERTEX_POSITION), elements[0]);
 		_Vertex->CreateVertexBuffer(texcoord, 4, sizeof(VERTEX_TEXCOORD), elements[1]);
 		_Vertex->CreateDeclaration();
 	}
-	applyForce = Vector3::zero;
-	texture = nullptr;
-	isDead = false;
+	_ApplyForce = Vector3::zero;
+	_Texture = nullptr;
+	_IsDead = false;
 }
 
 void Particle::Update()
 {
 	float deltaTime = Time::DeltaTime();
-	Vector3 addGrafity = gravity;
+	Vector3 addGrafity = _Gravity;
 	addGrafity.Scale(deltaTime);
-	velocity.Add(addGrafity);
-	Vector3 force = applyForce;
-	force.x += (((float)Random::RandDouble() - 0.5f) * 2.0f) * addVelocityRandomMargih.x;
-	force.y += (((float)Random::RandDouble() - 0.5f) * 2.0f) * addVelocityRandomMargih.y;
-	force.z += (((float)Random::RandDouble() - 0.5f) * 2.0f) * addVelocityRandomMargih.z;
+	_Velocity.Add(addGrafity);
+	Vector3 force = _ApplyForce;
+	force.x += (((float)Random::RandDouble() - 0.5f) * 2.0f) * _AddVelocityRandomMargih.x;
+	force.y += (((float)Random::RandDouble() - 0.5f) * 2.0f) * _AddVelocityRandomMargih.y;
+	force.z += (((float)Random::RandDouble() - 0.5f) * 2.0f) * _AddVelocityRandomMargih.z;
 	force.Scale(deltaTime);
-	velocity.Add(force);
-	Vector3 addPos = velocity;
+	_Velocity.Add(force);
+	Vector3 addPos = _Velocity;
 	addPos.Scale(deltaTime);
-	applyForce = Vector3::zero;
+	_ApplyForce = Vector3::zero;
 
 	transform->localPosition.Add(addPos);
 	transform->Update();
-	if (isBillboard) {
+	if (_IsBillboard) {
 		//ビルボード処理を行う。
 		//カメラの回転行列取得
-		const D3DXMATRIX& mCameraRot = camera->transform->RotateMatrix();
+		const D3DXMATRIX& mCameraRot = _Camera->transform->RotateMatrix();
 		Quaternion qRot;
-		qRot.SetRotation(Vector3(mCameraRot.m[2][0], mCameraRot.m[2][1], mCameraRot.m[2][2]), rotateZ);
+		qRot.SetRotation(Vector3(mCameraRot.m[2][0], mCameraRot.m[2][1], mCameraRot.m[2][2]), _RotateZ);
 		D3DXMATRIX rot;
 		//クウォータニオンから行列作成
 		D3DXMatrixRotationQuaternion(&rot,(D3DXQUATERNION*)&qRot);
@@ -97,30 +97,30 @@ void Particle::Update()
 	}
 	
 
-	timer += deltaTime;
-	switch (state) {
+	_Timer += deltaTime;
+	switch (_State) {
 	case eStateRun:
-		if (timer >= life) {
-			if (isFade) {
-				state = eStateFadeOut;
-				timer = 0.0f;
+		if (_Timer >= _Life) {
+			if (_IsFade) {
+				_State = eStateFadeOut;
+				_Timer = 0.0f;
 			}
 			else {
-				state = eStateDead;
+				_State = eStateDead;
 			}
 		}
 		break;
 	case eStateFadeOut: {
-		float t = timer / fadeTIme;
-		timer += deltaTime;
-		alpha = initAlpha + (-initAlpha)*t;
-		if (alpha <= 0.0f) {
-			alpha = 0.0f;
-			state = eStateDead;	//死亡。
+		float t = _Timer / _FadeTIme;
+		_Timer += deltaTime;
+		_Alpha = _InitAlpha + (-_InitAlpha)*t;
+		if (_Alpha <= 0.0f) {
+			_Alpha = 0.0f;
+			_State = eStateDead;	//死亡。
 		}
 	}break;
 	case eStateDead:
-		isDead = true;
+		_IsDead = true;
 		break;
 	}
 }
@@ -129,43 +129,43 @@ void Particle::Render()
 {
 	D3DXMATRIX wvp;
 	
-	wvp = transform->WorldMatrix() * camera->View() * camera->Projection();
+	wvp = transform->GetWorldMatrix() * _Camera->View() * _Camera->Projection();
 
 	//シェーダー適用開始。
 	//αブレンド許可
 	(*graphicsDevice()).SetRenderState(D3DRS_ALPHABLENDENABLE, TRUE);
-	switch (alphaBlendMode)
+	switch (_AlphaBlendMode)
 	{
 	case 0:
 		//乗算
 		(*graphicsDevice()).SetRenderState(D3DRS_SRCBLEND, D3DBLEND_SRCALPHA);
 		(*graphicsDevice()).SetRenderState(D3DRS_DESTBLEND, D3DBLEND_INVSRCALPHA);
-		shaderEffect->SetTechnique("ColorTexPrimTrans");
+		_Effect->SetTechnique("ColorTexPrimTrans");
 		break;
 	case 1:
 		//加算合成
 		(*graphicsDevice()).SetRenderState(D3DRS_SRCBLEND, D3DBLEND_ONE);
 		(*graphicsDevice()).SetRenderState(D3DRS_DESTBLEND, D3DBLEND_ONE);
-		shaderEffect->SetTechnique("ColorTexPrimAdd");
+		_Effect->SetTechnique("ColorTexPrimAdd");
 		break;
 	}
 
-	shaderEffect->Begin(NULL, D3DXFX_DONOTSAVESHADERSTATE);
-	shaderEffect->BeginPass(0);
+	_Effect->Begin(NULL, D3DXFX_DONOTSAVESHADERSTATE);
+	_Effect->BeginPass(0);
 	//Zバッファ
 	(*graphicsDevice()).SetRenderState(D3DRS_ZENABLE, TRUE);
 	(*graphicsDevice()).SetRenderState(D3DRS_ZWRITEENABLE, FALSE);
 
-	shaderEffect->SetMatrix("g_mWVP", &wvp);
-	shaderEffect->SetTexture("g_texture", texture->pTexture);
-	shaderEffect->SetFloat("g_alpha", alpha);
-	shaderEffect->SetValue("g_mulColor", mulColor, sizeof(Vector4));
-	shaderEffect->CommitChanges();
+	_Effect->SetMatrix("g_mWVP", &wvp);
+	_Effect->SetTexture("g_texture", _Texture->pTexture);
+	_Effect->SetFloat("g_alpha", _Alpha);
+	_Effect->SetValue("g_mulColor", _MulColor, sizeof(Vector4));
+	_Effect->CommitChanges();
 
 	_Vertex->DrawPrimitive();
 
-	shaderEffect->EndPass();
-	shaderEffect->End();
+	_Effect->EndPass();
+	_Effect->End();
 
 	//変更したステートを元に戻す
 	(*graphicsDevice()).SetRenderState(D3DRS_ALPHABLENDENABLE, FALSE);
@@ -177,30 +177,30 @@ void Particle::Render()
 
 void Particle::Init(const ParicleParameter & param,Vector3 & emitPosition)
 {
-	texture = LOADTEXTURE((char*)param.texturePath);
-	shaderEffect = EffectManager::LoadEffect("Particle.fx");
-	this->camera = GameObjectManager::mainCamera;
+	_Texture = LOADTEXTURE((char*)param.texturePath);
+	_Effect = EffectManager::LoadEffect("Particle.fx");
+	this->_Camera = GameObjectManager::mainCamera;
 	transform->localScale = Vector3(param.size.x, param.size.y, 1.0f);
-	life = param.life;
-	velocity = param.initVelocity;
+	_Life = param.life;
+	_Velocity = param.initVelocity;
 	//初速度に乱数を加える。
-	velocity.x += (((float)Random::RandDouble() - 0.5f) * 2.0f) * param.initVelocityVelocityRandomMargin.x;
-	velocity.y += (((float)Random::RandDouble() - 0.5f) * 2.0f) * param.initVelocityVelocityRandomMargin.y;
-	velocity.z += (((float)Random::RandDouble() - 0.5f) * 2.0f) * param.initVelocityVelocityRandomMargin.z;
+	_Velocity.x += (((float)Random::RandDouble() - 0.5f) * 2.0f) * param.initVelocityVelocityRandomMargin.x;
+	_Velocity.y += (((float)Random::RandDouble() - 0.5f) * 2.0f) * param.initVelocityVelocityRandomMargin.y;
+	_Velocity.z += (((float)Random::RandDouble() - 0.5f) * 2.0f) * param.initVelocityVelocityRandomMargin.z;
 	transform->localPosition = emitPosition;
 	transform->localPosition.x += (((float)Random::RandDouble() - 0.5f) * 2.0f) * param.initPositionRandomMargin.x;
 	transform->localPosition.y += (((float)Random::RandDouble() - 0.5f) * 2.0f) * param.initPositionRandomMargin.y;
 	transform->localPosition.z += (((float)Random::RandDouble() - 0.5f) * 2.0f) * param.initPositionRandomMargin.z;
-	addVelocityRandomMargih = param.addVelocityRandomMargih;
-	gravity = param.gravity;
-	isFade = param.isFade;
-	state = eStateRun;
-	initAlpha = param.initAlpha;
-	alpha = initAlpha;
-	fadeTIme = param.fadeTime;
-	isBillboard = param.isBillboard;
-	brightness = param.brightness;
-	alphaBlendMode = param.alphaBlendMode;
-	mulColor = param.mulColor;
-	rotateZ = 3.1415 * 2.0f * (float)Random::RandDouble();
+	_AddVelocityRandomMargih = param.addVelocityRandomMargih;
+	_Gravity = param.gravity;
+	_IsFade = param.isFade;
+	_State = eStateRun;
+	_InitAlpha = param.initAlpha;
+	_Alpha = _InitAlpha;
+	_FadeTIme = param.fadeTime;
+	_IsBillboard = param.isBillboard;
+	_Brightness = param.brightness;
+	_AlphaBlendMode = param.alphaBlendMode;
+	_MulColor = param.mulColor;
+	_RotateZ = 3.1415 * 2.0f * (float)Random::RandDouble();
 }

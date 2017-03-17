@@ -44,44 +44,18 @@ void Transform::Update()
 	UpdateTransform();
 }
 
-//親を返す関数
-//戻り値：Transform* 親のアドレス
-Transform* Transform::GetParent()
-{
-	return _Parent;
-};
-
-//引数のトランスフォームを自分の親に登録する
-//第一引数：Transform
-void Transform::SetParent(Transform* _Parent)
-{
-	//親に登録
-	this->_Parent = _Parent;
-	//親の子に自分を登録
-	_Parent->_Children.push_back(this);
-}
-
 //子供を検索する関数
 //戻り値：Transform* ヒットした子のアドレス
 //第一引数：char* 子供の名前
 Transform* Transform::FindChild(char* childname)
 {
-	////for eachはコピーしているので返しても意味ない？
-	//for each (Transform* t in _Children)
-	//{
-	//	if(t->gameObject->Name() == childname)
-	//	{
-	//		return t;
-	//	}
-	//}
-
 	//イテレータ取得
 	vector<Transform*>::iterator it = _Children.begin();
 	//最後まで見る
 	while (it != _Children.end())
 	{
 		//ヒットしたか？
-		if((*it)->gameObject->Name() == childname)
+		if((*it)->gameObject->GetName() == childname)
 		{
 			return (*it);
 		}
@@ -90,7 +64,7 @@ Transform* Transform::FindChild(char* childname)
 
 	return nullptr;
 }
-Transform * Transform::FindChild(int idx)
+Transform * Transform::FindChild(unsigned int idx)
 {
 	//範囲外アクセスをはじく
 	if (_Children.size() <= idx)
@@ -110,7 +84,7 @@ Transform ** Transform::FindChilds(char * childname)
 	while (it != _Children.end())
 	{
 		//ヒットしたか？
-		if ((*it)->gameObject->Name() == childname)
+		if ((*it)->gameObject->GetName() == childname)
 		{
 			
 		}
@@ -119,20 +93,6 @@ Transform ** Transform::FindChilds(char * childname)
 
 	return nullptr;
 }
-;
-
-//子の数を返す関数
-//戻り値：int 子の数
-int Transform::ChildCnt()
-{
-	return _Children.size();
-};
-
-//子供たち取得
-vector<Transform*> Transform::Children()
-{
-	return _Children;
-};
 
 //ローカルからトランスフォームを更新
 //親から更新していくべき
@@ -143,7 +103,7 @@ void Transform::UpdateTransform()
 	//親が居るなら
 	if (_Parent) {
 		//親がいる。
-		D3DXMATRIX PWorld = _Parent->WorldMatrix();
+		D3DXMATRIX PWorld = _Parent->GetWorldMatrix();
 		//親のワールド行列を乗算して、ローカル座標をワールド座標に変換する。
 		D3DXVECTOR4 pos;
 		D3DXVECTOR3 lpos;
@@ -202,11 +162,49 @@ void Transform::UpdateWolrdMatrix()
 	_WorldMatrix = Scale * _RotateMatrix * Pos;
 }
 
+Vector3 Transform::Direction(Vector3 v)
+{
+	D3DXVECTOR3 in;
+	D3DXVECTOR3 out;
+	v.CopyFrom(in);
+	D3DXVec3TransformCoord(&out, &in, &_RotateMatrix);
+
+	Vector3 r = out;
+	//正規化はどうしようか？？？
+	//r.Normalize();
+	return r;
+}
+
+Vector3 Transform::Local(Vector3 v)
+{
+	D3DXVECTOR4 pos;	//ポジション
+	D3DXVECTOR3 lpos;	//ローカルポジション
+	//vをコピー
+	v.CopyFrom(lpos);
+	//ワールド行列から見たローカルポジションをposに格納
+	D3DXVec3Transform(&pos, &lpos, &_WorldMatrix);
+	return Vector3(pos.x, pos.y, pos.z);
+}
+
+Vector3 Transform::LocalPos(Vector3 v)
+{
+	D3DXVECTOR4 pos;
+	D3DXVECTOR3 lpos;
+	v.CopyFrom(lpos);
+	D3DXMATRIX offset;
+	D3DXMatrixIdentity(&offset);
+	offset._41 = _WorldMatrix._41;
+	offset._42 = _WorldMatrix._42;
+	offset._43 = _WorldMatrix._43;
+	D3DXVec3Transform(&pos, &lpos, &offset);
+	return Vector3(pos.x, pos.y, pos.z);
+}
+
 void Transform::LockAt(GameObject * obj)
 {
 	D3DXVECTOR3 target, me;
 	obj->transform->position.CopyFrom(target);
-	transform->position.CopyFrom(me);
+	this->position.CopyFrom(me);
 	D3DXMatrixIdentity(&_RotateMatrix);
 	//ターゲットから見た自分
 	D3DXMatrixLookAtLH(&_RotateMatrix, &target, &me, &D3DXVECTOR3(0, 1, 0));
@@ -247,32 +245,4 @@ void Transform::RemoveChild(Transform * t)
 		}
 		it++;
 	}
-}
-
-//////以下セッター・ゲッター
-
-
-//ゲッター
-D3DXMATRIX Transform::WorldMatrix()
-{
-	return _WorldMatrix;
-}
-
-
-//セッター
-void Transform::WorldMatrix(D3DXMATRIX w)
-{
-	_WorldMatrix = w;
-}
-
-//ゲッター
-D3DXMATRIX Transform::RotateMatrix()
-{
-	return _RotateMatrix;
-}
-
-//ゲッター
-D3DXMATRIX* Transform::RotateMatrixAddress ()
-{
-	return &_RotateMatrix;
 }

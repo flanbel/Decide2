@@ -468,7 +468,7 @@ void btGeneric6DofConstraint::buildJacobian()
 		{
 			m_angularLimits[i].m_accumulatedImpulse = btScalar(0.);
 		}
-		//calculates transform
+		//calculates Transform
 		calculateTransforms(m_rbA.getCenterOfMassTransform(),m_rbB.getCenterOfMassTransform());
 
 		//  const btVector3& pivotAInW = m_calculatedTransformA.getOrigin();

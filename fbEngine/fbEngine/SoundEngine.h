@@ -130,5 +130,5 @@ private:
 	X3DAUDIO_CONE	m_emitterCone;
 	WaveFileBank m_waveFileBank;					//!<波形データのバンク。
 
-	static SoundEngine* instance;	//インスタンス
+	static SoundEngine* _Instance;	//インスタンス
 };

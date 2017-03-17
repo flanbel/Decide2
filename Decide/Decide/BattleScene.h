@@ -12,11 +12,19 @@ public:
 	void Start()override;
 	void Update()override;
 private:
-	ImageObject* test;
-	TextObject *Timer;
-	int playerNum;
-	SoundSource *gong,*BGM;
+	//制限時間の表示更新
+	void _UpdateTimer();
+	//ゲーム開始前のカウントダウン
+	//カウントダウンが終了したならtrueを返す。
+	bool _CountDown();
+private:
+#ifdef _DEBUG
+	ImageObject* _ShowDepth;
+#endif //_DEBUG
+	//タイマー表示テキスト
+	TextObject *_GameTimerT,*_CountDownT;
+	SoundSource *_Gong,*_BGM;
 	GameRule *_GameRule;
-	bool Change;
-	int lastTime;	//前の時間
+	int _LastTime;	//前の時間
+	double _CountDownTimer;
 };

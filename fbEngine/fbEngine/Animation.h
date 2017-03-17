@@ -12,9 +12,9 @@ public:
 	/*!
 	 * @brief	コンストラクタ
 	 */
-	Animation(GameObject* g, Transform* t) :Component(g,t)
+	Animation(GameObject* g, Transform* t) :Component(g,t,typeid(this).name())
 	{
-		name = (char*)typeid(*this).name();
+		
 	}
 	/*!
 	 * @brief	デストラクタ。
@@ -22,8 +22,8 @@ public:
 	~Animation()
 	{
 		//ユニークポインタ破棄
-		animationSets.release();
-		blendRateTable.release();
+		_AnimationSets.release();
+		_BlendRateTable.release();
 	}
 	
 	void Initialize(ID3DXAnimationController* anim);
@@ -34,66 +34,66 @@ public:
 	/*!
 	*@brief	アニメーションの再生。アニメーションの補完が行われます。
 	*@param[in]		animationSetIndex	再生したいアニメーションのインデックス。
-	*@param[in]		interpolateTime		補間時間。
+	*@param[in]		_InterpolateTime		補間時間。
 	//第三引数　ループ数
 	*/
-	void PlayAnimation(int animationSetIndex, float interpolateTime,int loopnum = -1);
+	void PlayAnimation(int animationSetIndex, float _InterpolateTime,int loopnum = -1);
 	/*!
 	*@brief	アニメーションセットの取得。
 	*/
 	int GetNumAnimationSet() const
 	{
-		return numAnimSet;
+		return _NumAnimSet;
 	}
 	//現在再生中のアニメーション番号取得
 	int GetPlayAnimNo() const
 	{
-		return currentAnimationSetNo;
+		return _CurrentAnimationSetNo;
 	}
 	//アニメーションが終了しているかどうか
 	bool GetPlaying()
 	{
-		return isPlaying;
+		return _IsPlaying;
 	}
 
 	double GetNowTime()
 	{
-		return nowTime;
+		return _NowTime;
 	}
 
 	int NowFrame()
 	{
-		return currentFrame;
+		return _CurrentFrame;
 	}
 	//割合取得
 	double GetTimeRatio()
 	{
-		return TimeRatio;
+		return _TimeRatio;
 	}
 
 	void SetAnimeSpeed(float sp)
 	{
-		playSpeed = sp;
-		animController->SetTrackSpeed(currentTrackNo, sp);
+		_PlaySpeed = sp;
+		_AnimController->SetTrackSpeed(_CurrentTrackNo, sp);
 	}
 private:
-	ID3DXAnimationController*				animController;		//!<アニメーションコントローラ。
-	int										numAnimSet;				//!<アニメーションセットの数。
-	std::unique_ptr<ID3DXAnimationSet*[]>	animationSets;			//!<アニメーションセットの配列。
-	std::unique_ptr<float[]>				blendRateTable;			//!<ブレンディングレートのテーブル。
-	int										currentAnimationSetNo;	//!<現在再生中のアニメーショントラックの番号。
-	int										currentTrackNo;			//!<現在のトラックの番号。
-	int										numMaxTracks;			//!<アニメーショントラックの最大数。
-	bool									isBlending;				//!<アニメーションブレンディング中？
-	bool									isInterpolate;			//!<補間中？
-	float									interpolateEndTime;		//!<補間終了時間。
-	float									interpolateTime;		//!<補間時間。
+	ID3DXAnimationController*				_AnimController;		//!<アニメーションコントローラ。
+	int										_NumAnimSet;				//!<アニメーションセットの数。
+	std::unique_ptr<ID3DXAnimationSet*[]>	_AnimationSets;			//!<アニメーションセットの配列。
+	std::unique_ptr<float[]>				_BlendRateTable;			//!<ブレンディングレートのテーブル。
+	int										_CurrentAnimationSetNo;	//!<現在再生中のアニメーショントラックの番号。
+	int										_CurrentTrackNo;			//!<現在のトラックの番号。
+	int										_NumMaxTracks;			//!<アニメーショントラックの最大数。
+	bool									_IsBlending;				//!<アニメーションブレンディング中？
+	bool									_IsInterpolate;			//!<補間中？
+	float									_InterpolateEndTime;		//!<補間終了時間。
+	float									_InterpolateTime;		//!<補間時間。
 
-	double TimeRatio;	//正規化された時間の割合。
-	double nowTime;
-	int currentFrame;		//現在のフレーム数
-	float playSpeed;//再生速度
-	int loopNum;//指定したループ数
-	int loopCount;//ループのカウント
-	bool isPlaying;//アニメーション再生中
+	double _TimeRatio;	//正規化された時間の割合。
+	double _NowTime;	//現在のアニメーションの時間
+	int _CurrentFrame;		//現在のフレーム数
+	float _PlaySpeed;//再生速度
+	int _LoopNum;//指定したループ数
+	int _LoopCount;//ループのカウント
+	bool _IsPlaying;//アニメーション再生中
 };

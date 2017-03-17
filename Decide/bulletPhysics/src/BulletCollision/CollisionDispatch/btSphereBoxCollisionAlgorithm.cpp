@@ -146,7 +146,7 @@ bool btSphereBoxCollisionAlgorithm::getSphereDistance(const btCollisionObjectWra
 //	v3PointOnSphere = sphereRelPos - (normal * fRadius);	
 	penetrationDepth = distance - intersectionDist;
 
-	// transform back in world space
+	// Transform back in world space
 	btVector3 tmp = m44T(pointOnBox);
 	pointOnBox = tmp;
 //	tmp = m44T(v3PointOnSphere);
