@@ -23,7 +23,7 @@ void CharaSelect::Awake()
 	
 	_Name->transform->SetParent(transform);
 	_Name->transform->localPosition = Vector3(0, 190, 0);
-	_Name->Initialize(L"notSelect", 40.0f, Color::white, sprite::SpriteEffectE::SHADOW, "HGS–¾’©E");
+	_Name->Initialize(L"notSelect", 40.0f, Color::white, fbSprite::SpriteEffectE::SHADOW, "HGS–¾’©E");
 
 	_Back->SetTexture(LOADTEXTURE("Back.png"));
 	_Back->SetClipColor(Color::red);
@@ -164,7 +164,7 @@ void CharaSelect::Update()
 	}else
 	{
 		_Back->SetBlendColor(Color(_PlayerColor.r, _PlayerColor.g, _PlayerColor.b, 0.7f));
-		_Show->SetBlendColor(Color(1, 1, 1, 0.7f));
+		_Show->SetBlendColor(Color(1.0f, 1.0f, 1.0f, 0.7f));
 		_OK->SetActive(false);
 	}
 }

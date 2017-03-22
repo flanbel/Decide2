@@ -33,12 +33,17 @@ void Item::Awake()
 	_IsHave = false;
 }
 
+void Item::Update()
+{
+}
+
 void Item::LateUpdate()
 {
 	if (_IsHave)
 	{
 		D3DXMATRIX world;
 		D3DXMatrixMultiply(&world, _HandMat, _ItemHandleMat);
+		//ワールド行列更新
 		transform->SetWorldMatrix(world);
 	}
 	//所有されてない
@@ -68,12 +73,13 @@ bool Item::ToHave(const D3DXMATRIX* handmat)
 	return false;
 }
 
-void Item::ToSeparate(const D3DXMATRIX& world)
+void Item::ToSeparate(const Vector3& vec)
 {
 	Vector3 pos;
-	pos.x = world.m[3][0];
-	pos.y = world.m[3][1];
-	pos.z = world.m[3][2];
+	//手の位置から落ちる。
+	pos.x = _HandMat->m[3][0];
+	pos.y = _HandMat->m[3][1];
+	pos.z = _HandMat->m[3][2];
 	transform->localPosition = pos;
 
 	_HandMat = nullptr;

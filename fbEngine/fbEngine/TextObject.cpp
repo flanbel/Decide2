@@ -5,7 +5,7 @@ void TextObject::Awake()
 	_Text = AddComponent<Text>();
 }
 
-void TextObject::Initialize(const wchar_t * string, const float& size, const Color& color, const sprite::SpriteEffectE& flg , const char * style, TEXT::TextFormatE format)
+void TextObject::Initialize(const wchar_t * string, const float& size, const Color& color, const fbSprite::SpriteEffectE& flg , const char * style, fbText::TextFormatE format)
 {
 	_Text->Initialize(string, size, color, flg, style, format);
 }
@@ -30,17 +30,17 @@ void TextObject::SetBlendColor(const Color& c)
 	_Text->SetBlendColor(c);
 }
 
-void TextObject::SetEffectFlg(const sprite::SpriteEffectE& e)
+void TextObject::SetEffectFlg(const fbSprite::SpriteEffectE& e)
 {
 	_Text->SetEffectFlg(e);
 }
 
-void TextObject::SetEffectFlg(const sprite::SpriteEffectE& e, const bool& f)
+void TextObject::SetEffectFlg(const fbSprite::SpriteEffectE& e, const bool& f)
 {
 	_Text->SetEffectFlg(e,f);
 }
 
-void TextObject::SetFormat(TEXT::TextFormatE format)
+void TextObject::SetFormat(fbText::TextFormatE format)
 {
 	_Text->SetFormat(format);
 }

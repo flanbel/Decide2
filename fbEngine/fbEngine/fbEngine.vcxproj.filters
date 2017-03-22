@@ -217,6 +217,9 @@
     <ClInclude Include="ComponentManager.h">
       <Filter>Manager</Filter>
     </ClInclude>
+    <ClInclude Include="SpriteAnimation.h">
+      <Filter>Object\Component\2D</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Object.cpp">
@@ -398,6 +401,9 @@
     </ClCompile>
     <ClCompile Include="ComponentManager.cpp">
       <Filter>Manager</Filter>
+    </ClCompile>
+    <ClCompile Include="SpriteAnimation.cpp">
+      <Filter>Object\Component\2D</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

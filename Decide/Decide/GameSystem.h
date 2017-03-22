@@ -1,11 +1,11 @@
 #pragma once
 
-#define WindowW 1280.0f
-#define WindowH 720.0f
+static const float WindowW = 1280.0f;
+static const float WindowH = 720.0f;
 //プレイヤーの数
-#define PLAYER_NUM 4
+static const int PLAYER_NUM = 4;
 //選択可能なキャラクターの数
-#define CHARACTER_NUM 1
+static const int CHARACTER_NUM = 1;
 
 enum Collision_ID
 {

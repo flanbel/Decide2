@@ -22,7 +22,7 @@ void Collision::Awake()
 	data->CloneModelData(SkinModelManager::LoadModel("BoxCollision.X"));
 	model->SetModelData(data);
 	//Ô‚¢ƒRƒŠƒWƒ‡ƒ“
-	model->SetAllBlend(Color(1.0f, 0, 0, 0.5f));
+	model->SetAllBlend(Color(1.0f, 0.0f, 0.0f, 0.5f));
 #endif // _DEBUG
 
 	_Offset = Vector3::zero;

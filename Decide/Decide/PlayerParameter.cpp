@@ -26,19 +26,19 @@ void PlayerParameter::Awake()
 	_KillT->Discard(false);
 	_NameT->Discard(false);
 
-	_DamageT->Initialize(L"0%", 100.0f, Color::white, sprite::SpriteEffectE::SHADOW, "HGS–¾’©E",TEXT::TextFormatE::RIGHT);
+	_DamageT->Initialize(L"0%", 100.0f, Color::white, fbSprite::SpriteEffectE::SHADOW, "HGS–¾’©E",fbText::TextFormatE::RIGHT);
 
-	_NameT->Initialize(L"name", 40.0f, Color::white, sprite::SpriteEffectE::SHADOW, "HGS–¾’©E");
+	_NameT->Initialize(L"name", 40.0f, Color::white, fbSprite::SpriteEffectE::SHADOW, "HGS–¾’©E");
 	_NameT->transform->localPosition = Vector3(-40, 40, 0);
 
-	_StockT->Initialize(L"3", 40.0f, Color::white, sprite::SpriteEffectE::SHADOW, "HGS–¾’©E");
+	_StockT->Initialize(L"3", 40.0f, Color::white, fbSprite::SpriteEffectE::SHADOW, "HGS–¾’©E");
 	_StockT->transform->localPosition = Vector3(-110, -80, 0);
 
-	_KillT->Initialize(L"KILL:0", 40.0f, Color::white, sprite::SpriteEffectE::SHADOW, "HGS–¾’©E");
+	_KillT->Initialize(L"KILL:0", 40.0f, Color::white, fbSprite::SpriteEffectE::SHADOW, "HGS–¾’©E");
 	_KillT->transform->localPosition = Vector3(60, -80, 0);
 
 	_Emblem->SetTexture(LOADTEXTURE("nico2.png"));
-	_Emblem->SetEffectFlg(sprite::SpriteEffectE::SHADOW, true);
+	_Emblem->SetEffectFlg(fbSprite::SpriteEffectE::SHADOW, true);
 	_Emblem->transform->localPosition = Vector3(50, -20, 0);
 	//_Frame->SetTexture(LOADTEXTURE("Frame.png"));
 }

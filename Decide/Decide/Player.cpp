@@ -793,7 +793,7 @@ void Player::ItemAction()
 		if (KeyBoardInput->isPush(DIK_X) || XboxInput(_Playeridx)->IsPushButton(XINPUT_GAMEPAD_RIGHT_SHOULDER))
 		{
 			//アイテムを離す
-			_HaveItem->ToSeparate(transform->GetWorldMatrix());
+			_HaveItem->ToSeparate();
 			_HaveItem = nullptr;
 		}
 	}
@@ -887,9 +887,9 @@ void Player::_GravityCheck(const float & movey)
 	const float addGravity = -9.8f * Time::DeltaTime();
 	//重力加速
 	_Gravity += addGravity;
-	float MoveY = movey + _Gravity;
+	double MoveY = movey + _Gravity;
 	//重力が発生している
-	if (MoveY < 0.0f)
+	if (MoveY < -0.1f)
 	{
 		//地面との判定
 		Vector3 start, end;

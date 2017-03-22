@@ -46,7 +46,8 @@ void CharaSelectScene::Start()
 	_GameRule->Discard(false);
 	//ゲームルール表示用テキスト
 	_DisplayGameRule = GameObjectManager::AddNew<TextObject>("DisplayGameRule", 1);
-	_DisplayGameRule->Initialize(L"GameRule:TimeLimit 2", 40.0f, Color::white, sprite::SpriteEffectE::SHADOW, "HGS明朝E",TEXT::TextFormatE::LEFT);
+	_DisplayGameRule->Initialize(L"GameRule  TimeLimit 2", 40.0f, Color::white,
+		fbSprite::SpriteEffectE::SHADOW, "HGS明朝E",fbText::TextFormatE::LEFT);
 	_DisplayGameRule->transform->localPosition = Vector3(50, 100, 0);
 	//背景画像
 	ImageObject* backGround = GameObjectManager::AddNew<ImageObject>("Back",0);
@@ -251,7 +252,7 @@ void CharaSelectScene::_UpdateGameRule()
 		//文字列に変換
 		Support::ToString(value, valueW);
 		//文字列コピー
-		wcscpy_s(display, wcslen(L"GameRule:") + 1, L"GameRule:");
+		wcscpy_s(display, wcslen(L"GameRule  ") + 1, L"GameRule  ");
 		//文字列追加
 		wcscat_s(display, wcslen(display) + wcslen(ruleW) + 1, ruleW);
 		wcscat_s(display, wcslen(display) + wcslen(valueW) + 1, valueW);

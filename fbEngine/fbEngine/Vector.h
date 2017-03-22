@@ -45,45 +45,52 @@ public:
 		return x * x + y * y;
 	}
 
-	Vector2 operator + (Vector2 in)
+	Vector2 operator + (const Vector2& in) const
 	{
-		this->x += in.x;
-		this->y += in.y;
+		Vector2 vec;
+		vec.x = this->x + in.x;
+		vec.y = this->y + in.y;
+		return vec;
 	}
 
-	Vector2 operator - (Vector2 in)
+	Vector2 operator - (const Vector2& in) const
 	{
-		this->x -= in.x;
-		this->y -= in.y;
-		return *this;
+		Vector2 vec;
+		vec.x = this->x - in.x;
+		vec.y = this->y - in.y;
+		return vec;
 	}
 
-	Vector2 operator * (Vector2 in)
+	Vector2 operator * (const Vector2& in) const
 	{
-		this->x *= in.x;
-		this->y *= in.y;
+		Vector2 vec;
+		vec.x = this->x * in.x;
+		vec.y = this->y * in.y;
+		return vec;
 	}
 
-	Vector2 operator * (float in)
+	Vector2 operator * (const float& in) const
 	{
-		Vector2 vec2;
-		vec2.x = this->x * in;
-		vec2.y = this->y * in;
-		return vec2;
+		Vector2 vec;
+		vec.x = this->x * in;
+		vec.y = this->y * in;
+		return vec;
 	}
 
-	Vector2 operator / (Vector2 in)
+	Vector2 operator / (const Vector2& in) const
 	{
-		this->x /= in.x;
-		this->y /= in.y;
+		Vector2 vec;
+		vec.x = this->x / in.x;
+		vec.y = this->y / in.y;
+		return vec;
 	}
 
-	Vector2 operator / (float in)
+	Vector2 operator / (const float& in) const
 	{
-		Vector2 vec2;
-		vec2.x = this->x / in;
-		vec2.y = this->y / in;
-		return vec2;
+		Vector2 vec;
+		vec.x = this->x / in;
+		vec.y = this->y / in;
+		return vec;
 	}
 };
 
@@ -258,7 +265,7 @@ public:
 		z /= d;
 	}
 
-	Vector3 operator + (Vector3 in)
+	Vector3 operator + (Vector3 in) const
 	{
 		Vector3 out;
 		out.x = this->x + in.x;
@@ -267,7 +274,7 @@ public:
 		return out;
 	}
 
-	Vector3 operator - (Vector3 in)
+	Vector3 operator - (Vector3 in) const
 	{
 		Vector3 out;
 		out.x = this->x - in.x;
@@ -276,7 +283,7 @@ public:
 		return out;
 	}
 
-	Vector3 operator * (Vector3 in)
+	Vector3 operator * (Vector3 in) const
 	{
 		Vector3 out;
 		out.x = this->x * in.x;
@@ -285,7 +292,7 @@ public:
 		return out;
 	}
 
-	Vector3 operator * (float in)
+	Vector3 operator * (float in) const
 	{
 		Vector3 out;
 		out.x = this->x * in;
@@ -294,7 +301,7 @@ public:
 		return out;
 	}
 
-	Vector3 operator / (Vector3 in)
+	Vector3 operator / (Vector3 in) const
 	{
 		Vector3 out;
 		out.x = this->x / in.x;

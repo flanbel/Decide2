@@ -37,6 +37,7 @@ public:
 	}
 private:
 	FontData* _CreateFontTexture(const int& code);
+	FontData* _CreateOutLineFontTexture(const wchar_t& wc,const int& code);
 private:
 	//デバイスコンテキスト
 	HDC _HDC;

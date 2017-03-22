@@ -8,7 +8,7 @@ Text::Text(GameObject* g, Transform* t) :
 	_Size(1.0f),
 	_Spacing(0),
 	_Kerning(true),
-	_TextFormat(TEXT::TextFormatE::CENTER)
+	_TextFormat(fbText::TextFormatE::CENTER)
 {
 	
 }
@@ -36,13 +36,13 @@ void Text::ImageRender()
 
 	switch (_TextFormat)
 	{
-	case TEXT::LEFT:
+	case fbText::TextFormatE::LEFT:
 		transform->position.x -= _Length * 0.0f;
 		break;
-	case TEXT::CENTER:
+	case fbText::TextFormatE::CENTER:
 		transform->position.x -= _Length * 0.5f;
 		break;
-	case TEXT::RIGHT:
+	case fbText::TextFormatE::RIGHT:
 		transform->position.x -= _Length * 1.0f;
 		break;
 	default:
@@ -89,9 +89,9 @@ void Text::ImageRender()
 	transform->scale = buf;
 }
 
-void Text::Initialize(const wchar_t * string, const float& _Size, const Color& color, const sprite::SpriteEffectE& flg, const char * style, TEXT::TextFormatE format)
+void Text::Initialize(const wchar_t * string, const float& _Size, const Color& color, const fbSprite::SpriteEffectE& flg, const char * style, fbText::TextFormatE format)
 {
-	SetStyle(style);
+	SetStyle((char*)style);
 	SetSize(_Size);
 	SetString(string);
 	SetFormat(format);
@@ -115,9 +115,18 @@ void Text::SetString(const wchar_t * s)
 	_UpdateLength();
 }
 
-void Text::SetStyle(const char * s)
+void Text::SetStyle(const char* s)
 {
-	strcpy_s(_FontStyle, 32, s);
+	//"fbText::TextStyleE::"が含まれているかチェック
+	if (strstr((char*)s, "fbText::TextStyleE::") != NULL)
+	{
+		strcpy_s(_FontStyle, 32, s+strlen("fbText::TextStyleE::"));
+	}
+	else
+	{
+		//そのままコピー
+		strcpy_s(_FontStyle, 32, s);
+	}
 }
 
 void Text::SetSize(const float& s)
@@ -138,17 +147,17 @@ void Text::SetBlendColor(const Color& c)
 	_Sprite->SetBlendColor(c);
 }
 
-void Text::SetEffectFlg(const sprite::SpriteEffectE& e)
+void Text::SetEffectFlg(const fbSprite::SpriteEffectE& e)
 {
 	_Sprite->SetEffectFlg((DWORD)e);
 }
 
-void Text::SetEffectFlg(const sprite::SpriteEffectE& e, const bool& f)
+void Text::SetEffectFlg(const fbSprite::SpriteEffectE& e, const bool& f)
 {
 	_Sprite->SetEffectFlg((DWORD)e,f);
 }
 
-void Text::SetFormat(TEXT::TextFormatE format)
+void Text::SetFormat(fbText::TextFormatE format)
 {
 	_TextFormat = format;
 }

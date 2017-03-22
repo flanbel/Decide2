@@ -9,12 +9,15 @@ public:
 	{
 		
 	}
-	bool Judgment(Vector2 point);
-	bool Judgment(CircleCollision* circle);
+	//â~Ç∆ì_ÇÃÇ†ÇΩÇËîªíË
+	const bool Judgment(const Vector2& point);
+	//ñ¢é¿ëï
+	const bool Judgment(const CircleCollision* circle);
+	//îºåaê›íË
 	void SetRadius(float r)
 	{
-		radius = r;
+		_Radius = r;
 	}
 private:
-	float radius;
+	float _Radius;
 };

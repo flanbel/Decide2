@@ -15,7 +15,8 @@ void TitleScene::Start()
 	titleback->SetPivot(0.0f, 0.0f);
 	//プリーズエンターテキスト
 	TextObject* text = GameObjectManager::AddNew<TextObject>("PleaseEnter", 1);
-	text->Initialize(L"<PleaseEnter>", 80.0f, Color::white, sprite::SpriteEffectE::SHADOW);
+	char* a = STRING(text);
+	text->Initialize(L"<PleaseEnter>", 80.0f, Color::white, fbSprite::SpriteEffectE::SHADOW, "HGS明朝E");
 	text->transform->localPosition = Vector3(WindowW/2, WindowH/2, 0);
 	//BGM
 	SoundSource *bgm = GameObjectManager::AddNew<SoundSource>("BGM", 1);

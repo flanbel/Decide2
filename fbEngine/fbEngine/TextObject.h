@@ -9,16 +9,17 @@ public:
 	TextObject(char* name) :GameObject(name) {}
 	void Awake()override;
 	//àÍäáÇ≈ê›íË
-	void Initialize(const wchar_t* string, const float& size,
-		const Color& color = Color::white, const sprite::SpriteEffectE& flg = sprite::SpriteEffectE::NONE, const char* style = "ÇlÇr ñæí©", TEXT::TextFormatE format = TEXT::TextFormatE::CENTER);
+	void Initialize(const wchar_t* string, const float& size,const Color& color = Color::white,
+		const fbSprite::SpriteEffectE& flg = fbSprite::SpriteEffectE::NONE, const char* style = "ÇlÇr ñæí©", fbText::TextFormatE format = fbText::TextFormatE::CENTER);
+
 	void SetString(const wchar_t* ws);
 	void SetFontSize(const float& size);
 	void SetFontStyle(const char* style);
 	void SetBlendColor(const Color& c);
-	void SetEffectFlg(const sprite::SpriteEffectE& e);
-	void SetEffectFlg(const sprite::SpriteEffectE& e, const bool& f);
+	void SetEffectFlg(const fbSprite::SpriteEffectE& e);
+	void SetEffectFlg(const fbSprite::SpriteEffectE& e, const bool& f);
 	//èëéÆê›íË
-	void SetFormat(TEXT::TextFormatE format);
+	void SetFormat(fbText::TextFormatE format);
 private:
 	Text* _Text;
 };

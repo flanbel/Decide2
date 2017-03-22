@@ -2,6 +2,24 @@
 #include "Component.h"
 #include "Sprite.h"
 
+namespace fbText
+{
+	//テキストの書式
+	enum class TextFormatE : unsigned int
+	{
+		LEFT,		//左揃え
+		CENTER,		//中央揃え
+		RIGHT		//右揃え
+	};
+	//よく使うかもしれないフォントのスタイル
+	enum class TextStyleE
+	{
+		ＭＳ_明朝,
+		DEFALT,
+		NewDokabenFont,		//ドカベンフォント
+	};
+}
+
 //文字列を描画するだけのクラス
 class Text : public Component
 {
@@ -10,8 +28,9 @@ public:
 	void Awake()override;
 	void PreRender()override;
 	void ImageRender()override;
+	//フォントスタイルを文字列で指定
 	void Initialize(const wchar_t* string, const float& size, const Color& color = Color::white,
-		const sprite::SpriteEffectE& flg = sprite::SpriteEffectE::NONE, const char* style = "ＭＳ 明朝",TEXT::TextFormatE format = TEXT::TextFormatE::CENTER);
+		const fbSprite::SpriteEffectE& flg = fbSprite::SpriteEffectE::NONE, const char* style = "ＭＳ 明朝",fbText::TextFormatE format = fbText::TextFormatE::CENTER);
 	//文字列セット
 	void SetString(const wchar_t* s);
 	//フォントのサイズ
@@ -23,10 +42,10 @@ public:
 	//ブレンドする色
 	void SetBlendColor(const Color& c);
 	//エフェクトフラグセット
-	void SetEffectFlg(const sprite::SpriteEffectE& e);
-	void SetEffectFlg(const sprite::SpriteEffectE& e,const bool& f);
+	void SetEffectFlg(const fbSprite::SpriteEffectE& e);
+	void SetEffectFlg(const fbSprite::SpriteEffectE& e,const bool& f);
 	//書式設定
-	void SetFormat(TEXT::TextFormatE format);
+	void SetFormat(fbText::TextFormatE format);
 private:
 	//テキストの長さ更新
 	void _UpdateLength();
@@ -45,7 +64,7 @@ private:
 	//文字を詰めるかどうか？
 	bool _Kerning;
 	//テキストのフォーマット
-	TEXT::TextFormatE _TextFormat;
+	fbText::TextFormatE _TextFormat;
 
 	//描画用スプライト
 	Sprite* _Sprite;

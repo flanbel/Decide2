@@ -18,9 +18,9 @@ public:
 	//削除する色設定
 	void SetClipColor(const Color& c);
 	//そのままセット
-	void SetEffectFlg(const sprite::SpriteEffectE& e);
+	void SetEffectFlg(const fbSprite::SpriteEffectE& e);
 	//trueなら足す、falseなら引く
-	void SetEffectFlg(const sprite::SpriteEffectE& e,bool f);
+	void SetEffectFlg(const fbSprite::SpriteEffectE& e,bool f);
 private:
 	Sprite* _Sprite;
 };

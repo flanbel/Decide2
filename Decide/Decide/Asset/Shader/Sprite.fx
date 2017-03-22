@@ -53,8 +53,9 @@ VS_OUTPUT vs_main(VS_INPUT In)
 {
 	//Outを0で初期化
 	VS_OUTPUT Out = (VS_OUTPUT)0;
-	//ピボット調整
+	//スクリーン変換をかける前にピボット調整
 	Out.pos = In.pos - float4(g_Pivotx, g_Pivoty, 0, 0);
+	//スクリーン画面に変換
 	Out.pos = mul(Out.pos, g_WP);
 	
 	//UV調整

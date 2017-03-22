@@ -9,9 +9,11 @@ public:
 	{
 		
 	}
-	bool Judgment(Vector2 point);
-	bool Judgment(SquareCollision* Square);
+	//四角形と点の判定
+	const bool Judgment(const Vector2& point);
+	//四角形同士の判定(未実装)
+	const bool Judgment(const SquareCollision* Square);
 private:
 	//立て幅、横幅
-	Vector2 size;
+	Vector2 _Size;
 };

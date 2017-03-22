@@ -29,12 +29,12 @@ void ImageObject::SetClipColor(const Color& c)
 {
 	_Sprite->SetClipColor(c);
 }
-void ImageObject::SetEffectFlg(const sprite::SpriteEffectE& e)
+void ImageObject::SetEffectFlg(const fbSprite::SpriteEffectE& e)
 {
 	_Sprite->SetEffectFlg((DWORD)e);
 }
 
-void ImageObject::SetEffectFlg(const sprite::SpriteEffectE& e, bool f)
+void ImageObject::SetEffectFlg(const fbSprite::SpriteEffectE& e, bool f)
 {
 	_Sprite->SetEffectFlg((DWORD)e,f);
 }

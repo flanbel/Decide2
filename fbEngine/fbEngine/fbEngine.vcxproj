@@ -154,6 +154,7 @@
     <ClInclude Include="Movie.h" />
     <ClInclude Include="Particle.h" />
     <ClInclude Include="PhysicsCallback.h" />
+    <ClInclude Include="SpriteAnimation.h" />
     <ClInclude Include="Vertex.h" />
     <ClInclude Include="ShadowCamera.h" />
     <ClInclude Include="SoundEngine.h" />
@@ -260,6 +261,7 @@
     <ClCompile Include="SoundSource.cpp" />
     <ClCompile Include="SphereCollider.cpp" />
     <ClCompile Include="Sprite.cpp" />
+    <ClCompile Include="SpriteAnimation.cpp" />
     <ClCompile Include="SquareCollision.cpp" />
     <ClCompile Include="stdafx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>

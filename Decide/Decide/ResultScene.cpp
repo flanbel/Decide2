@@ -56,7 +56,7 @@ void ResultScene::_CreateRanking(const list<GameRule::Ranking>& ranking)
 		TextObject* rtext = GameObjectManager::AddNew<TextObject>("RankingText", 0);
 		float space = 150.0f;
 		rtext->transform->localPosition = Vector3(WindowW/2, 200.0f+(space * idx), 0.0f);
-		rtext->Initialize(L"", 80.0f, Color::white, sprite::SpriteEffectE::SHADOW, "HGS–¾’©E");
+		rtext->Initialize(L"", 80.0f, Color::white, fbSprite::SpriteEffectE::SHADOW, "HGS–¾’©E");
 		//•¶šì¬
 		wchar_t display[128];
 		//‡ˆÊ

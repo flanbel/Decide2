@@ -15,7 +15,7 @@ Sprite::Sprite(GameObject * g, Transform * t) :
 	_FadeTime(10.0f),
 	_FTimer(0.0f),
 	_FadeLine(1.0f),
-	_SpriteEffect(((DWORD)sprite::SpriteEffectE::NONE))
+	_SpriteEffect(((DWORD)fbSprite::SpriteEffectE::NONE))
 {
 	
 }
@@ -39,12 +39,20 @@ void Sprite::Start()
 			{ 0.0f, 1.0f, 0.0f, 1.0f },//左上
 			{ 1.0f, 1.0f, 0.0f, 1.0f },//右上
 		};
+
+		//ポジション定義
+		//VERTEX_POSITION position[] = {
+		//	{ 0.0f, 0.0f, 0.0f, 1.0f },//左下
+		//	{ 0.0f, 1.0f, 0.0f, 1.0f },//左上
+		//	{ 1.0f, 0.0f, 0.0f, 1.0f },//右下
+		//	{ 1.0f, 1.0f, 0.0f, 1.0f },//右上
+		//};
 		//UV定義
 		VERTEX_TEXCOORD texcoord[] = {
-			{ 0.0f, 0.0f },//左下
-			{ 1.0f, 0.0f },//右下
-			{ 0.0f, 1.0f },//左上
-			{ 1.0f, 1.0f },//右上
+			{ 0.0f, 0.0f },//左上
+			{ 1.0f, 0.0f },//右上
+			{ 0.0f, 1.0f },//左下
+			{ 1.0f, 1.0f },//右下
 		};
 
 		//頂点宣言(頂点がどのように構成されているか)
@@ -71,48 +79,66 @@ void Sprite::ImageRender()
 	//テクスチャがないなら描画しない。
 	if (_Texture == nullptr)
 		return;
+	//各エフェクト
+	{
+		if (_SpriteEffect & (DWORD)fbSprite::SpriteEffectE::OUTLINE)
+			_CreateOutLine();
 
-	if (_SpriteEffect & (DWORD)sprite::SpriteEffectE::OUTLINE)
-		_CreateOutLine();
+		if (_SpriteEffect & (DWORD)fbSprite::SpriteEffectE::SHADOW)
+			_CreateShadow();
+	}
 
-	if (_SpriteEffect & (DWORD)sprite::SpriteEffectE::SHADOW)
-		_CreateShadow();
-
-	//エフェクト読み込み
+	//シェーダファイル読み込み
 	_Effect = EffectManager::LoadEffect("Sprite.fx");
 
 	D3DXMATRIX  matWorld, matSize, matScale, matRot, matTrans;
 	//初期化
-	D3DXMatrixIdentity(&matWorld);
+	//D3DXMatrixIdentity(&matWorld);
 	//画像のサイズを設定
 	D3DXMatrixScaling(&matSize, _Texture->Size.x, _Texture->Size.y, 1.0f);
 	//設定されたスケールを設定
 	D3DXMatrixScaling(&matScale, transform->scale.x, transform->scale.y, transform->scale.z);
 	//回転
 	D3DXMatrixRotationZ(&matRot, D3DXToRadian(transform->angle.z));
+	/*static float r = 0.0f;
+	if (KeyBoardInput->isPressed(DIK_UP))
+		r += 0.01f;
+	if (KeyBoardInput->isPressed(DIK_DOWN))
+		r -= 0.01f;
+	if (KeyBoardInput->isPressed(DIK_RIGHT))
+		r = 0.0f;
+	D3DXMatrixRotationX(&matRot, D3DXToRadian(r));*/
 	//移動
 	D3DXMatrixTranslation(&matTrans, transform->position.x, transform->position.y, transform->position.z);
 
 	//画像サイズ　*　スケール　*　回転　*　ポジション
-	matWorld = matSize * matScale * matRot * matTrans;
+	matWorld = matSize * matScale *matRot * matTrans;
 
 	RECT rect;
 	//ウィンドウハンドルからクライアントエリアのサイズを取得
 	GetClientRect(g_MainWindow, &rect);
-	float w = (float)(rect.right - rect.left);
-	float h = (float)(rect.bottom - rect.top);
+	float w = (float)rect.right;
+	float h = (float)rect.bottom;
 
-	// 射影変換行列？
-	//縦横を画面のサイズでスケーリング
-	//画面の中心が基準になっているのでXに-1.0f,Yに1.0fだけオフセットする。
-	D3DXMATRIX Proj(
+	//射影変換行列
+	//スクリーンのサイズに収める。
+	D3DXMATRIX proj(
 		2.0f / w, 0.0f, 0.0f, 0.0f,
-		0.0f, -2.0 / h, 0.0f, 0.0f,
+		0.0f, 2.0 / h, 0.0f, 0.0f,
 		0.0f, 0.0f, 1.0f, 0.0f,
-		-1.0f, 1.0f, 0.0f, 1.0f
+		0.0f, 0.0f, 0.0f, 1.0f
 	);
 
-	D3DXMATRIX wp = matWorld * Proj;
+	//調整用、整理のため上と分けたかった
+	D3DXMATRIX adjustment
+	(
+		1.0f, 0.0f, 0.0f, 0.0f,
+		0.0f, -1.0f, 0.0f, 0.0f,	//マイナスは上下を反転させるため
+		0.0f, 0.0f, 1.0f, 0.0f,
+		-1.0f, 1.0f, 0.0f, 1.0f		//画面の中心が基準になっているのでXに-1.0f,Yに1.0fだけオフセットする。
+	);
+
+	D3DXMATRIX wp = matWorld * (proj*adjustment);
 
 	(*graphicsDevice()).SetRenderState(D3DRS_ALPHABLENDENABLE, TRUE);
 	(*graphicsDevice()).SetRenderState(D3DRS_SRCBLEND, D3DBLEND_SRCALPHA);
@@ -188,7 +214,7 @@ bool Sprite::SetEffectFlg(const DWORD& e, bool f)
 void Sprite::Fade()
 {
 	//Fadeかどうか？
-	if((_SpriteEffect & (DWORD)sprite::SpriteEffectE::FADE) > 0)
+	if((_SpriteEffect & (DWORD)fbSprite::SpriteEffectE::FADE) > 0)
 	{
 		//タイマー増加
 		_FTimer += Time::DeltaTime();
@@ -217,7 +243,7 @@ void Sprite::_CreateShadow()
 	//色を黒に
 	_BlendColor = Color::black;
 	//フラグを消す(通常描画)
-	_SpriteEffect = (DWORD)sprite::SpriteEffectE::NONE;
+	_SpriteEffect = (DWORD)fbSprite::SpriteEffectE::NONE;
 	//ずらす量
 	Vector2 offset = Vector2(_Texture->Size.x * 0.05f, _Texture->Size.y * 0.05f);
 	transform->position.x += offset.x * transform->scale.x;
@@ -240,7 +266,7 @@ void Sprite::_CreateOutLine()
 	//色を黒に
 	_BlendColor = Color::black;
 	//フラグを消す(通常描画)
-	_SpriteEffect = (DWORD)sprite::SpriteEffectE::NONE;
+	_SpriteEffect = (DWORD)fbSprite::SpriteEffectE::NONE;
 	//移動量
 	float offset = 1.0f;
 	//上下左右に移動させて描画

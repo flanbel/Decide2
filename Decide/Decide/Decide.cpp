@@ -49,11 +49,11 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 	D3DXVECTOR2 WindowSize, ClientSize, Diff;
 	RECT window, client;
 
-	//ウィンドウエリアサイズ
+	//ウィンドウエリアサイズ（外枠を含めたサイズ）
 	GetWindowRect(g_MainWindow, &window);
 	WindowSize.x = (float)(window.right - window.left);
 	WindowSize.y = (float)(window.bottom - window.top);
-	//クライアントエリアサイズ
+	//クライアントエリアサイズ(描画している内側のサイズ)
 	GetClientRect(g_MainWindow, &client);
 	ClientSize.x = (float)(client.right - client.left);
 	ClientSize.y = (float)(client.bottom - client.top);
@@ -63,8 +63,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 	//ゲームウィンドウの大きさ調整
 
 	g_WindowSize = Vector2(WindowW,WindowH);
-
-	SetWindowPos(g_MainWindow, HWND_TOP, 0, 0, WindowW + (int)Diff.x, WindowH + (int)Diff.y, (SWP_NOZORDER));
+	SetWindowPos(g_MainWindow, HWND_TOP, 0, 0, WindowW + Diff.x, WindowH + Diff.y, (SWP_NOZORDER));
 
     // アプリケーションの初期化を実行します:
     if (!InitInstance (hInstance, nCmdShow))

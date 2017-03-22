@@ -1,16 +1,16 @@
 #include "stdafx.h"
 #include "SquareCollision.h"
 
-bool SquareCollision::Judgment(Vector2 point)
+const bool SquareCollision::Judgment(const Vector2& point)
 {
 	Vector2 pos = Vector2(transform->position.x, transform->position.y);
-	RECT rect = { pos.x - size.x / 2,pos.y + size.y / 2,pos.x + size.x / 2,pos.y - size.y / 2 };
+	RECT rect = { pos.x - _Size.x / 2,pos.y + _Size.y / 2,pos.x + _Size.x / 2,pos.y - _Size.y / 2 };
 	
 	return (rect.top > point.y || rect.bottom < point.y ||
 		rect.left > point.x || rect.right < point.x);
 }
-//‰~“¯Žm‚Íì‚Á‚Ä‚È‚¢‚æ
-bool SquareCollision::Judgment(SquareCollision * Square)
+
+const bool SquareCollision::Judgment(const SquareCollision * Square)
 {
 	return false;
 }

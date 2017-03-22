@@ -3,7 +3,7 @@
 
 class Vertex;
 
-namespace sprite
+namespace fbSprite
 {
 	//エフェクトのフラグ
 	enum class SpriteEffectE : unsigned int
