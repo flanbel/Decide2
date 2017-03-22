@@ -2,16 +2,26 @@
  *2D描画shader
  */
 //マトリックス
-float4x4	wp;
+float4x4 g_WP;
+
+//UVの始点
+float2 g_UVStart;
+//UVの長さ
+float2 g_UVLength;
 
 //基点
-float pivotx;
-float pivoty;
+float g_Pivotx;
+float g_Pivoty;
 
 //ブレンドカラー
-float4 blendColor;
+float4 g_BlendColor;
 //透過色(仮)
-float4 clipColor;
+float4 g_ClipColor;
+
+//エフェクトフラグ	xはフェード
+float4 g_EffectFlg;
+//消えるライン
+float g_FadeLine;
 
 //テクスチャ。
 texture g_texture;
@@ -43,12 +53,13 @@ VS_OUTPUT vs_main(VS_INPUT In)
 {
 	//Outを0で初期化
 	VS_OUTPUT Out = (VS_OUTPUT)0;
-	//ピボット調整
-	Out.pos = In.pos - float4(pivotx, pivoty, 0, 0);
-	Out.pos = mul(Out.pos, wp);
+	//スクリーン変換をかける前にピボット調整
+	Out.pos = In.pos - float4(g_Pivotx, g_Pivoty, 0, 0);
+	//スクリーン画面に変換
+	Out.pos = mul(Out.pos, g_WP);
 	
 	//UV調整
-	Out.uv = In.uv;
+	Out.uv = g_UVStart + (In.uv * g_UVLength);
 
 	return Out;
 }
@@ -60,16 +71,22 @@ float4 ps_main(VS_OUTPUT In) : COLOR0
 {
 	float4 color = tex2D(g_textureSampler, In.uv);
 	
-	//透明色と同じカラーなら透明に
-	if (clipColor.r == color.r &&
-		clipColor.g == color.g &&
-		clipColor.b == color.b &&
-		clipColor.a == color.a)
+	//消す色と同じ色ならピクセルキル
+	if (g_ClipColor.r == color.r &&
+		g_ClipColor.g == color.g &&
+		g_ClipColor.b == color.b &&
+		g_ClipColor.a == color.a)
 	{
 		clip(-1);
 	}
 
-	return color *blendColor;
+	//フェードフラグ確認
+	if (g_EffectFlg.x)
+	{
+		color.a = g_FadeLine;
+	}
+
+	return color * g_BlendColor;
 }
 
 //sprite描画テクニック

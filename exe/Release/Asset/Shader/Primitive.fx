@@ -1,7 +1,7 @@
 /*!
  *@brief	3Dモデルの描画
  */
-#include "System.h"
+#define MAX_LIGHTNUM 4
 bool Texflg;							//テクスチャ
 bool Spec;	//スペキュラフラグ
 
