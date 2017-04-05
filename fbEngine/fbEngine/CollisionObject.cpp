@@ -4,7 +4,7 @@
 
 void CollisionObject::Initialize(int ID, float Life, Vector3 size)
 {
-	transform->localScale = Vector3(size.x, size.y, size.z);
+	transform->SetLocalScale(Vector3(size.x, size.y, size.z));
 	_Shape->Create(Vector3(size.x, size.y, size.z));
 	_Coll->Create(_Shape,ID);
 }

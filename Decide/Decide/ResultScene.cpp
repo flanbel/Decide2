@@ -9,12 +9,12 @@ void ResultScene::Start()
 	//ResultBack
 	ImageObject* back = GameObjectManager::AddNew<ImageObject>("back", 0);
 	back->SetTexture(LOADTEXTURE("ResultBack.jpg"));
-	back->transform->localPosition = Vector3(WindowW / 2, WindowH / 2, 0);
+	back->transform->SetLocalPosition(Vector3(WindowW / 2, WindowH / 2, 0));
 
 	ImageObject* result = GameObjectManager::AddNew<ImageObject>("result", 1);
 	result->SetPivot(0.5f, 0.0f);
 	result->SetTexture(LOADTEXTURE("Result.png"));
-	result->transform->localPosition = Vector3(WindowW / 2-50, 10, 0);
+	result->transform->SetLocalPosition(Vector3(WindowW / 2-50, 10, 0));
 
 	//âπÇÃçƒê∂
 	SoundSource *sound = GameObjectManager::AddNew<SoundSource>("test", 1);
@@ -55,7 +55,7 @@ void ResultScene::_CreateRanking(const list<GameRule::Ranking>& ranking)
 	{
 		TextObject* rtext = GameObjectManager::AddNew<TextObject>("RankingText", 0);
 		float space = 150.0f;
-		rtext->transform->localPosition = Vector3(WindowW/2, 200.0f+(space * idx), 0.0f);
+		rtext->transform->SetLocalPosition(Vector3(WindowW/2, 200.0f+(space * idx), 0.0f));
 		rtext->Initialize(L"", 80.0f, Color::white, fbSprite::SpriteEffectE::SHADOW, "HGSñæí©E");
 		//ï∂éöçÏê¨
 		wchar_t display[128];

@@ -47,7 +47,10 @@ void FontManager::Createfont(const wchar_t* string,const char* Style)
 {
 	//使いまわせそう
 	if (strcmp(_LFont.lfFaceName, Style) == 0)
+	{
+		//TODO:: フォントを使いまわす処理
 		int a = 0;
+	}
 	//フォントスタイルはコピー
 	strcpy_s(_LFont.lfFaceName, 32, Style);
 	//ウィンドウズのAPIでフォント作成

@@ -156,11 +156,11 @@ void SkinModel::DrawMeshContainer(
 		_Effect->SetVector("g_ambientLight", &D3DXVECTOR4(0.4, 0.4, 0.4, 1.0f));
 
 		//カメラのポジションセット(スペキュラライト用)
-		Vector3 campos = GameObjectManager::mainCamera->transform->position;
+		Vector3 campos = GameObjectManager::mainCamera->transform->GetPosition();
 		_Effect->SetValue("g_cameraPos", &D3DXVECTOR4(campos.x, campos.y, campos.z, 1.0f), sizeof(D3DXVECTOR4));
 		
 		//各行列を送信
-		_Effect->SetMatrix("g_rotationMatrix", transform->RotateMatrixAddress());
+		_Effect->SetMatrix("g_rotationMatrix", transform->GetRotateMatrixAddress());
 		_Effect->SetMatrix("g_viewMatrix", &_Camera->View());
 		_Effect->SetMatrix("g_projectionMatrix", &_Camera->Projection());
 		
@@ -196,7 +196,7 @@ void SkinModel::DrawMeshContainer(
 			//バッファー
 			LPD3DXBONECOMBINATION pBoneComb = LPD3DXBONECOMBINATION(pMeshContainer->pBoneCombinationBuf->GetBufferPointer());
 			//各マテリアル
-			for (iAttrib = 0; iAttrib < pMeshContainer->NumAttributeGroups; iAttrib++)
+			for (iAttrib = 0; iAttrib < pMeshContainer->NumMaterials; iAttrib++)
 			{
 				//ボーン
 				for (DWORD iPaletteEntry = 0; iPaletteEntry < pMeshContainer->NumPaletteEntries; ++iPaletteEntry)
@@ -338,7 +338,7 @@ void SkinModel::CreateShadow(D3DXMESHCONTAINER_DERIVED * pMeshContainer, D3DXFRA
 		//バッファー
 		LPD3DXBONECOMBINATION pBoneComb = LPD3DXBONECOMBINATION(pMeshContainer->pBoneCombinationBuf->GetBufferPointer());
 		//各マテリアル
-		for (iAttrib = 0; iAttrib < pMeshContainer->NumAttributeGroups; iAttrib++)
+		for (iAttrib = 0; iAttrib < pMeshContainer->NumMaterials; iAttrib++)
 		{
 			//ボーン
 			for (DWORD iPaletteEntry = 0; iPaletteEntry < pMeshContainer->NumPaletteEntries; ++iPaletteEntry)

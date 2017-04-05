@@ -18,7 +18,7 @@ public:
 	void Update()override;
 	void Render() override;
 
-	void Init(const ParicleParameter& param,Vector3& emitPosition);
+	void Init(const ParicleParameter& param,const Vector3& emitPosition);
 	/*!
 	*@brief	パーティクルに力を加える。
 	*@param[in]	_ApplyForce		乱数生成に使用する乱数生成機。

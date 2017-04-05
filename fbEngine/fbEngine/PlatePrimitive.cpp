@@ -100,7 +100,7 @@ void PlatePrimitive::Render()
 	_Effect->BeginPass(0);
 
 	_Effect->SetMatrix("g_worldMatrix", &matWorld);
-	_Effect->SetMatrix("g_rotationMatrix", transform->RotateMatrixAddress());
+	_Effect->SetMatrix("g_rotationMatrix", transform->GetRotateMatrixAddress());
 	_Effect->SetMatrix("g_viewMatrix", &_Camera->View());
 	_Effect->SetMatrix("g_projectionMatrix", &_Camera->Projection());
 
@@ -124,7 +124,7 @@ void PlatePrimitive::Render()
 	//環境光
 	_Effect->SetVector("g_ambientLight", &D3DXVECTOR4(0.5, 0.5, 0.5, 1));
 	//カメラのポジションセット
-	Vector3 campos = _Camera->transform->position;
+	Vector3 campos = _Camera->transform->GetPosition();
 	_Effect->SetValue("g_cameraPos", &D3DXVECTOR4(campos.x, campos.y, campos.z, 1.0f), sizeof(D3DXVECTOR4));
 
 	//テクスチャが格納されていればセット

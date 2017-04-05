@@ -392,6 +392,17 @@ public:
 	{
 		return x * x + y * y + z * z + w * w;
 	}
+	//正規化
+	void Normalize()
+	{
+		//長さを取得
+		float len = Length();
+		//各要素を長さで割る。
+		x /= len;
+		y /= len;
+		z /= len;
+		w /= len;
+	}
 	/*!
 	* @brief	拡大。
 	*/
@@ -405,34 +416,42 @@ public:
 
 	Vector4 operator + (Vector4 in)
 	{
-		this->x += in.x;
-		this->y += in.y;
-		this->z += in.z;
-		this->w += in.w;
+		Vector4 out;
+		out.x = this->x + in.x;
+		out.y = this->y + in.y;
+		out.z = this->z + in.z;
+		out.w = this->w + in.w;
+		return out;
 	}
 
 	Vector4 operator - (Vector4 in)
 	{
-		this->x -= in.x;
-		this->y -= in.y;
-		this->z -= in.z;
-		this->w -= in.w;
+		Vector4 out;
+		out.x = this->x - in.x;
+		out.y = this->y - in.y;
+		out.z = this->z - in.z;
+		out.w = this->w - in.w;
+		return out;
 	}
 
 	Vector4 operator * (Vector4 in)
 	{
-		this->x *= in.x;
-		this->y *= in.y;
-		this->z *= in.z;
-		this->w *= in.w;
+		Vector4 out;
+		out.x = this->x * in.x;
+		out.y = this->y * in.y;
+		out.z = this->z * in.z;
+		out.w = this->w * in.w;
+		return out;
 	}
 
 	Vector4 operator / (Vector4 in)
 	{
-		this->x /= in.x;
-		this->y /= in.y;
-		this->z /= in.z;
-		this->w /= in.w;
+		Vector4 out;
+		out.x = this->x / in.x;
+		out.y = this->y / in.y;
+		out.z = this->z / in.z;
+		out.w = this->w / in.w;
+		return out;
 	}
 };
 	
@@ -446,6 +465,11 @@ public:
 	}
 	Quaternion(float x, float y, float z, float w) :
 		Vector4(x, y, z, w)
+	{
+	}
+
+	Quaternion(Vector4 v) :
+		Vector4(v)
 	{
 	}
 	//D3DXVECTOR3をVector3に変換
@@ -470,6 +494,25 @@ public:
 		y = axis.y * s;
 		z = axis.z * s;
 	}
+	//オイラー角度からクォータニオン作成
+	void SetEuler(Vector3 ang)
+	{
+		D3DXQUATERNION q;
+		D3DXQuaternionRotationYawPitchRoll(&q, D3DXToRadian(ang.y), D3DXToRadian(ang.x), D3DXToRadian(ang.z));
+		(*this) = q;
+	}
+	//回転行列取得
+	D3DXMATRIX GetRotationMatrix()
+	{
+		D3DXMATRIX rot;
+		D3DXMatrixIdentity(&rot);
+		//クォータニオンをコピー
+		D3DXQUATERNION q;
+		this->CopyFrom(q);
+		//クォータニオンから回転行列作成
+		D3DXMatrixRotationQuaternion(&rot, &q);
+		return rot;
+	}
 	/*!
 	*@brief	クォータニオン同士の積。
 	*/
@@ -493,5 +536,27 @@ public:
 		q.y = y;
 		q.z = z;
 		q.w = w;
+	}
+	//逆クォータニオンにする。
+	void Inverse()
+	{
+		//正規化されている必要がある
+		Normalize();
+		//共役クォータニオン作成(マイナスの奴を作る)
+		Quaternion qminus = Quaternion(-(this->x), -(this->y), -(this->z), this->w);
+		//クォータニオンの長さの二乗
+		Quaternion qlength = (qminus*(*this));
+		//逆クォータニオン作成
+		*this = qminus / qlength;
+	}
+	//各軸の回転量を取得
+	Vector3 GetAngle()
+	{
+		Vector3 ang;
+		//θをラジアンに変換する(ToDegree)
+		ang.x = D3DXToDegree(asin(this->x) * 2.0f);
+		ang.y = D3DXToDegree(asin(this->y) * 2.0f);
+		ang.z = D3DXToDegree(asin(this->z) * 2.0f);
+		return ang;
 	}
 };

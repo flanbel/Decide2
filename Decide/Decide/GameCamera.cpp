@@ -5,8 +5,8 @@ void GameCamera::Awake()
 {
 	Camera* camera = AddComponent<Camera>();
 	GameObjectManager::mainCamera = camera;
-	transform->localPosition = Vector3(0, 991, -684);
-	transform->localAngle = Vector3(60, 0, 0);
+	transform->SetLocalPosition(Vector3(0, 991, -684));
+	transform->SetLocalAngle(Vector3(60, 0, 0));
 	camera->Near(10);
 	camera->Far(1850);
 	//camera->Near(1);

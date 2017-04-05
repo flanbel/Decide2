@@ -43,8 +43,6 @@ void RenderTarget::Create(Vector2 size, _D3DFORMAT colorfmt)
 		TRUE,
 		&depth,
 		NULL);
-
-	int a = 0;
 }
 
 RenderTargetManager::RenderTargetManager()

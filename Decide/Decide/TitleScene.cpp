@@ -17,7 +17,7 @@ void TitleScene::Start()
 	TextObject* text = GameObjectManager::AddNew<TextObject>("PleaseEnter", 1);
 	char* a = STRING(text);
 	text->Initialize(L"<PleaseEnter>", 80.0f, Color::white, fbSprite::SpriteEffectE::SHADOW, "HGS–¾’©E");
-	text->transform->localPosition = Vector3(WindowW/2, WindowH/2, 0);
+	text->transform->SetLocalPosition(Vector3(WindowW/2, WindowH/2, 0));
 	//BGM
 	SoundSource *bgm = GameObjectManager::AddNew<SoundSource>("BGM", 1);
 	bgm->Init("Asset/Sound/bgm_Title.wav");

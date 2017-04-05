@@ -18,11 +18,11 @@ void CharaSelect::Awake()
 	_ShowModel = GameObjectManager::AddNew<ShowModel>("ShowModel", 0);
 	_Sound = GameObjectManager::AddNew<SoundSource>("test", 1);
 
-	_ShowModel->transform->localAngle = Vector3(0, 180, 0);
+	_ShowModel->transform->SetLocalAngle(Vector3(0, 180, 0));
 	_Sound->Init("Asset/Sound/Select.wav");
 	
 	_Name->transform->SetParent(transform);
-	_Name->transform->localPosition = Vector3(0, 190, 0);
+	_Name->transform->SetLocalPosition(Vector3(0, 190, 0));
 	_Name->Initialize(L"notSelect", 40.0f, Color::white, fbSprite::SpriteEffectE::SHADOW, "HGS明朝E");
 
 	_Back->SetTexture(LOADTEXTURE("Back.png"));
@@ -84,14 +84,19 @@ void CharaSelect::Update()
 		{
 			dir.x -= speed;
 		}
-		Vector3 pos = _Cursor->transform->position;
+		Vector3 pos = _Cursor->transform->GetPosition();
+		//画面外に出ないようにチェック
 		if (0 < pos.x + dir.x && pos.x + dir.x < WindowW)
 		{
-			_Cursor->transform->localPosition.x += dir.x;
+			Vector3 lpos = _Cursor->transform->GetLocalPosition();
+			lpos.x += dir.x;
+			_Cursor->transform->SetLocalPosition(lpos);
 		}
 		if (0 < pos.y + dir.y && pos.y + dir.y < WindowW)
 		{
-			_Cursor->transform->localPosition.y += dir.y;
+			Vector3 lpos = _Cursor->transform->GetLocalPosition();
+			lpos.y += dir.y;
+			_Cursor->transform->SetLocalPosition(lpos);
 		}
 
 
@@ -171,7 +176,7 @@ void CharaSelect::Update()
 
 Vector2 CharaSelect::GetCursorPos()
 {
-	Vector2 pos = Vector2(_Cursor->transform->position.x, _Cursor->transform->position.y);
+	Vector2 pos = Vector2(_Cursor->transform->GetPosition().x, _Cursor->transform->GetPosition().y);
 	return pos;
 }
 

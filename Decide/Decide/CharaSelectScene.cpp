@@ -48,7 +48,7 @@ void CharaSelectScene::Start()
 	_DisplayGameRule = GameObjectManager::AddNew<TextObject>("DisplayGameRule", 1);
 	_DisplayGameRule->Initialize(L"GameRule  TimeLimit 2", 40.0f, Color::white,
 		fbSprite::SpriteEffectE::SHADOW, "HGS明朝E",fbText::TextFormatE::LEFT);
-	_DisplayGameRule->transform->localPosition = Vector3(50, 100, 0);
+	_DisplayGameRule->transform->SetLocalPosition(Vector3(50, 100, 0));
 	//背景画像
 	ImageObject* backGround = GameObjectManager::AddNew<ImageObject>("Back",0);
 	backGround->SetTexture(LOADTEXTURE("SelectBack.png"));
@@ -56,7 +56,7 @@ void CharaSelectScene::Start()
 	//レディファイト
 	_ReadyFight = GameObjectManager::AddNew<ImageObject>("ReadyToFight", 4);
 	_ReadyFight->SetTexture(LOADTEXTURE("ReadyToStart.png"));
-	_ReadyFight->transform->localPosition = Vector3(WindowW/2, WindowH/2, 0);
+	_ReadyFight->transform->SetLocalPosition(Vector3(WindowW/2, WindowH/2, 0));
 	_ReadyFight->SetActive(false);
 
 	//キャラクターフレーム作成
@@ -78,7 +78,7 @@ void CharaSelectScene::Start()
 		_SelectArray[i]->SetIdx(i);
 		_SelectArray[i]->SetColor(playercolor[i]);
 		float Space = 300.0f;
-		_SelectArray[i]->transform->localPosition = Vector3(190.0f+(i*Space), 450.0f, 0);
+		_SelectArray[i]->transform->SetLocalPosition(Vector3(190.0f+(i*Space), 450.0f, 0));
 	}
 
 	//シーン切り替えフラグ初期化
@@ -179,7 +179,7 @@ void CharaSelectScene::_CreateCharaFrame(const wchar_t ** nameArray,const char *
 	{
 		_RingArray[j] = GameObjectManager::AddNew<CharaRingFrame>("Frame", 0);
 		//今は一体しかいないので場所は適当
-		_RingArray[j]->transform->localPosition = Vector3(WindowW / 2, 100, 0);
+		_RingArray[j]->transform->SetLocalPosition(Vector3(WindowW / 2, 100, 0));
 		//プレイヤ数分情報作成
 		FOR(PLAYER_NUM)
 		{

@@ -5,11 +5,7 @@
 class Transform : public Component
 {
 public:
-	Transform(GameObject* g, Transform* t) :
-		Component(g, t, typeid(this).name())
-	{
-		
-	}
+	Transform(GameObject* g, Transform* t);
 	~Transform();
 
 	void Awake()override;
@@ -19,13 +15,13 @@ public:
 	//子供を検索する関数
 	//戻り値：Transform* 一番最初にヒットした子のアドレス
 	//第一引数：char* 子供の名前
-	Transform* FindChild(char* childname);
+	Transform* FindChild(char* name);
 	//添え字で取得
 	Transform* FindChild(unsigned int idx);
 	//子供を検索する関数(未実装)
 	//戻り値：Transform** ヒットした子達のアドレスの配列
 	//第一引数：char* 子供の名前
-	Transform** FindChilds(char* childname);
+	Transform** FindChilds(char* name);
 
 	//ローカルからトランスフォームを更新
 	void UpdateTransform();
@@ -33,12 +29,14 @@ public:
 	//トランスフォームからワールド行列更新
 	void UpdateWolrdMatrix();
 
+	//前向きのベクトル取得
+	Vector3 GetForward();
 	//受け取ったベクトルをこいつから見た向きに変換
-	Vector3 Direction(Vector3 v);
+	Vector3 Direction(const Vector3& v);
 	//ローカルな位置に変換(回転込み)
-	Vector3 Local(Vector3 v);
+	Vector3 Local(const Vector3& v);
 	//ローカルな位置に変換(回転抜き)
-	Vector3 LocalPos(Vector3 v);
+	Vector3 LocalPos(const Vector3& v);
 	//受け取ったオブジェクトの向きを見る
 	void LockAt(GameObject* obj);
 
@@ -62,6 +60,7 @@ public:
 		this->_Parent = _Parent;
 		//親の子に自分を登録
 		_Parent->_Children.push_back(this);
+		UpdateTransform();
 	}
 
 	//子供たち取得
@@ -70,43 +69,41 @@ public:
 		return _Children;
 	};
 
-	//ゲッター
-	const D3DXMATRIX& Transform::GetWorldMatrix()
-	{
-		return _WorldMatrix;
-	}
+	//各セッター・ゲッター
 
-	//セッター
-	void Transform::SetWorldMatrix(D3DXMATRIX w)
-	{
-		_WorldMatrix = w;
-	}
+	void SetLocalPosition(const Vector3& v);
+	void SetPosition(const Vector3& v);
+	void SetLocalScale(const Vector3& v);
+	void SetScale(const Vector3& v);
+	void SetLocalAngle(const Vector3& v);
+	void SetAngle(const Vector3& v);
+	void SetLocalRotation(const Quaternion& q);
+	void SetRotation(const Quaternion& q);
+	void SetWorldMatrix(D3DXMATRIX w);
 
-	//ゲッター
-	const D3DXMATRIX& Transform::RotateMatrix()
-	{
-		return _RotateMatrix;
-	}
-
-	//ゲッター
-	D3DXMATRIX* Transform::RotateMatrixAddress()
-	{
-		return &_RotateMatrix;
-	}
-
-
-	//簡単にアクセスしたかった・・・。
-	Vector3	position;		//最終ポジション
-	Vector3	localPosition;	//ローカルポジション
-	Vector3	scale;			//最終スケール
-	Vector3	localScale;		//ローカルスケール
-	Vector3	angle;			//回転(度)
-	Vector3	localAngle;		//ローカル回転
-	Quaternion rotation;	//回転（クウォータニオン）
+	const Vector3&	GetLocalPosition();
+	const Vector3& GetPosition();
+	const Vector3& GetLocalScale();
+	const Vector3& GetScale();
+	const Vector3&	GetLocalAngle();
+	const Vector3& GetAngle();
+	const Quaternion& GetLocalRotation();
+	const Quaternion& GetRotation();
+	D3DXMATRIX* GetRotateMatrixAddress();
+	const D3DXMATRIX& GetRotateMatrix();
+	const D3DXMATRIX& GetWorldMatrix();
 private:
 	Transform* _Parent;		//親のアドレス
 	vector<Transform*> _Children;		//子供達のアドレスを格納した
 	
+	Vector3	_Position;		//最終ポジション
+	Vector3	_LocalPosition;	//ローカルポジション
+	Vector3	_Scale;			//最終スケール
+	Vector3	_LocalScale;	//ローカルスケール
+	Vector3	_Angle;			//角度
+	Vector3	_LocalAngle;	//ローカル角度
+	Quaternion _Rotation;		//回転（クウォータニオン）
+	Quaternion _LocalRotation;	//ローカル回転（クウォータニオン）
 	D3DXMATRIX _RotateMatrix;	//回転行列
 	D3DXMATRIX _WorldMatrix;	//ワールド行列
 };

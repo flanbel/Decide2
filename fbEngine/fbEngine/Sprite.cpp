@@ -97,9 +97,9 @@ void Sprite::ImageRender()
 	//画像のサイズを設定
 	D3DXMatrixScaling(&matSize, _Texture->Size.x, _Texture->Size.y, 1.0f);
 	//設定されたスケールを設定
-	D3DXMatrixScaling(&matScale, transform->scale.x, transform->scale.y, transform->scale.z);
+	D3DXMatrixScaling(&matScale, transform->GetScale().x, transform->GetScale().y, transform->GetScale().z);
 	//回転
-	D3DXMatrixRotationZ(&matRot, D3DXToRadian(transform->angle.z));
+	D3DXMatrixRotationZ(&matRot, D3DXToRadian(transform->GetAngle().z));
 	/*static float r = 0.0f;
 	if (KeyBoardInput->isPressed(DIK_UP))
 		r += 0.01f;
@@ -109,7 +109,7 @@ void Sprite::ImageRender()
 		r = 0.0f;
 	D3DXMatrixRotationX(&matRot, D3DXToRadian(r));*/
 	//移動
-	D3DXMatrixTranslation(&matTrans, transform->position.x, transform->position.y, transform->position.z);
+	D3DXMatrixTranslation(&matTrans, transform->GetPosition().x, transform->GetPosition().y, transform->GetPosition().z);
 
 	//画像サイズ　*　スケール　*　回転　*　ポジション
 	matWorld = matSize * matScale *matRot * matTrans;
@@ -239,22 +239,25 @@ void Sprite::_CreateShadow()
 	//変更前に値を保存
 	Color colorbuf = _BlendColor;
 	DWORD effectbuf = _SpriteEffect;
-	Vector3 posbuf = transform->position;
+	Vector3 posbuf, pos;
+	pos = posbuf = transform->GetPosition();
 	//色を黒に
 	_BlendColor = Color::black;
 	//フラグを消す(通常描画)
 	_SpriteEffect = (DWORD)fbSprite::SpriteEffectE::NONE;
 	//ずらす量
 	Vector2 offset = Vector2(_Texture->Size.x * 0.05f, _Texture->Size.y * 0.05f);
-	transform->position.x += offset.x * transform->scale.x;
-	transform->position.y += offset.y * transform->scale.y;
+	
+	pos.x += offset.x * transform->GetScale().x;
+	pos.y += offset.y * transform->GetScale().y;
+	transform->SetPosition(pos);
 
 	ImageRender();
 
 	//戻す
 	_BlendColor = colorbuf;
 	_SpriteEffect = effectbuf;
-	transform->position = posbuf;
+	transform->SetPosition(posbuf);
 }
 
 void Sprite::_CreateOutLine()
@@ -262,7 +265,8 @@ void Sprite::_CreateOutLine()
 	//変更前に値を保存
 	Color colorbuf = _BlendColor;
 	DWORD effectbuf = _SpriteEffect;
-	Vector3 posbuf = transform->position;
+	Vector3 posbuf, pos;
+	pos = posbuf = transform->GetPosition();
 	//色を黒に
 	_BlendColor = Color::black;
 	//フラグを消す(通常描画)
@@ -275,26 +279,27 @@ void Sprite::_CreateOutLine()
 		switch (i)
 		{
 		case 0:
-			transform->position.x += offset;
+			pos.x += offset;
 			break;
 		case 1:
-			transform->position.x -= offset;
+			pos.x -= offset;
 			break;
 		case 2:
-			transform->position.y += offset;
+			pos.y += offset;
 			break;
 		case 3:
-			transform->position.y -= offset;
+			pos.y -= offset;
 			break;
 		default:
 			break;
 		}
+		transform->SetPosition(pos);
 		ImageRender();
-		transform->position = posbuf;
+		transform->SetPosition(posbuf);
 	}
 
 	//戻す
 	_BlendColor = colorbuf;
 	_SpriteEffect = effectbuf;
-	transform->position = posbuf;
+	transform->SetPosition(posbuf);
 }

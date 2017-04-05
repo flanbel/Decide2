@@ -13,12 +13,12 @@ public:
 	//‚­‚Á‚»’·‚¢ŠÖ”–¼
 	void ParallelProjectionMatrixUpdate()
 	{
-		float w = _near * tan(D3DXToRadian(viewAngle) / 2) * 2;
-		float h = w * aspect;
+		float w = _near * tan(D3DXToRadian(_ViewAngle) / 2) * 2;
+		float h = w * _Aspect;
 		//‰e‚Í•½s“Š‰e‚ÅÊ‚µ‚½‚¢‚È‚è
 		//•½s“Š‰e‚Å‚µ‚È‚¢‚È‚ç‰e‚ÍL‚Ñ‚é
 		D3DXMatrixOrthoLH(
-			&projection,
+			&_Projection,
 			w,
 			h,
 			_near,

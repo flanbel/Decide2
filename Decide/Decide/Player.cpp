@@ -106,7 +106,7 @@ void Player::Awake()
 	//王冠生成
 	_CrownPlate = GameObjectManager::AddNew<PlatePrimitive>("Crown", 4);
 	_CrownPlate->transform->SetParent(_IdxPlate->transform);
-	_CrownPlate->transform->localPosition = Vector3(10, 60, 0);
+	_CrownPlate->transform->SetLocalPosition(Vector3(10, 60, 0));
 	_CrownPlate->SetTexture(LOADTEXTURE("Crown.png"));
 	_CrownPlate->Discard(false);
 
@@ -137,7 +137,7 @@ void Player::Start()
 	_PunchSound->Init("Asset/Sound/punch.wav");
 
 	float space = 300.0f;
-	_Pparameter->transform->localPosition = Vector3(180.0f + (_Playeridx * space), 600.0f, 0.0f);
+	_Pparameter->transform->SetLocalPosition(Vector3(180.0f + (_Playeridx * space), 600.0f, 0.0f));
 	_Model->SetCamera(GameObjectManager::mainCamera);
 	_Model->SetLight(GameObjectManager::mainLight);
 
@@ -167,10 +167,11 @@ void Player::Update()
 		ItemAction();
 		Move();
 
-		//n割り再生したら遷移開始
 		//ステートパターン実装したい。
+		//TODO::アニメーションの機能に盛り込むとかして消したい。
 		if (_IsAction)
 		{
+			//n割り再生したら遷移開始
 			float normalTime;
 			normalTime = 0.7f;
 			if (_State == PStateE::KICK &&
@@ -211,8 +212,7 @@ void Player::Update()
 	if (_Move.Length() > 0)
 	{
 		//XZ軸の移動
-		transform->localPosition.Add(_Move);
-		transform->UpdateTransform();
+		transform->SetLocalPosition(transform->GetLocalPosition() + _Move);
 	}
 
 	_GravityCheck(moveY);
@@ -221,16 +221,17 @@ void Player::Update()
 
 	//場外にでたときの処理。
 	Death();
+
+	//頭の上あたり
+	_IdxPlate->transform->SetLocalPosition(transform->LocalPos(Vector3(-50, 150, 0)));
+	_IdxPlate->transform->LockAt(GameObjectManager::mainCamera->gameObject);
+	//王冠
+	_CrownPlate->transform->LockAt(GameObjectManager::mainCamera->gameObject);
 }
 
 void Player::LateUpdate()
 {
-	//頭の上あたり
-	_IdxPlate->transform->localPosition = transform->LocalPos(Vector3(-50, 150, 0));
-	_IdxPlate->transform->Update();
-	_IdxPlate->transform->LockAt(GameObjectManager::mainCamera->gameObject);
-
-	_CrownPlate->transform->LockAt(GameObjectManager::mainCamera->gameObject);
+	
 }
 
 void Player::UpdateStateMachine()
@@ -484,9 +485,8 @@ void Player::Attack()
 			AttackCollision* obj = GameObjectManager::AddNew<AttackCollision>("panch", 1);
 			Transform* t = obj->GetComponent<Transform>();
 			//前に出す
-			t->localPosition = transform->Local(Vector3(0, 60, 30));
-			t->localAngle = transform->localAngle;
-			t->UpdateTransform();
+			t->SetLocalPosition(transform->Local(Vector3(0, 60, 30)));
+			t->SetLocalAngle(transform->GetLocalAngle());
 
 			DamageCollision::DamageCollisonInfo info;
 			//攻撃力補正
@@ -512,9 +512,8 @@ void Player::Attack()
 			Vector3 size = Vector3(60, 60, 80);
 
 			//前に出す
-			t->localPosition = transform->Local(Vector3(0, 60, (size.z / 2) + 10));
-			t->localAngle = transform->localAngle;
-			t->UpdateTransform();
+			t->SetLocalPosition(transform->Local(Vector3(0, 60, (size.z / 2) + 10)));
+			t->SetLocalAngle(transform->GetLocalAngle());
 
 			DamageCollision::DamageCollisonInfo info;
 			//攻撃力補正
@@ -537,10 +536,9 @@ void Player::Attack()
 			Transform* t = obj->GetComponent<Transform>();
 			//前に出す
 			/*t->SetParent(transform);
-			t->localPosition = Vector3(0, 60, 30);*/
-			t->localPosition = transform->Local(Vector3(0, 60, 30));
-			t->localAngle = transform->localAngle;
-			t->UpdateTransform();
+			t->SetLocalPosition(Vector3(0, 60, 30);*/
+			t->SetLocalPosition(transform->Local(Vector3(0, 60, 30)));
+			t->SetLocalAngle(transform->GetLocalAngle());
 			Vector3 size = Vector3(70, 70, 40);
 
 			DamageCollision::DamageCollisonInfo info;
@@ -578,8 +576,10 @@ void Player::Damage()
 			vec.Normalize();
 			//ベクトルから角度を求める
 			float rot = D3DXToRadian(360) - atan2f(vec.z, vec.x);
+			Vector3 ang = transform->GetLocalAngle();
+			ang.y = D3DXToDegree(rot + D3DXToRadian(90));
 			//回転
-			transform->localAngle.y = D3DXToDegree(rot + D3DXToRadian(90));
+			transform->SetLocalAngle(ang);
 
 			//最後に攻撃してきたとしてやつ保存
 			//とりあえず永続
@@ -713,7 +713,10 @@ void Player::Move()
 			//ベクトルから角度を求める
 			float rot = D3DXToRadian(360) - atan2f(vec.z, vec.x);
 			//回転
-			transform->localAngle.y = D3DXToDegree(rot + D3DXToRadian(90));
+			Vector3 ang = transform->GetLocalAngle();
+			ang.y = D3DXToDegree(rot + D3DXToRadian(90));
+			//回転
+			transform->SetLocalAngle(ang);
 		}
 		//移動していない
 		else if (_State == PStateE::WALK || _State == PStateE::DASH)
@@ -757,7 +760,7 @@ void Player::Jump()
 void Player::Death()
 {
 	//とりあえずポジションだけで判定する
-	if (transform->localPosition.y < -200)
+	if (transform->GetPosition().y < -200)
 	{
 		//ストックを減らす？
 		if (_Stock > 0)
@@ -877,8 +880,8 @@ void Player::_Reset()
 	_Dir = Vector3::zero;
 
 	//スタートポジションに移動(適当)
-	transform->localPosition = Vector3(0, 200, 0);
-	transform->localAngle = Vector3::zero;
+	transform->SetLocalPosition(Vector3(0, 200, 0));
+	transform->SetLocalAngle(Vector3::zero);
 }
 
 void Player::_GravityCheck(const float & movey)
@@ -894,7 +897,7 @@ void Player::_GravityCheck(const float & movey)
 		//地面との判定
 		Vector3 start, end;
 		//コリジョンの中心
-		start = transform->position + Vector3(0, (_Height / 2), 0);
+		start = transform->GetPosition() + Vector3(0, (_Height / 2), 0);
 		//終点(落下先)
 		end = start + Vector3(0, MoveY, 0);
 
@@ -904,7 +907,9 @@ void Player::_GravityCheck(const float & movey)
 		if (hit.isHit)
 		{
 			//ヒットした位置に着地
-			transform->localPosition.y = hit.hitPos.y;
+			Vector3 lpos = transform->GetLocalPosition();
+			lpos.y = hit.hitPos.y;
+			transform->SetLocalPosition(lpos);
 			_Jump = false;
 			_JumpCount = 0;
 			_Gravity = 0;
@@ -935,7 +940,9 @@ void Player::_GravityCheck(const float & movey)
 		else
 		{
 			//落下
-			transform->localPosition.y += MoveY;
+			Vector3 lpos = transform->GetLocalPosition();
+			lpos.y += MoveY;
+			transform->SetLocalPosition(lpos);
 			//空中？
 			if (!_IsAction)
 				ChangeState(PStateE::FALL);
@@ -944,6 +951,8 @@ void Player::_GravityCheck(const float & movey)
 	else
 	{
 		//上昇
-		transform->localPosition.y += MoveY;
+		Vector3 lpos = transform->GetLocalPosition();
+		lpos.y += MoveY;
+		transform->SetLocalPosition(lpos);
 	}
 }

@@ -37,7 +37,7 @@ void BattleScene::Start()
 		//制限時間表示用のアレ
 		_GameTimerT = GameObjectManager::AddNew<TextObject>("GameTimer", 1);
 		_GameTimerT->Initialize(L"", 80.0f, Color::white, fbSprite::SpriteEffectE::SHADOW, "HGS明朝E");
-		_GameTimerT->transform->localPosition = Vector3(WindowW/2, 80, 0);
+		_GameTimerT->transform->SetLocalPosition(Vector3(WindowW/2, 80, 0));
 		wchar_t time[10];
 		int now = _GameRule->GetRemainingTime();
 		Support::ToString(now, time);
@@ -52,7 +52,7 @@ void BattleScene::Start()
 	//カウントダウン
 	_CountDownT = GameObjectManager::AddNew<TextObject>("CountDown", 1);
 	_CountDownT->Initialize(L"", 160.0f, Color::red, fbSprite::SpriteEffectE::SHADOW, "HGS明朝E");
-	_CountDownT->transform->localPosition = Vector3(WindowW / 2, WindowH / 2, 0.0f);
+	_CountDownT->transform->SetLocalPosition(Vector3(WindowW / 2, WindowH / 2, 0.0f));
 
 	//シーン切り替えフラグ
 	_ChangeScene = false;
@@ -75,7 +75,7 @@ void BattleScene::Update()
 	{
 		//アイテム生成
 		Item* i = GameObjectManager::AddNew<Item>("item", 1);
-		i->transform->localPosition = Vector3(0, 200, 0);
+		i->transform->SetLocalPosition(Vector3(0, 200, 0));
 		//深度画像表示
 		//_ShowDepth->SetActive(!_ShowDepth->GetActive());
 	}

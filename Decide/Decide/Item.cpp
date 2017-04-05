@@ -18,7 +18,7 @@ void Item::Awake()
 	_Rigid->Create(1, coll, 6,Vector3::zero, Vector3(0, 25, 0));
 
 	SkinModelData* modeldata = new SkinModelData();
-	modeldata->CloneModelData(SkinModelManager::LoadModel("Item/StandardSowrd.X"), _Anim);
+	modeldata->CloneModelData(SkinModelManager::LoadModel("Item/bom.X"), _Anim);
 	model->SetModelData(modeldata);
 
 	//アイテムの持ち手のフレーム取得
@@ -42,7 +42,8 @@ void Item::LateUpdate()
 	if (_IsHave)
 	{
 		D3DXMATRIX world;
-		D3DXMatrixMultiply(&world, _HandMat, _ItemHandleMat);
+		//掛ける順番が大切（子×親）
+		D3DXMatrixMultiply(&world, _ItemHandleMat, _HandMat);
 		//ワールド行列更新
 		transform->SetWorldMatrix(world);
 	}
@@ -80,7 +81,7 @@ void Item::ToSeparate(const Vector3& vec)
 	pos.x = _HandMat->m[3][0];
 	pos.y = _HandMat->m[3][1];
 	pos.z = _HandMat->m[3][2];
-	transform->localPosition = pos;
+	transform->SetLocalPosition(pos);
 
 	_HandMat = nullptr;
 	_IsHave = false;

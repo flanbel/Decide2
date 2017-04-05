@@ -14,7 +14,7 @@ void Sky::Awake()
 	model->SetModelData(modeldata);
 	model->SetModelEffect(ModelEffectE::RECEIVE_SHADOW, false);
 	model->SetSky(true);
-	transform->localAngle.x = 15;
+	transform->SetLocalAngle(Vector3(15, 0, 0));
 }
 #include "Player.h"
 void Sky::Update()

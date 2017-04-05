@@ -63,7 +63,7 @@ void ParticleEmitter::Emit()
 			//パーティクルを生成。
 			Particle* p = new Particle("particle");
 			p->Awake();
-			p->Init(_Param, transform->position);
+			p->Init(_Param, transform->GetPosition());
 			_Timer = 0.0f;
 			_ParticleList.push_back(p);
 		}

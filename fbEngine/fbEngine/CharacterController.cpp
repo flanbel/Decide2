@@ -109,7 +109,7 @@ void CCharacterController::Init(float radius, float height)
 	m_rigidBody->Create(0.0f,m_collider,5);
 	btTransform& trans = m_rigidBody->GetCollisonObj()->getWorldTransform();
 	//剛体の位置を更新。
-	trans.setOrigin(btVector3(transform->position.x, transform->position.y, transform->position.z));
+	trans.setOrigin(btVector3(transform->GetPosition().x, transform->GetPosition().y, transform->GetPosition().z));
 	//@todo 未対応。trans.setRotation(btQuaternion(rotation.x, rotation.y, rotation.z));
 	m_rigidBody->GetCollisonObj()->setUserIndex(enCollisionAttr_Character);
 	m_rigidBody->GetCollisonObj()->setCollisionFlags(btCollisionObject::CF_CHARACTER_OBJECT);
@@ -120,7 +120,7 @@ void CCharacterController::Execute()
 	//速度に重力加速度を加える。
 	m_moveSpeed.y += m_gravity * 1.0f / 60.0f;
 	//次の移動先となる座標を計算する。
-	Vector3 nextPosition = transform->position;
+	Vector3 nextPosition = transform->GetPosition();
 	//速度からこのフレームでの移動量を求める。オイラー積分。
 	Vector3 addPos = m_moveSpeed;
 	addPos.Scale(1.0f/60.0f);
@@ -132,7 +132,7 @@ void CCharacterController::Execute()
 		while (true) {
 			//現在の座標から次の移動先へ向かうベクトルを求める。
 			Vector3 addPos;
-			addPos.Subtract(nextPosition, transform->position);
+			addPos.Subtract(nextPosition, transform->GetPosition());
 			Vector3 addPosXZ = addPos;
 			addPosXZ.y = 0.0f;
 			if (addPosXZ.Length() < FLT_EPSILON) {
@@ -142,7 +142,7 @@ void CCharacterController::Execute()
 				break;
 			}
 			//カプセルコライダーの中心座標 + 0.2の座標をposTmpに求める。
-			Vector3 posTmp = transform->position;
+			Vector3 posTmp = transform->GetPosition();
 			posTmp.y += m_height * 0.5f + m_radius + 0.2f;
 			//レイを作成。
 			btTransform start, end;
@@ -193,20 +193,21 @@ void CCharacterController::Execute()
 		}
 	}
 	//XZの移動は確定。
-	transform->position.x = nextPosition.x;
-	transform->position.z = nextPosition.z;
+	Vector3 pos = nextPosition;
+	pos.y = 0;
+	transform->SetPosition(pos);
 	//下方向を調べる。
 	{
 		Vector3 addPos;
-		addPos.Subtract(nextPosition, transform->position);
+		addPos.Subtract(nextPosition, transform->GetPosition());
 
-		transform->position = nextPosition;	//移動の仮確定。
+		transform->SetPosition(nextPosition);	//移動の仮確定。
 									//レイを作成する。
 		btTransform start, end;
 		start.setIdentity();
 		end.setIdentity();
 		//始点はカプセルコライダーの中心。
-		start.setOrigin(btVector3(transform->position.x, transform->position.y + m_height * 0.5f + m_radius, transform->position.z));
+		start.setOrigin(btVector3(transform->GetPosition().x, transform->GetPosition().y + m_height * 0.5f + m_radius, transform->GetPosition().z));
 		//終点は地面上にいない場合は1m下を見る。
 		//地面上にいなくてジャンプで上昇中の場合は上昇量の0.01倍下を見る。
 		//地面上にいなくて降下中の場合はそのまま落下先を調べる。
@@ -240,7 +241,7 @@ void CCharacterController::Execute()
 			float offset = 0.0f;	//押し戻す量。
 			Circle = Vector3::zero;
 
-			Circle = transform->position;
+			Circle = transform->GetPosition();
 			Circle.y = callback.hitPos.y;//円の中心
 			Vector3 v;
 			v.Subtract(Circle, callback.hitPos);
@@ -259,13 +260,13 @@ void CCharacterController::Execute()
 		}
 	}
 	//移動確定。
-	transform->position = nextPosition;
+	transform->SetPosition(nextPosition);
 	btRigidBody* btBody = (btRigidBody*)m_rigidBody->GetCollisonObj();
 	//剛体を動かす。
 	btBody->setActivationState(DISABLE_DEACTIVATION);
 	btTransform& trans = btBody->getWorldTransform();
 	//剛体の位置を更新。
-	trans.setOrigin(btVector3(transform->position.x, transform->position.y, transform->position.z));
+	trans.setOrigin(btVector3(transform->GetPosition().x, transform->GetPosition().y, transform->GetPosition().z));
 	//@todo 未対応。 trans.setRotation(btQuaternion(rotation.x, rotation.y, rotation.z));
 }
 	/*!

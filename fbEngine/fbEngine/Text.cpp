@@ -30,20 +30,21 @@ void Text::PreRender()
 
 void Text::ImageRender()
 {
-	Vector3 buf = transform->scale;
-	Vector3 base = transform->position;
-	transform->scale = Vector3(_Size, _Size, _Size);
+	Vector3 buf = transform->GetScale();
+	Vector3 base = transform->GetPosition();
+	transform->SetScale(Vector3(_Size, _Size, _Size));
 
+	Vector3 pos = base;
 	switch (_TextFormat)
 	{
 	case fbText::TextFormatE::LEFT:
-		transform->position.x -= _Length * 0.0f;
+		pos.x -= _Length * 0.0f;
 		break;
 	case fbText::TextFormatE::CENTER:
-		transform->position.x -= _Length * 0.5f;
+		pos.x -= _Length * 0.5f;
 		break;
 	case fbText::TextFormatE::RIGHT:
-		transform->position.x -= _Length * 1.0f;
+		pos.x -= _Length * 1.0f;
 		break;
 	default:
 		break;
@@ -60,15 +61,15 @@ void Text::ImageRender()
 		//前の文字のoffset分ずらす
 		if (_Kerning)
 		{
-			transform->position.x += (offset)* _Size;
+			pos.x += (offset)* _Size;
 		}
 		else
 		{
-			transform->position.x += (offset + data->gm.gmptGlyphOrigin.x) * _Size;
+			pos.x += (offset + data->gm.gmptGlyphOrigin.x) * _Size;
 		}
-		
 		//フォントの左上の座標を引く
-		transform->position.y = base.y - (data->gm.gmptGlyphOrigin.y * _Size);
+		pos.y = base.y - (data->gm.gmptGlyphOrigin.y * _Size);
+		transform->SetPosition(pos);
 		//テクスチャセット
 		_Sprite->SetTexture(data->texture);
 		//描画
@@ -86,7 +87,8 @@ void Text::ImageRender()
 	}
 	//nullptrを設定して描画しないようにする
 	_Sprite->SetTexture(nullptr);
-	transform->scale = buf;
+	transform->SetPosition(base);
+	transform->SetScale(buf);
 }
 
 void Text::Initialize(const wchar_t * string, const float& _Size, const Color& color, const fbSprite::SpriteEffectE& flg, const char * style, fbText::TextFormatE format)

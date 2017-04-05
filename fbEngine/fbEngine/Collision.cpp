@@ -50,7 +50,7 @@ void Collision::_UpdateCollisionTrans()
 	//コリジョンのトランスフォームの参照を取得
 	btTransform& trans = _CollisionObject->getWorldTransform();
 	//移動を設定
-	trans.setOrigin(btVector3(transform->position.x + _Offset.x, transform->position.y + _Offset.y, transform->position.z + _Offset.z));
+	trans.setOrigin(btVector3(transform->GetPosition().x + _Offset.x, transform->GetPosition().y + _Offset.y, transform->GetPosition().z + _Offset.z));
 	//回転を設定
-	trans.setRotation(btQuaternion(transform->rotation.x, transform->rotation.y, transform->rotation.z, transform->rotation.w));
+	trans.setRotation(btQuaternion(transform->GetRotation().x, transform->GetRotation().y, transform->GetRotation().z, transform->GetRotation().w));
 }
