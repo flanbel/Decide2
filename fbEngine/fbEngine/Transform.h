@@ -1,6 +1,8 @@
 #pragma once
 #include "Component.h"
 
+class Camera;
+
 //トランスフォームクラス
 class Transform : public Component
 {
@@ -81,7 +83,7 @@ public:
 	void SetRotation(const Quaternion& q);
 	void SetWorldMatrix(D3DXMATRIX w);
 
-	const Vector3&	GetLocalPosition();
+	Vector3&	GetLocalPosition();
 	const Vector3& GetPosition();
 	const Vector3& GetLocalScale();
 	const Vector3& GetScale();

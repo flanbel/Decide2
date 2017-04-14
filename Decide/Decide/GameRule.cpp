@@ -69,7 +69,7 @@ const int& GameRule::GetStock()
 		return -1;
 }
 
-const int& GameRule::GetRemainingTime()
+int GameRule::GetRemainingTime()
 {
 	return max(0, (_Value * 60) - _Timer);
 }
@@ -202,11 +202,11 @@ bool GameRule::_TimeLimitGameSet()
 bool GameRule::_KnockOutGameSet()
 {
 	//“Á’è‚ÌƒvƒŒƒCƒ„[‚Ì“|‚µ‚½”‚ğŒ©‚é
-	FOR(PLAYER_NUM)
+	FOR(idx,PLAYER_NUM)
 	{
-		if (_Players[i] == nullptr)
+		if (_Players[idx] == nullptr)
 			continue;
-		if(_Players[i]->GetKillCount() >= _Value)
+		if(_Players[idx]->GetKillCount() >= _Value)
 		{
 			return true;
 		}

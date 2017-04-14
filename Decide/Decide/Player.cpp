@@ -12,6 +12,9 @@
 #include "fbEngine/SoundSource.h"
 #include "Item.h"
 #include "GameRule.h"
+#include "fbEngine\Camera.h"
+#include "DamageCollision.h"
+#include "AttackCollision.h"
 
 namespace
 {
@@ -65,11 +68,6 @@ Player::Player(const char * name) :
 	_Jump(false),
 	_IsAction(false),
 	_Gravity(0)
-	/*StayState(this),
-	RunState(this),
-	WalkState(this),
-	JumpState(this),
-	FallState(this)*/
 {
 
 }
@@ -114,8 +112,6 @@ void Player::Awake()
 	//いろいろなパラメータ初期化
 	_Reset();
 
-
-
 	_Smoke = GameObjectManager::AddNew<ParticleEmitter>("SmokeEmit", 2);
 	_Smoke->Discard(false);
 	_Smoke->transform->SetParent(transform);
@@ -152,11 +148,12 @@ void Player::Start()
 
 	_Pparameter->SetColor(_PlayerColor);
 	_Model->SetTextureBlend(_PlayerColor * 8.0f);
+
+	//初期ポジ設定
+	int idx = _Playeridx + 1;
+	transform->SetLocalPosition(Vector3(-200 + (idx % 2 * 400), 200,-200 + (idx / 3 * 400)));
 }
 
-#include "DamageCollision.h"
-#include "AttackCollision.h"
-#include "fbEngine/Camera.h"
 void Player::Update()
 {
 	//開始前じゃないなら
@@ -199,7 +196,6 @@ void Player::Update()
 		}
 
 		Attack();
-		Damage();
 
 		Jump();
 		Blown();
@@ -226,72 +222,22 @@ void Player::Update()
 	_IdxPlate->transform->SetLocalPosition(transform->LocalPos(Vector3(-50, 150, 0)));
 	_IdxPlate->transform->LockAt(GameObjectManager::mainCamera->gameObject);
 	//王冠
-	_CrownPlate->transform->LockAt(GameObjectManager::mainCamera->gameObject);
-}
+	//_CrownPlate->transform->LockAt(GameObjectManager::mainCamera->gameObject);
 
-void Player::LateUpdate()
-{
-	
-}
-
-void Player::UpdateStateMachine()
-{
-	////nullチェック
-	//if(currentState != nullptr)
-	//{
-	//	currentState->Update();
-	//}
+	//test
+	{
+		//lockatのテスト
+		if (_Playeridx != 0)
+		{
+			GameObject* p1 = GameObjectManager::FindObject("Player1");
+			if (p1)
+				transform->LockAt(p1);
+		}
+	}
 }
 
 void Player::ChangeState(PStateE next)
 {
-	//if(currentState != nullptr)
-	//{
-	//	//ステートを抜ける
-	//	currentState->Leave();
-	//}
-	//switch (next)
-	//{
-	//case PStateE::STAY:
-	//	currentState = &StayState;
-	//	break;
-	//case PStateE::WALK:
-	//	currentState = &WalkState;
-	//	break;
-	//case PStateE::DASH:
-	//	currentState = &RunState;
-	//	break;
-	//case PStateE::JUMP:
-	//	currentState = &JumpState;
-	//	break;
-	//case PStateE::FALL:
-	//	currentState = &FallState;
-	//	break;
-	//case PStateE::PUNCH:
-	//	currentState = &StayState;
-	//	break;
-	//case PStateE::KICK_CHARGE:
-	//	currentState = &StayState;
-	//	break;
-	//case PStateE::KICK:
-	//	currentState = &StayState;
-	//	break;
-	//case PStateE::SLASH:
-	//	currentState = &StayState;
-	//	break;
-	//case PStateE::DAMAGE:
-	//	currentState = &StayState;
-	//	break;
-	//case PStateE::BLOW:
-	//	currentState = &StayState;
-	//	break;
-	//default:
-	//	//エラー
-	//	break;
-	//}
-	//_State = next;
-	//currentState->Enter();
-
 	//今のステートを抜けるときの処理
 	switch (_State)
 	{
@@ -397,7 +343,6 @@ void Player::AnimationControl()
 	case PStateE::PUNCH:
 		//パンチ再生
 		PlayAnimation(3, 0.2f, 1);
-		_Anim->SetAnimeSpeed(2.0f);
 		break;
 	case PStateE::KICK_CHARGE:
 		//蹴りため開始
@@ -409,7 +354,6 @@ void Player::AnimationControl()
 	case PStateE::SLASH:
 		//武器振り再生
 		PlayAnimation(8, 0.2f, 1);
-		_Anim->SetAnimeSpeed(1.5f);
 		break;
 	case PStateE::DAMAGE:
 		PlayAnimation(6, 0.2f, 1);
@@ -555,64 +499,6 @@ void Player::Attack()
 	}
 }
 
-void Player::Damage()
-{
-	//ダメージ処理
-	FOR(PLAYER_NUM)
-	{
-		//自分のあたり判定はしない
-		if (i == _Playeridx)
-			continue;
-
-		const DamageCollision *co = (const DamageCollision*)PhysicsWorld::Instance()->FindOverlappedDamageCollision(_RB, i);
-		if (co)
-		{
-			//吹き飛ぶ方向
-			Vector3 vec = co->info.Blown;
-			//反対を向く
-			vec.Scale(-1);
-			vec.y = 0;
-			//正規化
-			vec.Normalize();
-			//ベクトルから角度を求める
-			float rot = D3DXToRadian(360) - atan2f(vec.z, vec.x);
-			Vector3 ang = transform->GetLocalAngle();
-			ang.y = D3DXToDegree(rot + D3DXToRadian(90));
-			//回転
-			transform->SetLocalAngle(ang);
-
-			//最後に攻撃してきたとしてやつ保存
-			//とりあえず永続
-			_LastAttack = i;
-			//ダメージ加算(999が最大)
-			_Damage = min(999, _Damage + co->info.Damage);
-			//テキストのダメージ更新
-			_Pparameter->SetDamage(_Damage);
-			//タイマー初期化
-			_RigorTimer = 0;
-			//硬直時間受け取り
-			_Rigor = co->info.Rigor;
-			//吹き飛び力受け取り
-			_Blown = co->info.Blown;
-			//吹き飛び補正
-			_Blown.Scale(_Cparameter->ToBlowCorrection);
-			//更にダメージによる吹き飛び補正
-			_Blown.Scale(1.0f + (float)_Damage / 30.0f);
-
-
-			//吹き飛ばし力があるなら
-			if (_Blown.Length() > 0)
-			{
-				//コントローラ振動
-				XboxInput(_Playeridx)->Vibration(20000, 20000);
-				//吹き飛んだのでジャンプ回数を1に
-				_JumpCount = 1;
-			}
-		}
-	}
-
-}
-
 void Player::Blown()
 {
 	//吹き飛ばし力があるのなら。
@@ -654,28 +540,28 @@ void Player::Move()
 	_Move = Vector3::zero;
 	if (!_IsAction)
 	{
-		const float speed = _Cparameter->Speed;
+		float speed = _Cparameter->Speed;
 		_Dir = Vector3::zero;
 		//コントローラー移動
-		_Dir.x = (XboxInput(_Playeridx)->GetAnalog(AnalogInputE::L_STICK).x / 32767.0f)*speed;
-		_Dir.z = (XboxInput(_Playeridx)->GetAnalog(AnalogInputE::L_STICK).y / 32767.0f)*speed;
+		_Dir.x = (XboxInput(_Playeridx)->GetAnalog(AnalogInputE::L_STICK).x / 32767.0f);
+		_Dir.z = (XboxInput(_Playeridx)->GetAnalog(AnalogInputE::L_STICK).y / 32767.0f);
 #ifdef _DEBUG
 		//キーボード(デバッグ用)
 		if (KeyBoardInput->isPressed(DIK_W))
 		{
-			_Dir.z += speed;
+			_Dir.z += 1;
 		}
 		if (KeyBoardInput->isPressed(DIK_S))
 		{
-			_Dir.z -= speed;
+			_Dir.z -= 1;
 		}
 		if (KeyBoardInput->isPressed(DIK_A))
 		{
-			_Dir.x -= speed;
+			_Dir.x -= 1;
 		}
 		if (KeyBoardInput->isPressed(DIK_D))
 		{
-			_Dir.x += speed;
+			_Dir.x += 1;
 		}
 #endif // _DEBUG
 
@@ -690,7 +576,7 @@ void Player::Move()
 				)
 			{
 				//はやくする
-				_Dir.Scale(2.0f);
+				speed *= 2.0f;
 				if (_State != PStateE::FALL)
 					ChangeState(PStateE::DASH);
 			}
@@ -703,18 +589,19 @@ void Player::Move()
 
 			//カメラからみた向きに変換
 			Camera* c = GameObjectManager::mainCamera;
-			_Dir = c->transform->Direction(_Dir)*Time::DeltaTime();
+			_Dir = c->transform->Direction(_Dir) * speed * Time::DeltaTime();
 			//Yの移動量を消す
 			_Move = Vector3(_Dir.x, 0.0f, _Dir.z);
+			_Move.Normalize();
+			_Move.Scale(speed * Time::DeltaTime());
 
-			Vector3 vec = _Move;
+			//移動方向
+			Vector2 vec = Vector2(_Dir.x, _Dir.z);
 			//正規化
 			vec.Normalize();
-			//ベクトルから角度を求める
-			float rot = D3DXToRadian(360) - atan2f(vec.z, vec.x);
-			//回転
 			Vector3 ang = transform->GetLocalAngle();
-			ang.y = D3DXToDegree(rot + D3DXToRadian(90));
+			//y軸回転
+			ang.y = D3DXToDegree(vec.Rot());
 			//回転
 			transform->SetLocalAngle(ang);
 		}
@@ -757,6 +644,49 @@ void Player::Jump()
 	}
 }
 
+void Player::Damage(const int& idx, const float& damage, const Vector3& blow, const float& rigor)
+{
+	//吹き飛ばしベクトルと逆の向きを向くようにする。
+	{
+		//吹き飛ぶ方向と反対のベクトル
+		Vector2 vec = Vector2(blow.x * -1, blow.z * -1);
+		//正規化
+		vec.Normalize();
+		Vector3 ang = transform->GetLocalAngle();
+		//ベクトルから角度を求める
+		ang.y = D3DXToDegree(vec.Rot());
+		//回転
+		transform->SetLocalAngle(ang);
+	}
+
+	//ダメージ加算(999が最大)
+	_Damage = min(999, _Damage + damage);
+	//テキストのダメージ更新
+	_Pparameter->SetDamage(_Damage);
+
+	//最後に攻撃してきたとしてやつ保存
+	_LastAttack = idx;
+	//タイマー初期化
+	_RigorTimer = 0;
+	//硬直時間受け取り
+	_Rigor = rigor;
+	//吹き飛び力受け取り
+	_Blown = blow;
+	//キャラクターの「吹き飛ばされやすさ」による吹き飛び補正
+	_Blown.Scale(_Cparameter->ToBlowCorrection);
+	//更にダメージによる吹き飛び補正
+	_Blown.Scale(1.0f + (float)_Damage / 30.0f);
+
+	//吹き飛ばし力があるなら
+	if (_Blown.Length() > 0)
+	{
+		//コントローラ振動
+		XboxInput(_Playeridx)->Vibration(20000, 20000);
+		//吹き飛んだのでジャンプ回数を1に
+		_JumpCount = 1;
+	}
+}
+
 void Player::Death()
 {
 	//とりあえずポジションだけで判定する
@@ -787,8 +717,6 @@ void Player::Death()
 	}
 }
 
-#include "Item.h"
-
 void Player::ItemAction()
 {
 	if (_HaveItem)
@@ -796,7 +724,7 @@ void Player::ItemAction()
 		if (KeyBoardInput->isPush(DIK_X) || XboxInput(_Playeridx)->IsPushButton(XINPUT_GAMEPAD_RIGHT_SHOULDER))
 		{
 			//アイテムを離す
-			_HaveItem->ToSeparate();
+			_HaveItem->ToSeparate(_Move*3.0f);
 			_HaveItem = nullptr;
 		}
 	}
@@ -804,7 +732,7 @@ void Player::ItemAction()
 	else
 	{
 		//アイテム(ID:6)と当たっているか？
-		const Collision *coll = (const Collision*)PhysicsWorld::Instance()->FindOverlappedDamageCollision(_RB, 6);
+		const Collision *coll = (const Collision*)PhysicsWorld::Instance()->FindHitCollision(_Rigid, 6);
 		//当たっている
 		if (coll)
 		{

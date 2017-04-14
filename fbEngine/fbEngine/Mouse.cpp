@@ -86,9 +86,19 @@ int Mouse::GetValue(MouseInE m)
 	return value;
 }
 
-Vector2 Mouse::GetCursorPosition()
+Vector2 Mouse::GetCursorPosOnScreen()
 {
 	POINT pos;
 	GetCursorPos(&pos);
-	return Vector2(pos.x,pos.y);
+	return Vector2(pos.x, pos.y);
+}
+
+Vector2 Mouse::GetCursorPosOnWindow(HWND hwnd)
+{
+	POINT pos;
+	//â‘Î’l‚ğæ“¾
+	GetCursorPos(&pos);
+	//‘Š‘Î“I‚ÈˆÊ’u‚ğæ“¾
+	ScreenToClient(hwnd, &pos);
+	return Vector2(pos.x, pos.y);
 }

@@ -28,12 +28,12 @@ public:
 		{
 			priority = System::MAX_PRIORITY - 1;
 		}
-		if (gameObjects.size() <= 0)
+		if (_GameObjects.size() <= 0)
 		{
-			gameObjects.resize(System::MAX_PRIORITY);
+			_GameObjects.resize(System::MAX_PRIORITY);
 		}
 		T* obj = new T(name);
-		gameObjects.at(priority).push_back(obj);
+		_GameObjects.at(priority).push_back(obj);
 		obj->Awake();
 
 		return obj;
@@ -92,9 +92,9 @@ public:
 	};
 private:
 	//ゲームオブジェクトを管理
-	static vector<list<GameObject*>> gameObjects;
+	static vector<list<GameObject*>> _GameObjects;
 	//削除リスト
-	static list<RemoveObj> removeList;
+	static list<RemoveObj> _RemoveList;
 	//削除リストのオブジェクトを削除する。
-	static void RemoveObject();
+	static void _RemoveObject();
 };

@@ -140,7 +140,7 @@ void SkinModel::DrawMeshContainer(
 		Color color[System::MAX_LIGHTNUM];
 		ZeroMemory(dir, sizeof(Vector4)*System::MAX_LIGHTNUM);
 		const vector<DirectionalLight*>& vec = GameObjectManager::mainLight->GetLight();
-		FOR(num)
+		FOR(i,num)
 		{
 			dir[i] = vec[i]->Direction();
 			color[i] = vec[i]->GetColor();
@@ -161,11 +161,11 @@ void SkinModel::DrawMeshContainer(
 		
 		//各行列を送信
 		_Effect->SetMatrix("g_rotationMatrix", transform->GetRotateMatrixAddress());
-		_Effect->SetMatrix("g_viewMatrix", &_Camera->View());
-		_Effect->SetMatrix("g_projectionMatrix", &_Camera->Projection());
+		_Effect->SetMatrix("g_viewMatrix", &(D3DXMATRIX)_Camera->GetViewMat());
+		_Effect->SetMatrix("g_projectionMatrix", &(D3DXMATRIX)_Camera->GetProjectionMat());
 		
 		//影カメラのビュープロジェクション行列を作って送信
-		D3DXMATRIX LVP = GameObjectManager::mainShadowCamera->View() * GameObjectManager::mainShadowCamera->Projection();
+		D3DXMATRIX LVP = GameObjectManager::mainShadowCamera->GetViewMat() * GameObjectManager::mainShadowCamera->GetProjectionMat();
 		_Effect->SetMatrix("g_LVP", &LVP);
 
 		//深度テクスチャ
@@ -328,8 +328,8 @@ void SkinModel::CreateShadow(D3DXMESHCONTAINER_DERIVED * pMeshContainer, D3DXFRA
 	_Effect->BeginPass(0);
 
 	//影カメラのビュープロジェクション行列を送る
-	_Effect->SetMatrix("g_viewMatrix", &GameObjectManager::mainShadowCamera->View());
-	_Effect->SetMatrix("g_projectionMatrix", &GameObjectManager::mainShadowCamera->Projection());
+	_Effect->SetMatrix("g_viewMatrix", &(D3DXMATRIX)GameObjectManager::mainShadowCamera->GetViewMat());
+	_Effect->SetMatrix("g_projectionMatrix", &(D3DXMATRIX)GameObjectManager::mainShadowCamera->GetProjectionMat());
 
 	//アニメーションの有無で分岐
 	if (pMeshContainer->pSkinInfo != NULL)

@@ -9,9 +9,14 @@ public:
 	}
 	Object(const char* name)
 	{
-		_Name = name;
+		_Name = new char[strlen(name) + 1];
+		//文字列コピー
+		strcpy(_Name, name);
 	}
-	virtual ~Object() {};
+	virtual ~Object()
+	{
+		SAFE_DELETE(_Name);
+	};
 
 	//インスタンスが作成された時に実行される
 	//純粋仮想関数ではないので絶対オーバーライドしなくてもいい
@@ -43,5 +48,5 @@ public:
 	}
 protected:
 	//オブジェクトの名前
-	const char* _Name;
+	char* _Name;
 };

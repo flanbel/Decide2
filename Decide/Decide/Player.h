@@ -1,16 +1,6 @@
 #pragma once
 #include "fbEngine/GameObject.h"
 #include "Character.h"
-//#include "PlayerState.h"
-//#include "PlayerState_Stay.h"
-//#include "PlayerState_Walk.h"
-//#include "PlayerState_Run.h"
-//#include "PlayerState_Jump.h"
-//#include "PlayerState_Fall.h"
-//#include "PlayerState_Punch.h"
-//#include "PlayerState_Kick.h"
-//#include "PlayerState_KickCharge.h"
-//#include "PlayerState_Blow.h"
 
 class SkinModel;
 class Animation;
@@ -21,6 +11,7 @@ class ParticleEmitter;
 struct D3DXFRAME_DERIVED;
 class Item;
 class GameRule;
+class DamageCollision;
 //プレイヤークラス
 class Player :public GameObject
 {
@@ -44,16 +35,15 @@ public:
 	void Awake()override;
 	void Start()override;
 	void Update()override;
-	void LateUpdate()override;
-
-	void UpdateStateMachine();	//ステートマシン更新
+	
 	void ChangeState(PStateE s);		//ステート切り替え
 	void PlayAnimation(int idx, float time, int loop = -1);
 	void AnimationControl();		//ステートによって再生するアニメーションを指定
 	void Attack();
 	void Move();
 	void Jump();
-	void Damage();
+	//外部からダメージを加える
+	void Damage(const int& idx,const float& damage,const Vector3& blow,const float& rigor);
 	void Blown();
 	void ItemAction();
 	//落ちた時の処理
@@ -85,12 +75,6 @@ private:
 	void _Reset();
 	//重力処理
 	void _GravityCheck(const float& movey);
-	//PlayerState* currentState = nullptr;	//現在のステート.
-	//PlayerStateStay StayState;				//待機ステート.
-	//PlayerStateWalk WalkState;				//歩きステート.
-	//PlayerStateRun RunState;				//走りステート.
-	//PlayerStateJump JumpState;
-	//PlayerStateFall FallState;
 private:
 	//コンポーネントとかアドレスの保持が必要なものたち
 	SkinModel* _Model;

@@ -6,24 +6,18 @@ void GameShadowCamera::Awake()
 	ShadowCamera* camera = AddComponent<ShadowCamera>();
 	GameObjectManager::mainShadowCamera = camera;
 
-	/*transform->SetLocalPosition(Vector3(-1270, 3100, -1800);
-	transform->localAngle = Vector3(69, 49, 0);
-	camera->Near(3040);
-	camera->Far(4000);*/
-
-	transform->SetLocalPosition(Vector3(-2044, 2034, -2344));
-	transform->SetLocalAngle(Vector3(50, 50, 0));
-	camera->Near(2544);
-	camera->Far(4310);
-	//camera->Near(1);
-	//camera->Far(2000);
+	transform->SetLocalPosition(Vector3(-500, 760, -460));
+	transform->SetLocalAngle(Vector3(52, 48, 0));
+	camera->SetNear(1);
+	camera->SetFar(1500);
+	camera->SetViewVolume(Vector2(1200, 1200));
 }
 
 void GameShadowCamera::Update()
 {
 	//í≤êÆóp
 	ShadowCamera* camera = GetComponent<ShadowCamera>();
-	static Vector2 nf = { 2544,4310 };
+	static Vector2 nf = { 1,1500 };
 	if (KeyBoardInput->isPressed(DIK_N))
 	{
 		nf.x++;
@@ -41,26 +35,28 @@ void GameShadowCamera::Update()
 		nf.y--;
 	}
 
-	/*camera->Near(nf.x);
-	camera->Far(nf.y);
-
-
+	//camera->SetNear(nf.x);
+	//camera->SetFar(nf.y);
+	
+	Vector3 lang = Vector3::zero;
 	if (KeyBoardInput->isPressed(DIK_LEFT))
 	{
-		transform->localAngle.y -= 1;
+		lang.y -= 1;
 	}
 	if (KeyBoardInput->isPressed(DIK_RIGHT))
 	{
-		transform->localAngle.y += 1;
+		lang.y += 1;
 	}
 	if (KeyBoardInput->isPressed(DIK_UP))
 	{
-		transform->localAngle.x -= 1;
+		lang.x -= 1;
 	}
 	if (KeyBoardInput->isPressed(DIK_DOWN))
 	{
-		transform->localAngle.x += 1;
-	}*/
+		lang.x += 1;
+	}
+	Vector3 la = transform->GetLocalAngle();
+	//transform->SetLocalAngle(la + (lang));
 
 	Vector3 dir = Vector3::zero;
 	if (KeyBoardInput->isPressed(DIK_W))
@@ -88,5 +84,6 @@ void GameShadowCamera::Update()
 		dir.y -= 1;
 	}
 
-	//transform->localPosition.Add(transform->Direction(dir));
+	Vector3 lp = transform->GetLocalPosition();
+	//transform->SetLocalPosition(lp + transform->Direction(dir));
 }

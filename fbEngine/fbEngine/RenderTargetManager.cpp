@@ -67,7 +67,7 @@ RenderTargetManager::RenderTargetManager()
 		DWORD MaxRT = Caps.NumSimultaneousRTs;
 		_MaxRTNum = MaxRT;
 
-		FOR(_MaxRTNum)
+		FOR(i,_MaxRTNum)
 		{
 			RenderTarget* ren = new RenderTarget();
 			//とりあえず浮動小数点バッファで作ってみる(絶対無駄がある)
@@ -100,7 +100,7 @@ void RenderTargetManager::ReSetRT(DWORD Index, RenderTarget* renderTarget, Color
 
 void RenderTargetManager::ReSetRT()
 {
-	FOR(_MaxRTNum)
+	FOR(i,_MaxRTNum)
 	{
 		ReSetRT(i, _RTList[i]);
 	}

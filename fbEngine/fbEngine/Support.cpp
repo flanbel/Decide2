@@ -91,7 +91,7 @@ namespace Support
 		//‹t‚©‚ç
 		list<char>::reverse_iterator it = l.rbegin();
 		short i = 0;
-		short size = l.size();
+		size_t size = l.size();
 		while (it != l.rend())
 		{
 			if (size - i == decimal)

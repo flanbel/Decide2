@@ -274,7 +274,7 @@ void Sprite::_CreateOutLine()
 	//ˆÚ“®—Ê
 	float offset = 1.0f;
 	//ã‰º¶‰E‚ÉˆÚ“®‚³‚¹‚Ä•`‰æ
-	FOR(4)
+	FOR(i,4)
 	{
 		switch (i)
 		{

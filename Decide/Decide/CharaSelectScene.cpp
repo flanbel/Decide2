@@ -72,13 +72,13 @@ void CharaSelectScene::Start()
 	};
 
 	//選択のやつを生成
-	FOR(PLAYER_NUM)
+	FOR(idx,PLAYER_NUM)
 	{
-		_SelectArray[i] = GameObjectManager::AddNew<CharaSelect>("Select", 0);
-		_SelectArray[i]->SetIdx(i);
-		_SelectArray[i]->SetColor(playercolor[i]);
+		_SelectArray[idx] = GameObjectManager::AddNew<CharaSelect>("Select", 0);
+		_SelectArray[idx]->SetIdx(idx);
+		_SelectArray[idx]->SetColor(playercolor[idx]);
 		float Space = 300.0f;
-		_SelectArray[i]->transform->SetLocalPosition(Vector3(190.0f+(i*Space), 450.0f, 0));
+		_SelectArray[idx]->transform->SetLocalPosition(Vector3(190.0f+(idx*Space), 450.0f, 0));
 	}
 
 	//シーン切り替えフラグ初期化
@@ -88,25 +88,25 @@ void CharaSelectScene::Start()
 void CharaSelectScene::Update()
 {
 	//キャラクター選択(こいつがするの？？？？？？)
-	FOR(PLAYER_NUM)
+	FOR(idx,PLAYER_NUM)
 	{
 		//jはキャラクター数
-		short j = 0;
-		for(;j<CHARACTER_NUM;j++)
+		short chara = 0;
+		FOR(nul,CHARACTER_NUM)
 		{
 			//各カーソルと重なっているか判定
-			if(_RingArray[j]->Judgment(_SelectArray[i]->GetCursorPos()))
+			if(_RingArray[chara]->Judgment(_SelectArray[idx]->GetCursorPos()))
 			{
 				//リングの情報セット
-				_SelectArray[i]->SetInfo(_RingArray[j]->GetInfo(i));
+				_SelectArray[idx]->SetInfo(_RingArray[chara]->GetInfo(idx));
 				
 				break;
 			}
 		}
 		//何もセットしない
-		if(j == CHARACTER_NUM && _SelectArray[i]->GetDecision() == false)
+		if(chara == CHARACTER_NUM && _SelectArray[idx]->GetDecision() == false)
 		{
-			_SelectArray[i]->SetInfo(nullptr);
+			_SelectArray[idx]->SetInfo(nullptr);
 		}
 	}
 	//ゲームルール更新
@@ -115,9 +115,9 @@ void CharaSelectScene::Update()
 
 	//決定しているプレイヤー数カウント
 	int count = 0;
-	FOR(4)
+	FOR(idx, PLAYER_NUM)
 	{
-		if (_SelectArray[i]->GetDecision())
+		if (_SelectArray[idx]->GetDecision())
 			count++;
 	}
 
@@ -144,27 +144,30 @@ void CharaSelectScene::Update()
 	if(_ChangeScene && !_IsFade)
 	{
 		vector<Player*> Array;
-		FOR(PLAYER_NUM)
+		FOR(idx,PLAYER_NUM)
 		{
-			//選択されているなら
-			if (_SelectArray[i]->GetDecision())
+			//選択されているならプレイヤーオブジェクト生成
+			if (_SelectArray[idx]->GetDecision())
 			{
+				char pname[20] = "Player";
+				char num[2] = { (48 + idx + 1) + '\0' };
+				strcat(pname, num);
 				//プレイヤー生成
-				Player* p = GameObjectManager::AddNew<Player>("Player", 1);
-				p->SetIdx(i);
-				p->SetInfo(_SelectArray[i]->GetInfo());
-				p->SetColor(_SelectArray[i]->GetColor());
+				Player* p = GameObjectManager::AddNew<Player>(pname, 1);
+				p->SetIdx(idx);
+				p->SetInfo(_SelectArray[idx]->GetInfo());
+				p->SetColor(_SelectArray[idx]->GetColor());
 				//シーン切り替えしても破棄しないように設定
 				p->Discard(false);
 				Array.push_back(p);
 				//ゲームルールの方にプレイヤーの情報をセット
-				_GameRule->SetPlayer(p, i);
+				_GameRule->SetPlayer(p, idx);
 			}
 		}
 		//選択のやつ解放
-		FOR(PLAYER_NUM)
+		FOR(idx,PLAYER_NUM)
 		{
-			_SelectArray[i]->Release();
+			_SelectArray[idx]->Release();
 		}
 		//切り替え
 		INSTANCE(SceneManager)->ChangeScene("BattleScene");
@@ -175,20 +178,20 @@ void CharaSelectScene::Update()
 void CharaSelectScene::_CreateCharaFrame(const wchar_t ** nameArray,const char ** pathArray,const CharacterParam* paramArray)
 {
 	//キャラクタ数分フレーム作成
-	for (short j = 0; j<CHARACTER_NUM; j++)
+	FOR (chara,CHARACTER_NUM)
 	{
-		_RingArray[j] = GameObjectManager::AddNew<CharaRingFrame>("Frame", 0);
+		_RingArray[chara] = GameObjectManager::AddNew<CharaRingFrame>("Frame", 0);
 		//今は一体しかいないので場所は適当
-		_RingArray[j]->transform->SetLocalPosition(Vector3(WindowW / 2, 100, 0));
+		_RingArray[chara]->transform->SetLocalPosition(Vector3(WindowW / 2, 100, 0));
 		//プレイヤ数分情報作成
-		FOR(PLAYER_NUM)
+		FOR(idx,PLAYER_NUM)
 		{
 			//このへんメモリリーク注意
 			Animation* anim = new Animation(nullptr, nullptr);
 			SkinModelData* data = new SkinModelData();
-			data->CloneModelData(SkinModelManager::LoadModel(pathArray[j]), anim);
-			CharacterInfo* info = new CharacterInfo(nameArray[j], pathArray[j], &paramArray[j], data, anim);
-			_RingArray[j]->SetInfo(info, i);
+			data->CloneModelData(SkinModelManager::LoadModel(pathArray[chara]), anim);
+			CharacterInfo* info = new CharacterInfo(nameArray[chara], pathArray[chara], &paramArray[chara], data, anim);
+			_RingArray[chara]->SetInfo(info, idx);
 		}
 	}
 }

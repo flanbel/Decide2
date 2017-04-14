@@ -77,7 +77,7 @@ public:
 	//ストック数取得
 	const int& GetStock();
 	//残り時間取得
-	const int& GetRemainingTime();
+	int GetRemainingTime();
 	//試合が終了したかチェック
 	const GameStateE& IsGameSet();
 	//試合のステート取得

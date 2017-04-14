@@ -1,6 +1,7 @@
 #include "Random.h"
 
 int Random::Range(int min,int max) {
+	max += 1;
 	//‘å‚«‚³‚ª‹t
 	if (min > max)
 	{

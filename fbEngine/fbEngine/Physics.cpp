@@ -77,13 +77,35 @@ void PhysicsWorld::RemoveCollision(Collision * coll)
 	dynamicWorld->removeCollisionObject(coll->GetCollisonObj());
 }
 
-const Collision * PhysicsWorld::FindOverlappedDamageCollision(btCollisionObject * colliObject,const int& id) const
+const Vector3 PhysicsWorld::ClosestRayTest(const Vector3& f, const Vector3& t)
+{
+	//始点と終点を設定
+	btVector3 from(f.x, f.y, f.z), to(t.x, t.y, t.z);
+	//最も近かったを返す
+	btCollisionWorld::ClosestRayResultCallback call(from, to);
+	call.m_hitPointWorld = btVector3(0, 0, 0);
+	//レイを飛ばす
+	dynamicWorld->rayTest(from, to, call);
+	return Vector3(call.m_hitPointWorld.x(), call.m_hitPointWorld.y(), call.m_hitPointWorld.z());
+}
+
+const Collision * PhysicsWorld::FindHitCollision(Collision * coll,const int& id) const
 {
 	MyContactResultCallback callback;
-	callback.queryCollisionObject = colliObject;
+	callback.queryCollisionObject = coll;
 	callback.id = id;
-	dynamicWorld->contactTest(colliObject, callback);
-	
+	dynamicWorld->contactTest(coll->GetCollisonObj(), callback);
+
+	return callback.hitObject;
+}
+
+const Collision * PhysicsWorld::SearchCollisionByName(Collision * coll, const char * name, const int & id) const
+{
+	FindNameContactResultCallback callback;
+	callback.queryCollisionObject = coll;
+	callback.name = name;
+	callback.id = id;
+	dynamicWorld->contactTest(coll->GetCollisonObj(), callback);
 
 	return callback.hitObject;
 }

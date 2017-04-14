@@ -9,11 +9,7 @@ void AttackCollision::Awake()
 
 void AttackCollision::Update()
 {
-	//“–‚½‚Á‚½ || Ž€‚ñ‚Å‚È‚¢
-	if(coll->GetHit() || !coll->enable)
-	{
-		GameObjectManager::AddRemoveList(this);
-	}
+	
 }
 
 void AttackCollision::Create(const int & ID, float & Life, Vector3 & Size, DamageCollision::DamageCollisonInfo & info)

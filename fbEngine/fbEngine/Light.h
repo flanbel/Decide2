@@ -63,7 +63,7 @@ public:
 	//ベクター取得
 	const vector<DirectionalLight*>& GetLight();
 	//ライトの数取得
-	const int& GetNum();
+	const int GetNum()const;
 private:
 	//ライトのポインタ達
 	vector<DirectionalLight*> _LightVec;

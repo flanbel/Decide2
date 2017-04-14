@@ -1,20 +1,20 @@
 #include "GameObjectManager.h"
 #include "GameObject.h"
 
-vector<list<GameObject*>> GameObjectManager::gameObjects;
-list<GameObjectManager::RemoveObj> GameObjectManager::removeList;
+vector<list<GameObject*>> GameObjectManager::_GameObjects;
+list<GameObjectManager::RemoveObj> GameObjectManager::_RemoveList;
 Camera* GameObjectManager::mainCamera = nullptr;
 Light* GameObjectManager::mainLight = nullptr;
 ShadowCamera* GameObjectManager::mainShadowCamera = nullptr;
 
 GameObject* GameObjectManager::Add(GameObject* pAdd, int priority)
 {
-	if(gameObjects.size() <= 0)
+	if(_GameObjects.size() <= 0)
 	{
-		gameObjects.resize(System::MAX_PRIORITY);
+		_GameObjects.resize(System::MAX_PRIORITY);
 	}
 	GameObject* obj = pAdd;
-	gameObjects.at(priority).push_back(obj);
+	_GameObjects.at(priority).push_back(obj);
 	obj->Awake();
 	return pAdd;
 }
@@ -23,7 +23,7 @@ void GameObjectManager::StartObject()
 {
 	for (short priority = 0; priority < System::MAX_PRIORITY; priority++)
 	{
-		for each (GameObject* obj in gameObjects[priority])
+		for each (GameObject* obj in _GameObjects[priority])
 		{
 			if (obj->GetActive())
 			{
@@ -37,11 +37,11 @@ void GameObjectManager::StartObject()
 void GameObjectManager::UpdateObject()
 {
 	//削除リストを削除
-	RemoveObject();
+	_RemoveObject();
 
 	for (short priority = 0; priority < System::MAX_PRIORITY; priority++)
 	{
-		for each (GameObject* obj in gameObjects[priority])
+		for each (GameObject* obj in _GameObjects[priority])
 		{
 			if (obj->GetActive())
 			{
@@ -56,7 +56,7 @@ void GameObjectManager::LateUpdateObject()
 {
 	for (short priority = 0; priority < System::MAX_PRIORITY; priority++)
 	{
-		for each (GameObject* obj in gameObjects[priority])
+		for each (GameObject* obj in _GameObjects[priority])
 		{
 			if (obj->GetActive())
 			{
@@ -72,7 +72,7 @@ void GameObjectManager::PreRenderObject()
 	//レンダーターゲットセット
 	for (short priority = 0; priority < System::MAX_PRIORITY; priority++)
 	{
-		for each (GameObject* obj in gameObjects[priority])
+		for each (GameObject* obj in _GameObjects[priority])
 		{
 			if (obj->GetActive())
 			{
@@ -87,7 +87,7 @@ void GameObjectManager::RenderObject()
 {
 	for (short priority = 0; priority < System::MAX_PRIORITY; priority++)
 	{
-		for each (GameObject* obj in gameObjects[priority])
+		for each (GameObject* obj in _GameObjects[priority])
 		{
 			if (obj->GetActive())
 			{
@@ -102,7 +102,7 @@ void GameObjectManager::PostRenderObject()
 {
 	for (short priority = 0; priority < System::MAX_PRIORITY; priority++)
 	{
-		for each (GameObject* obj in gameObjects[priority])
+		for each (GameObject* obj in _GameObjects[priority])
 		{
 			if (obj->GetActive())
 			{
@@ -117,7 +117,7 @@ void GameObjectManager::ImageRenderObject()
 {
 	for (short priority = 0; priority < System::MAX_PRIORITY; priority++)
 	{
-		for each (GameObject* obj in gameObjects[priority])
+		for each (GameObject* obj in _GameObjects[priority])
 		{
 			if (obj->GetActive())
 			{
@@ -132,15 +132,15 @@ void GameObjectManager::AddRemoveList(GameObject * obj)
 {
 	for (short priority = 0; priority < System::MAX_PRIORITY; priority++)
 	{
-		list<GameObject*>::iterator it = gameObjects[priority].begin();
+		list<GameObject*>::iterator it = _GameObjects[priority].begin();
 
-		while (it != gameObjects[priority].end())
+		while (it != _GameObjects[priority].end())
 		{
 			//アドレスの比較
 			if (obj == *it)
 			{
 				RemoveObj remove(it, priority);
-				removeList.push_back(remove);
+				_RemoveList.push_back(remove);
 				return;
 			}
 			else
@@ -153,15 +153,15 @@ void GameObjectManager::AddRemoveList(char * name)
 {
 	for (short priority = 0; priority < System::MAX_PRIORITY; priority++)
 	{
-		list<GameObject*>::iterator it = gameObjects[priority].begin();
+		list<GameObject*>::iterator it = _GameObjects[priority].begin();
 
-		while (it != gameObjects[priority].end())
+		while (it != _GameObjects[priority].end())
 		{
 			//名前の比較
 			if (strcmp(name, (*it)->GetName()) == 0)
 			{
 				RemoveObj remove(it,priority);
-				removeList.push_back(remove);
+				_RemoveList.push_back(remove);
 				return;
 			}
 			else
@@ -174,9 +174,9 @@ GameObject* GameObjectManager::FindObject(char* name)
 {
 	for (short priority = 0; priority < System::MAX_PRIORITY; priority++)
 	{
-		list<GameObject*>::iterator it = gameObjects[priority].begin();
+		list<GameObject*>::iterator it = _GameObjects[priority].begin();
 
-		while (it != gameObjects[priority].end())
+		while (it != _GameObjects[priority].end())
 		{
 			//名前の比較
 			if (strcmp(name, (*it)->GetName()) == 0)
@@ -195,9 +195,9 @@ bool GameObjectManager::FindObjects(char* name, GameObject ** objArray)
 {
 	for (short priority = 0; priority < System::MAX_PRIORITY; priority++)
 	{
-		list<GameObject*>::iterator it = gameObjects[priority].begin();
+		list<GameObject*>::iterator it = _GameObjects[priority].begin();
 
-		while (it != gameObjects[priority].end())
+		while (it != _GameObjects[priority].end())
 		{
 			//名前の比較
 			if (strcmp(name, (*it)->GetName()) == 0)
@@ -211,30 +211,30 @@ bool GameObjectManager::FindObjects(char* name, GameObject ** objArray)
 	return false;
 }
 
-void GameObjectManager::RemoveObject()
+void GameObjectManager::_RemoveObject()
 {
-	for each (RemoveObj remove in removeList)
+	for each (RemoveObj remove in _RemoveList)
 	{
 		SAFE_DELETE(*remove.it);
-		gameObjects[remove.prio].erase(remove.it);
+		_GameObjects[remove.prio].erase(remove.it);
 	} 
-	removeList.clear();
+	_RemoveList.clear();
 }
 
 void GameObjectManager::Release()
 {
 	for (short priority = 0; priority < System::MAX_PRIORITY; priority++)
 	{
-		if (gameObjects.size() > 0)
+		if (_GameObjects.size() > 0)
 		{
-			list<GameObject*>::iterator it = gameObjects[priority].begin();
+			list<GameObject*>::iterator it = _GameObjects[priority].begin();
 			//すべて追加
-			while (it != gameObjects[priority].end())
+			while (it != _GameObjects[priority].end())
 			{
 				if ((*it)->Discard())
 				{
 					RemoveObj remove(it, priority);
-					removeList.push_back(remove);
+					_RemoveList.push_back(remove);
 				}
 				else
 				{
@@ -247,7 +247,7 @@ void GameObjectManager::Release()
 			}
 		}
 	}
-	RemoveObject();
+	_RemoveObject();
 	mainCamera = nullptr;
 	mainLight = nullptr;
 }

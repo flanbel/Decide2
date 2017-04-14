@@ -219,20 +219,28 @@ Vector3 Transform::LocalPos(const Vector3& v)
 
 void Transform::LockAt(GameObject * obj)
 {
-	D3DXVECTOR3 target, me;
+	//注視点と視点
+	D3DXVECTOR3 target, eye;
 	obj->transform->_Position.CopyFrom(target);
-	this->_Position.CopyFrom(me);
+	this->_Position.CopyFrom(eye);
+	//回転行列初期化
 	D3DXMatrixIdentity(&_RotateMatrix);
+	//視点から見た上方向取得
+	Vector3 vup = this->Direction(Vector3::up);
 	//ターゲットから見た自分
-	D3DXMatrixLookAtLH(&_RotateMatrix, &target, &me, &D3DXVECTOR3(0, 1, 0));
-	//逆行列に
+	//第四引数は視点の上方向
+	D3DXMatrixLookAtLH(&_RotateMatrix, &target, &eye, (D3DXVECTOR3*)&vup);
+	//ビュー行列を逆行列にしてワールド行列に
 	D3DXMatrixInverse(&_RotateMatrix, NULL, &_RotateMatrix);
-	_RotateMatrix._41 = 0.0f;   // オフセットを切る（回転行列だけにしてしまう）
+	// オフセットを切って回転行列だけにしてしまう
+	_RotateMatrix._41 = 0.0f;   
 	_RotateMatrix._42 = 0.0f;
 	_RotateMatrix._43 = 0.0f;
+
 	//回転行列からクォータニオン生成
 	D3DXQUATERNION q;
 	D3DXQuaternionRotationMatrix(&q, &_RotateMatrix);
+	//メンバ変数のクォータニオンにコピー
 	_Rotation = q;
 	//クォータニオンからオイラー角を求める
 	SetAngle(_Rotation.GetAngle());
@@ -451,7 +459,7 @@ void Transform::SetWorldMatrix(D3DXMATRIX w)
 	_WorldMatrix = w;
 }
 //ゲッター
-const Vector3& Transform::GetLocalPosition()
+Vector3& Transform::GetLocalPosition()
 {
 	return _LocalPosition;
 }

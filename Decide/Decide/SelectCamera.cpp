@@ -7,8 +7,8 @@ void SelectCamera::Awake()
 	GameObjectManager::mainCamera = camera;
 	transform->SetLocalPosition(Vector3(0, 50, -150));
 	transform->SetLocalAngle(Vector3(0, 0, 0));
-	camera->Near(1);
-	camera->Far(300);
+	camera->SetNear(1);
+	camera->SetFar(300);
 }
 
 void SelectCamera::Update()

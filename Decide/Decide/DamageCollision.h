@@ -25,6 +25,11 @@ public:
 	//げったー、セッター作るのめんどくさかった。
 	DamageCollisonInfo info;
 private:
+	//死んだかどうかチェック
+	void _CheckDeath();
+	//当たったかどうか？
+	void _CheckHit();
+private:
 	float _Life;	//寿命。0以下だと死なない
 	float _Timer;
 };

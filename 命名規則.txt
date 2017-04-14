@@ -5,6 +5,12 @@ private:
 private:
   int _Rank;
 
+プロテクトも同じに
+protected:
+  void _SetName(char* n);
+protected:
+  char* _Name;
+
 
 //こいつ微妙
 パブリックな変数はローワーキャメルケース(先頭小文字で文字区切りごとに大文字)

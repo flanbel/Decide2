@@ -4,5 +4,4 @@ void ShadowCamera::Update()
 {
 	ViewMatrixUpdate();
 	ParallelProjectionMatrixUpdate();
-	//ProjectionMatrixUpdate();
 }

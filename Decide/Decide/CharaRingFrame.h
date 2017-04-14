@@ -10,8 +10,10 @@ public:
 	CharaRingFrame(const char* name) :GameObject(name) {}
 	~CharaRingFrame()
 	{
-		FOR(PLAYER_NUM)
-		SAFE_DELETE(info[i]);
+		FOR(idx, PLAYER_NUM)
+		{
+			SAFE_DELETE(info[idx]);
+		}
 	}
 	void Awake()override;
 	void Start()override;

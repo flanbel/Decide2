@@ -25,7 +25,7 @@ const vector<DirectionalLight*>& Light::GetLight()
 	return _LightVec;
 }
 
-const int& Light::GetNum()
+const int Light::GetNum() const
 {
 	return min(System::MAX_LIGHTNUM,(const int)_LightVec.size());
 }

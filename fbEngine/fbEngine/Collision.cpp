@@ -30,6 +30,14 @@ void Collision::Awake()
 	_CollisionObject = nullptr;
 }
 
+void Collision::Update()
+{
+	//毎フレーム初期化
+	_IsHit = false;
+	//トランスフォームの更新
+	_UpdateCollisionTrans();
+}
+
 void Collision::Create(btCollisionObject * collision, Collider * shape, const int & id, Vector3 offset)
 {
 	_IsHit = false;
@@ -38,8 +46,8 @@ void Collision::Create(btCollisionObject * collision, Collider * shape, const in
 	//コリジョンオブジェクト設定
 	_CollisionObject.reset(collision);
 	_CollisionObject->setCollisionShape(_Shape->GetBody());
-	_CollisionObject->setUserPointer(this);
-	_CollisionObject->setUserIndex(id);
+	_CollisionObject->setUserPointer(this);	//ポインタ設定
+	_CollisionObject->setUserIndex(id);		//コリジョンID設定
 
 	//トランスフォーム更新
 	_UpdateCollisionTrans();
@@ -50,7 +58,7 @@ void Collision::_UpdateCollisionTrans()
 	//コリジョンのトランスフォームの参照を取得
 	btTransform& trans = _CollisionObject->getWorldTransform();
 	//移動を設定
-	trans.setOrigin(btVector3(transform->GetPosition().x + _Offset.x, transform->GetPosition().y + _Offset.y, transform->GetPosition().z + _Offset.z));
+	trans.setOrigin(btVector3(GetOffsetPos().x, GetOffsetPos().y, GetOffsetPos().z));
 	//回転を設定
 	trans.setRotation(btQuaternion(transform->GetRotation().x, transform->GetRotation().y, transform->GetRotation().z, transform->GetRotation().w));
 }

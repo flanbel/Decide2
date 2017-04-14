@@ -62,7 +62,13 @@ public:
 
 	void Discard(const bool& b)
 	{
-		_Discard = b;	
+		_Discard = b;
+		
+		//for each (Transform* t in transform->GetChildren())
+		//{
+		//	//子に全てに親と同じ値を設定
+		//	t->gameObject->Discard(_Discard);
+		//}
 	}
 
 	const bool& Discard()

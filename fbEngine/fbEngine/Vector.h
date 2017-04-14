@@ -44,6 +44,29 @@ public:
 	{
 		return x * x + y * y;
 	}
+	//内積
+	float Dot(const Vector2& in)
+	{
+		return x * in.x + y * in.y;
+	}
+	//外積
+	float Cross(const Vector2& in)
+	{
+		return x * in.y - y * in.x;
+	}
+	//角度＋回転方向を求める（単位はラジアン）
+	float Rot()
+	{
+		//上向きのベクトルとの角度をとる。
+		return atan2f(this->Cross(Vector2(0, 1)), this->Dot(Vector2(0, 1)));
+	}
+	//正規化
+	void Normalize()
+	{
+		float len = Length();
+		x /= len;
+		y /= len;
+	}
 
 	Vector2 operator + (const Vector2& in) const
 	{
@@ -225,14 +248,14 @@ public:
 	/*!
 	 * @brief	長さを取得
 	 */
-	float Length()
+	float Length() const
 	{
 		return sqrt(LengthSq());
 	}
 	/*!
 	 * @brief	長さの二乗を取得
 	 */
-	float LengthSq()
+	float LengthSq() const
 	{
 		return x * x + y * y + z * z;
 	}
@@ -263,6 +286,18 @@ public:
 		x /= d;
 		y /= d;
 		z /= d;
+	}
+	//線形補完
+	//補完先、かかる時間、割合
+	void Lerp(const Vector3& in,float time,float wariai)
+	{
+		//差を求める
+		Vector3 diff = in - (*this);
+		//1あたりの
+		diff.Div(time);
+		//割合分
+		diff.Scale(wariai);
+		this->Add(diff);
 	}
 
 	Vector3 operator + (Vector3 in) const

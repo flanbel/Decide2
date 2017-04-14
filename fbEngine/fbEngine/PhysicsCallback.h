@@ -11,35 +11,84 @@ public:
 	//衝突された時のコールバック関数
 	virtual	btScalar	addSingleResult(btManifoldPoint& cp, const btCollisionObjectWrapper* colObj0Wrap, int partId0, int index0, const btCollisionObjectWrapper* colObj1Wrap, int partId1, int index1) override
 	{
+		//初期化
 		const Vector3* vColl0Pos = (Vector3*)(&colObj0Wrap->getWorldTransform().getOrigin());
 		const Vector3* vColl1Pos = (Vector3*)(&colObj1Wrap->getWorldTransform().getOrigin());
 		Vector3 vDist;
 		vDist.Subtract(*vColl0Pos, *vColl1Pos);
 		float distTmpSq = vDist.LengthSq();
 		Collision* hitObjectTmp;
+		//近いなら
 		if (distTmpSq < distSq) {
 			//こちらの方が近い。
-			if (queryCollisionObject == colObj0Wrap->getCollisionObject()) {
+			if (queryCollisionObject->GetCollisonObj() == colObj0Wrap->getCollisionObject()) {
 				hitObjectTmp = (Collision*)colObj1Wrap->getCollisionObject()->getUserPointer();
 			}
 			else {
 				hitObjectTmp = (Collision*)colObj0Wrap->getCollisionObject()->getUserPointer();
 			}
-			//リジッドボディ同士のあたり判定はまだ実装してない
+			//hitオブジェクトがある && コリジョンが指定したIDである。
 			if (hitObjectTmp && id == hitObjectTmp->GetCollisonObj()->getUserIndex()) {
 				distSq = distTmpSq;
 				hitObject = hitObjectTmp;
 				hitObject->SetHit(true);
+				queryCollisionObject->SetHit(true);
 			}
 		}
 
 		return 0.0f;
 	}
 public:
-	btCollisionObject* queryCollisionObject = nullptr;
-	Collision* hitObject = nullptr;
-	float distSq = FLT_MAX;
-	int id = 0;
+	int id;												//検索するコリジョンID
+	float distSq = FLT_MAX;								//距離を保持
+	Collision* hitObject = nullptr;						//ヒットしたオブジェクト
+	Collision* queryCollisionObject = nullptr;			//自身？
+};
+
+//名前で検索するコールバック
+struct FindNameContactResultCallback : public btCollisionWorld::ContactResultCallback
+{
+public:
+	FindNameContactResultCallback()
+	{
+
+	}
+	//衝突された時のコールバック関数
+	virtual	btScalar	addSingleResult(btManifoldPoint& cp, const btCollisionObjectWrapper* colObj0Wrap, int partId0, int index0, const btCollisionObjectWrapper* colObj1Wrap, int partId1, int index1) override
+	{
+		//ヒットしたコリジョンを格納する。
+		Collision* hitObjectTmp;
+
+		//自身であった?よくわからない。
+		if (queryCollisionObject->GetCollisonObj() == colObj0Wrap->getCollisionObject())
+		{
+			hitObjectTmp = (Collision*)colObj1Wrap->getCollisionObject()->getUserPointer();
+		}
+		else
+		{
+			hitObjectTmp = (Collision*)colObj0Wrap->getCollisionObject()->getUserPointer();
+		}
+		//コリジョンID取得
+		int hitid = hitObjectTmp->GetCollisonObj()->getUserIndex();
+		//コリジョンネーム取得
+		const char* hitname = hitObjectTmp->gameObject->GetName();
+		if (hitObjectTmp &&				//hitオブジェクトがある
+			id == hitid &&				//コリジョンが指定したIDである。
+			strcmp(name,hitname) == 0)	//指定した名前と同じゲームオブジェクトである。
+		{
+			hitObject = hitObjectTmp;
+			hitObject->SetHit(true);
+			queryCollisionObject->SetHit(true);
+		}
+
+		return 0.0f;
+	}
+public:
+	int id;												//検索するコリジョンID
+	const char* name;									//検索するコリジョンネーム
+	float distSq = FLT_MAX;								//距離を保持
+	Collision* hitObject = nullptr;						//ヒットしたオブジェクト
+	Collision* queryCollisionObject = nullptr;			//自身？
 };
 
 //衝突したときに呼ばれる関数オブジェクト(地面用)

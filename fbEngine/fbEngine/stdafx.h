@@ -59,8 +59,8 @@ using namespace std;
 #define SAFE_DELETE_ARRAY(p)	{ if(p!=nullptr) { delete[] (p);   (p) = nullptr; } }	//インスタンス配列削除
 #define SAFE_DELETE(p)			{ if(p!=nullptr) { delete (p);     (p) = nullptr; } }	//インスタンス削除
 
-//p回繰り返す
-#define FOR(p) for(short i = 0;i < (int)p;i++)
+//変数countを使ってnum回繰り返す
+#define FOR(count,num) for(int count = 0;count < (int)num;count++)
 //シングルトン取得
 #define INSTANCE(p) p::Instance()
 //受け取った値を文字列に変換(enumや変数名も可能。)

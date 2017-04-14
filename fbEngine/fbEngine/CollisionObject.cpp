@@ -17,9 +17,5 @@ void CollisionObject::Awake()
 
 void CollisionObject::Update()
 {
-	//とりあえずコンポーネントが無効なら
-	if (!_Coll->enable)
-	{
-		GameObjectManager::AddRemoveList(this);
-	}
+	
 }

@@ -17,7 +17,10 @@ public:
 	void Update();
 	//値を取得
 	int GetValue(MouseInE m);
-	Vector2 GetCursorPosition();
+	//スクリーン上のマウスカーソルの位置を取得
+	Vector2 GetCursorPosOnScreen();
+	//ウィンドウの左上を基準とした相対的なマウスのポジション取得
+	Vector2 GetCursorPosOnWindow(HWND hwnd);
 private:
 	// DirectInputデバイス
 	LPDIRECTINPUTDEVICE8 mouseDevice;

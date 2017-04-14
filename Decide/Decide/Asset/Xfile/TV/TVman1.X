@@ -49199,3 +49199,1567 @@ AnimationSet ISJUMPING {
   }
  }
 }
+
+AnimationSet ITEM_THROW {
+ 
+
+ Animation Anim- {
+  
+  { RootNode }
+
+  AnimationKey rot {
+   0;
+   1;
+   0;4;-0.707107,0.707107,0.000000,0.000000;;;
+  }
+
+  AnimationKey scale {
+   1;
+   1;
+   0;3;0.393701,0.393701,0.393701;;;
+  }
+
+  AnimationKey pos {
+   2;
+   1;
+   0;3;-0.000371,-0.000127,0.000229;;;
+  }
+ }
+
+ Animation Anim- {
+  
+  { Hips }
+
+  AnimationKey rot {
+   0;
+   1;
+   0;4;0.707107,-0.707107,0.000000,0.000000;;;
+  }
+
+  AnimationKey scale {
+   1;
+   1;
+   0;3;1.000000,1.000000,1.000000;;;
+  }
+
+  AnimationKey pos {
+   2;
+   1;
+   0;3;0.000000,54.300269,0.000000;;;
+  }
+ }
+
+ Animation Anim- {
+  
+  { LeftUpperLeg }
+
+  AnimationKey rot {
+   0;
+   1;
+   0;4;0.005364,0.095861,0.991022,-0.093041;;;
+  }
+
+  AnimationKey scale {
+   1;
+   1;
+   0;3;1.000000,1.000000,1.000000;;;
+  }
+
+  AnimationKey pos {
+   2;
+   1;
+   0;3;6.386518,0.000000,5.057762;;;
+  }
+ }
+
+ Animation Anim- {
+  
+  { LeftLowerLeg }
+
+  AnimationKey rot {
+   0;
+   1;
+   0;4;0.987268,0.159023,-0.003624,-0.000584;;;
+  }
+
+  AnimationKey scale {
+   1;
+   1;
+   0;3;1.000000,1.000000,1.000000;;;
+  }
+
+  AnimationKey pos {
+   2;
+   1;
+   0;3;-0.000107,0.000001,-23.371851;;;
+  }
+ }
+
+ Animation Anim- {
+  
+  { LeftFoot }
+
+  AnimationKey rot {
+   0;
+   1;
+   0;4;0.000000,-0.000000,-0.580404,0.814328;;;
+  }
+
+  AnimationKey scale {
+   1;
+   1;
+   0;3;1.000000,1.000000,1.000000;;;
+  }
+
+  AnimationKey pos {
+   2;
+   1;
+   0;3;-0.001803,0.000000,-22.854686;;;
+  }
+ }
+
+ Animation Anim- {
+  
+  { LeftToeBase }
+
+  AnimationKey rot {
+   0;
+   1;
+   0;4;0.973249,0.229753,-0.000000,0.000000;;;
+  }
+
+  AnimationKey scale {
+   1;
+   1;
+   0;3;1.000000,1.000000,1.000000;;;
+  }
+
+  AnimationKey pos {
+   2;
+   1;
+   0;3;0.000000,-0.000117,-7.478598;;;
+  }
+ }
+
+ Animation Anim- {
+  
+  { LeftToeBase_end }
+
+  AnimationKey rot {
+   0;
+   1;
+   0;4;1.000000,-0.000000,-0.000000,0.000000;;;
+  }
+
+  AnimationKey scale {
+   1;
+   1;
+   0;3;1.000000,1.000000,1.000000;;;
+  }
+
+  AnimationKey pos {
+   2;
+   1;
+   0;3;0.000001,0.000035,-7.803982;;;
+  }
+ }
+
+ Animation Anim- {
+  
+  { RightUpperLeg }
+
+  AnimationKey rot {
+   0;
+   1;
+   0;4;-0.002970,-0.070601,0.993132,-0.093248;;;
+  }
+
+  AnimationKey scale {
+   1;
+   1;
+   0;3;1.000000,1.000000,1.000000;;;
+  }
+
+  AnimationKey pos {
+   2;
+   1;
+   0;3;-6.386518,0.000000,5.057762;;;
+  }
+ }
+
+ Animation Anim- {
+  
+  { RightLowerLeg }
+
+  AnimationKey rot {
+   0;
+   1;
+   0;4;0.985780,0.168003,0.003618,0.000617;;;
+  }
+
+  AnimationKey scale {
+   1;
+   1;
+   0;3;1.000000,1.000000,1.000000;;;
+  }
+
+  AnimationKey pos {
+   2;
+   1;
+   0;3;0.000108,-0.000001,-23.371854;;;
+  }
+ }
+
+ Animation Anim- {
+  
+  { RightFoot }
+
+  AnimationKey rot {
+   0;
+   1;
+   0;4;-0.000000,0.000000,-0.585682,0.810541;;;
+  }
+
+  AnimationKey scale {
+   1;
+   1;
+   0;3;1.000000,1.000000,1.000000;;;
+  }
+
+  AnimationKey pos {
+   2;
+   1;
+   0;3;0.001803,0.000000,-22.854686;;;
+  }
+ }
+
+ Animation Anim- {
+  
+  { RightToeBase }
+
+  AnimationKey rot {
+   0;
+   1;
+   0;4;0.973249,0.229753,0.000000,-0.000000;;;
+  }
+
+  AnimationKey scale {
+   1;
+   1;
+   0;3;1.000000,1.000000,1.000000;;;
+  }
+
+  AnimationKey pos {
+   2;
+   1;
+   0;3;0.000000,-0.000117,-7.478598;;;
+  }
+ }
+
+ Animation Anim- {
+  
+  { RightToeBase_end }
+
+  AnimationKey rot {
+   0;
+   1;
+   0;4;1.000000,-0.000000,0.000000,-0.000000;;;
+  }
+
+  AnimationKey scale {
+   1;
+   1;
+   0;3;1.000000,1.000000,1.000000;;;
+  }
+
+  AnimationKey pos {
+   2;
+   1;
+   0;3;0.000002,0.000035,-7.803981;;;
+  }
+ }
+
+ Animation Anim- {
+  
+  { Spine }
+
+  AnimationKey rot {
+   0;
+   1;
+   0;4;0.999425,-0.033923,0.000000,0.000000;;;
+  }
+
+  AnimationKey scale {
+   1;
+   1;
+   0;3;1.000000,1.000000,1.000000;;;
+  }
+
+  AnimationKey pos {
+   2;
+   1;
+   0;3;0.000000,0.000000,-3.901993;;;
+  }
+ }
+
+ Animation Anim- {
+  
+  { Chest }
+
+  AnimationKey rot {
+   0;
+   1;
+   0;4;1.000000,0.000000,0.000000,0.000000;;;
+  }
+
+  AnimationKey scale {
+   1;
+   1;
+   0;3;1.000000,1.000000,1.000000;;;
+  }
+
+  AnimationKey pos {
+   2;
+   1;
+   0;3;0.000000,0.000000,-7.246566;;;
+  }
+ }
+
+ Animation Anim- {
+  
+  { Chest_branch }
+
+  AnimationKey rot {
+   0;
+   1;
+   0;4;1.000000,0.000000,0.000000,0.000000;;;
+  }
+
+  AnimationKey scale {
+   1;
+   1;
+   0;3;1.000000,1.000000,1.000000;;;
+  }
+
+  AnimationKey pos {
+   2;
+   1;
+   0;3;0.000000,0.000000,-8.361405;;;
+  }
+ }
+
+ Animation Anim- {
+  
+  { LeftShoulder }
+
+  AnimationKey rot {
+   0;
+   1;
+   0;4;0.707107,0.000000,0.707107,-0.000000;;;
+  }
+
+  AnimationKey scale {
+   1;
+   1;
+   0;3;1.000000,1.000000,1.000000;;;
+  }
+
+  AnimationKey pos {
+   2;
+   1;
+   0;3;3.901994,-0.000000,-5.574295;;;
+  }
+ }
+
+ Animation Anim- {
+  
+  { LeftUpperArm }
+
+  AnimationKey rot {
+   0;
+   1;
+   0;4;0.735206,0.071570,0.661303,0.130495;;;
+  }
+
+  AnimationKey scale {
+   1;
+   1;
+   0;3;1.000000,1.000000,1.000000;;;
+  }
+
+  AnimationKey pos {
+   2;
+   1;
+   0;3;-0.000015,0.000000,-6.492940;;;
+  }
+ }
+
+ Animation Anim- {
+  
+  { LeftLowerArm }
+
+  AnimationKey rot {
+   0;
+   1;
+   0;4;0.939067,-0.340662,-0.023153,-0.039568;;;
+  }
+
+  AnimationKey scale {
+   1;
+   1;
+   0;3;1.000000,1.000000,1.000000;;;
+  }
+
+  AnimationKey pos {
+   2;
+   1;
+   0;3;0.000015,0.000000,-15.225418;;;
+  }
+ }
+
+ Animation Anim- {
+  
+  { LeftLowerArm_branch }
+
+  AnimationKey rot {
+   0;
+   1;
+   0;4;1.000000,0.000000,-0.000000,-0.000000;;;
+  }
+
+  AnimationKey scale {
+   1;
+   1;
+   0;3;1.000000,1.000000,1.000000;;;
+  }
+
+  AnimationKey pos {
+   2;
+   1;
+   0;3;0.000212,-0.000002,-13.957019;;;
+  }
+ }
+
+ Animation Anim- {
+  
+  { LeftIndexProximal }
+
+  AnimationKey rot {
+   0;
+   1;
+   0;4;0.998976,-0.031980,-0.001024,0.031980;;;
+  }
+
+  AnimationKey scale {
+   1;
+   1;
+   0;3;1.000000,1.000000,1.000000;;;
+  }
+
+  AnimationKey pos {
+   2;
+   1;
+   0;3;-0.067432,1.019589,-6.278542;;;
+  }
+ }
+
+ Animation Anim- {
+  
+  { LeftIndexIntermediate }
+
+  AnimationKey rot {
+   0;
+   1;
+   0;4;0.999795,0.014313,0.000712,-0.014329;;;
+  }
+
+  AnimationKey scale {
+   1;
+   1;
+   0;3;1.000000,1.000000,1.000000;;;
+  }
+
+  AnimationKey pos {
+   2;
+   1;
+   0;3;0.000103,-0.000011,-1.743061;;;
+  }
+ }
+
+ Animation Anim- {
+  
+  { LeftIndexDistal }
+
+  AnimationKey rot {
+   0;
+   1;
+   0;4;0.999996,-0.002116,-0.000079,0.002117;;;
+  }
+
+  AnimationKey scale {
+   1;
+   1;
+   0;3;1.000000,1.000000,1.000000;;;
+  }
+
+  AnimationKey pos {
+   2;
+   1;
+   0;3;0.000193,-0.000002,-1.577625;;;
+  }
+ }
+
+ Animation Anim- {
+  
+  { LeftIndexDistal_end }
+
+  AnimationKey rot {
+   0;
+   1;
+   0;4;1.000000,0.000000,0.000000,0.000000;;;
+  }
+
+  AnimationKey scale {
+   1;
+   1;
+   0;3;1.000000,1.000000,1.000000;;;
+  }
+
+  AnimationKey pos {
+   2;
+   1;
+   0;3;0.000029,0.000010,-1.408886;;;
+  }
+ }
+
+ Animation Anim- {
+  
+  { LeftLittleProximal }
+
+  AnimationKey rot {
+   0;
+   1;
+   0;4;1.000000,0.000000,0.000000,0.000000;;;
+  }
+
+  AnimationKey scale {
+   1;
+   1;
+   0;3;1.000000,1.000000,1.000000;;;
+  }
+
+  AnimationKey pos {
+   2;
+   1;
+   0;3;-0.075548,-2.581423,-6.315666;;;
+  }
+ }
+
+ Animation Anim- {
+  
+  { LeftLittleIntermediate }
+
+  AnimationKey rot {
+   0;
+   1;
+   0;4;1.000000,0.000000,0.000000,0.000000;;;
+  }
+
+  AnimationKey scale {
+   1;
+   1;
+   0;3;1.000000,1.000000,1.000000;;;
+  }
+
+  AnimationKey pos {
+   2;
+   1;
+   0;3;0.000227,0.000001,-1.232918;;;
+  }
+ }
+
+ Animation Anim- {
+  
+  { LeftLittleDistal }
+
+  AnimationKey rot {
+   0;
+   1;
+   0;4;1.000000,0.000000,0.000000,0.000000;;;
+  }
+
+  AnimationKey scale {
+   1;
+   1;
+   0;3;1.000000,1.000000,1.000000;;;
+  }
+
+  AnimationKey pos {
+   2;
+   1;
+   0;3;0.000143,0.000000,-1.554234;;;
+  }
+ }
+
+ Animation Anim- {
+  
+  { LeftLittleDistal_end }
+
+  AnimationKey rot {
+   0;
+   1;
+   0;4;1.000000,0.000000,0.000000,0.000000;;;
+  }
+
+  AnimationKey scale {
+   1;
+   1;
+   0;3;1.000000,1.000000,1.000000;;;
+  }
+
+  AnimationKey pos {
+   2;
+   1;
+   0;3;0.000172,0.000002,-0.836163;;;
+  }
+ }
+
+ Animation Anim- {
+  
+  { LeftMiddleProximal }
+
+  AnimationKey rot {
+   0;
+   1;
+   0;4;1.000000,0.000000,0.000000,0.000000;;;
+  }
+
+  AnimationKey scale {
+   1;
+   1;
+   0;3;1.000000,1.000000,1.000000;;;
+  }
+
+  AnimationKey pos {
+   2;
+   1;
+   0;3;-0.071835,-0.094126,-6.204288;;;
+  }
+ }
+
+ Animation Anim- {
+  
+  { LeftMiddleIntermediate }
+
+  AnimationKey rot {
+   0;
+   1;
+   0;4;1.000000,0.000000,0.000000,0.000000;;;
+  }
+
+  AnimationKey scale {
+   1;
+   1;
+   0;3;1.000000,1.000000,1.000000;;;
+  }
+
+  AnimationKey pos {
+   2;
+   1;
+   0;3;0.000074,0.000000,-2.018188;;;
+  }
+ }
+
+ Animation Anim- {
+  
+  { LeftMiddleDistal }
+
+  AnimationKey rot {
+   0;
+   1;
+   0;4;1.000000,0.000000,0.000000,0.000000;;;
+  }
+
+  AnimationKey scale {
+   1;
+   1;
+   0;3;1.000000,1.000000,1.000000;;;
+  }
+
+  AnimationKey pos {
+   2;
+   1;
+   0;3;-0.000034,0.000000,-2.162529;;;
+  }
+ }
+
+ Animation Anim- {
+  
+  { LeftMiddleDistal_end }
+
+  AnimationKey rot {
+   0;
+   1;
+   0;4;1.000000,0.000000,0.000000,0.000000;;;
+  }
+
+  AnimationKey scale {
+   1;
+   1;
+   0;3;1.000000,1.000000,1.000000;;;
+  }
+
+  AnimationKey pos {
+   2;
+   1;
+   0;3;0.000225,0.000002,-1.114838;;;
+  }
+ }
+
+ Animation Anim- {
+  
+  { LeftRingProximal }
+
+  AnimationKey rot {
+   0;
+   1;
+   0;4;1.000000,0.000000,0.000000,0.000000;;;
+  }
+
+  AnimationKey scale {
+   1;
+   1;
+   0;3;1.000000,1.000000,1.000000;;;
+  }
+
+  AnimationKey pos {
+   2;
+   1;
+   0;3;-0.073009,-1.356337,-6.315670;;;
+  }
+ }
+
+ Animation Anim- {
+  
+  { LeftRingIntermediate }
+
+  AnimationKey rot {
+   0;
+   1;
+   0;4;1.000000,0.000000,0.000000,0.000000;;;
+  }
+
+  AnimationKey scale {
+   1;
+   1;
+   0;3;1.000000,1.000000,1.000000;;;
+  }
+
+  AnimationKey pos {
+   2;
+   1;
+   0;3;0.000034,0.000002,-1.556416;;;
+  }
+ }
+
+ Animation Anim- {
+  
+  { LeftRingDistal }
+
+  AnimationKey rot {
+   0;
+   1;
+   0;4;1.000000,0.000000,0.000000,0.000000;;;
+  }
+
+  AnimationKey scale {
+   1;
+   1;
+   0;3;1.000000,1.000000,1.000000;;;
+  }
+
+  AnimationKey pos {
+   2;
+   1;
+   0;3;-0.000208,0.000000,-2.016045;;;
+  }
+ }
+
+ Animation Anim- {
+  
+  { LeftRingDistal_end }
+
+  AnimationKey rot {
+   0;
+   1;
+   0;4;1.000000,0.000000,0.000000,0.000000;;;
+  }
+
+  AnimationKey scale {
+   1;
+   1;
+   0;3;1.000000,1.000000,1.000000;;;
+  }
+
+  AnimationKey pos {
+   2;
+   1;
+   0;3;-0.000099,0.000000,-1.114861;;;
+  }
+ }
+
+ Animation Anim- {
+  
+  { LeftThumbProximal }
+
+  AnimationKey rot {
+   0;
+   1;
+   0;4;0.948996,-0.216043,-0.077834,0.216043;;;
+  }
+
+  AnimationKey scale {
+   1;
+   1;
+   0;3;1.000000,1.000000,1.000000;;;
+  }
+
+  AnimationKey pos {
+   2;
+   1;
+   0;3;-0.000084,2.433609,-3.566181;;;
+  }
+ }
+
+ Animation Anim- {
+  
+  { LeftThumbIntermediate }
+
+  AnimationKey rot {
+   0;
+   1;
+   0;4;0.978820,0.130798,0.070708,-0.140723;;;
+  }
+
+  AnimationKey scale {
+   1;
+   1;
+   0;3;1.000000,1.000000,1.000000;;;
+  }
+
+  AnimationKey pos {
+   2;
+   1;
+   0;3;-0.000046,-0.000010,-1.247627;;;
+  }
+ }
+
+ Animation Anim- {
+  
+  { LeftThumbDistal }
+
+  AnimationKey rot {
+   0;
+   1;
+   0;4;0.999060,0.030380,0.004162,-0.030649;;;
+  }
+
+  AnimationKey scale {
+   1;
+   1;
+   0;3;1.000000,1.000000,1.000000;;;
+  }
+
+  AnimationKey pos {
+   2;
+   1;
+   0;3;0.000057,0.000002,-1.130554;;;
+  }
+ }
+
+ Animation Anim- {
+  
+  { LeftThumbDistal_end }
+
+  AnimationKey rot {
+   0;
+   1;
+   0;4;1.000000,0.000000,-0.000000,0.000000;;;
+  }
+
+  AnimationKey scale {
+   1;
+   1;
+   0;3;1.000000,1.000000,1.000000;;;
+  }
+
+  AnimationKey pos {
+   2;
+   1;
+   0;3;0.000027,0.000004,-1.121090;;;
+  }
+ }
+
+ Animation Anim- {
+  
+  { Neck }
+
+  AnimationKey rot {
+   0;
+   1;
+   0;4;1.000000,0.000000,0.000000,0.000000;;;
+  }
+
+  AnimationKey scale {
+   1;
+   1;
+   0;3;1.000000,1.000000,1.000000;;;
+  }
+
+  AnimationKey pos {
+   2;
+   1;
+   0;3;0.000000,-0.000000,-5.574295;;;
+  }
+ }
+
+ Animation Anim- {
+  
+  { Head }
+
+  AnimationKey rot {
+   0;
+   1;
+   0;4;1.000000,0.000000,0.000000,0.000000;;;
+  }
+
+  AnimationKey scale {
+   1;
+   1;
+   0;3;1.000000,1.000000,1.000000;;;
+  }
+
+  AnimationKey pos {
+   2;
+   1;
+   0;3;0.000000,0.000000,-5.574432;;;
+  }
+ }
+
+ Animation Anim- {
+  
+  { Head_end }
+
+  AnimationKey rot {
+   0;
+   1;
+   0;4;1.000000,0.000000,0.000000,0.000000;;;
+  }
+
+  AnimationKey scale {
+   1;
+   1;
+   0;3;1.000000,1.000000,1.000000;;;
+  }
+
+  AnimationKey pos {
+   2;
+   1;
+   0;3;0.000000,-0.000000,-5.574264;;;
+  }
+ }
+
+ Animation Anim- {
+  
+  { RightShoulder }
+
+  AnimationKey rot {
+   0;
+   1;
+   0;4;0.707107,-0.000000,-0.707107,-0.000000;;;
+  }
+
+  AnimationKey scale {
+   1;
+   1;
+   0;3;1.000000,1.000000,1.000000;;;
+  }
+
+  AnimationKey pos {
+   2;
+   1;
+   0;3;-3.901994,-0.000000,-5.574295;;;
+  }
+ }
+
+ Animation Anim- {
+  
+  { RightUpperArm }
+
+  AnimationKey rot {
+   0;
+   20;
+   0;4;0.744538,0.054908,-0.655547,-0.113610;;,
+   160;4;0.744140,0.025244,-0.662261,-0.083843;;,
+   320;4;0.737105,-0.054424,-0.673582,-0.001466;;,
+   480;4;0.711382,-0.167965,-0.671456,0.121945;;,
+   640;4;0.657237,-0.296048,-0.638498,0.269658;;,
+   800;4;0.573171,-0.418397,-0.565987,0.419616;;,
+   960;4;0.467667,-0.518502,-0.458679,0.549597;;,
+   1120;4;0.356615,-0.587972,-0.334100,0.644586;;,
+   1280;4;0.258407,-0.627776,-0.216872,0.701491;;,
+   1440;4;0.189749,-0.645583,-0.131780,0.727909;;,
+   1600;4;0.164240,-0.650260,-0.099591,0.735030;;,
+   1760;4;0.189749,-0.645583,-0.131780,0.727909;;,
+   1920;4;0.258407,-0.627776,-0.216872,0.701491;;,
+   2080;4;0.356615,-0.587972,-0.334100,0.644587;;,
+   2240;4;0.467667,-0.518502,-0.458679,0.549597;;,
+   2400;4;0.573171,-0.418397,-0.565987,0.419616;;,
+   2560;4;0.657237,-0.296048,-0.638498,0.269658;;,
+   2720;4;0.711382,-0.167965,-0.671456,0.121945;;,
+   2880;4;0.737105,-0.054424,-0.673582,-0.001466;;,
+   3040;4;0.744140,0.025244,-0.662261,-0.083843;;;
+  }
+
+  AnimationKey scale {
+   1;
+   1;
+   0;3;1.000000,1.000000,1.000000;;;
+  }
+
+  AnimationKey pos {
+   2;
+   1;
+   0;3;0.000015,0.000000,-6.492940;;;
+  }
+ }
+
+ Animation Anim- {
+  
+  { RightLowerArm }
+
+  AnimationKey rot {
+   0;
+   1;
+   0;4;0.959813,-0.277451,0.018857,0.037743;;;
+  }
+
+  AnimationKey scale {
+   1;
+   1;
+   0;3;1.000000,1.000000,1.000000;;;
+  }
+
+  AnimationKey pos {
+   2;
+   1;
+   0;3;-0.000013,0.000000,-15.225418;;;
+  }
+ }
+
+ Animation Anim- {
+  
+  { RightLowerArm_branch }
+
+  AnimationKey rot {
+   0;
+   1;
+   0;4;1.000000,-0.000000,0.000000,-0.000000;;;
+  }
+
+  AnimationKey scale {
+   1;
+   1;
+   0;3;1.009825,1.009825,1.009825;;;
+  }
+
+  AnimationKey pos {
+   2;
+   1;
+   0;3;-0.000214,-0.000001,-13.957027;;;
+  }
+ }
+
+ Animation Anim- {
+  
+  { RightIndexProximal }
+
+  AnimationKey rot {
+   0;
+   1;
+   0;4;0.998976,-0.031980,0.001024,-0.031980;;;
+  }
+
+  AnimationKey scale {
+   1;
+   1;
+   0;3;1.000000,1.000000,1.000000;;;
+  }
+
+  AnimationKey pos {
+   2;
+   1;
+   0;3;0.067432,1.019588,-6.278534;;;
+  }
+ }
+
+ Animation Anim- {
+  
+  { RightIndexIntermediate }
+
+  AnimationKey rot {
+   0;
+   1;
+   0;4;0.999795,0.014313,-0.000712,0.014329;;;
+  }
+
+  AnimationKey scale {
+   1;
+   1;
+   0;3;1.000000,1.000000,1.000000;;;
+  }
+
+  AnimationKey pos {
+   2;
+   1;
+   0;3;-0.000097,0.000018,-1.743050;;;
+  }
+ }
+
+ Animation Anim- {
+  
+  { RightIndexDistal }
+
+  AnimationKey rot {
+   0;
+   1;
+   0;4;0.999996,-0.002116,0.000079,-0.002117;;;
+  }
+
+  AnimationKey scale {
+   1;
+   1;
+   0;3;1.000000,1.000000,1.000000;;;
+  }
+
+  AnimationKey pos {
+   2;
+   1;
+   0;3;-0.000191,-0.000003,-1.577625;;;
+  }
+ }
+
+ Animation Anim- {
+  
+  { RightIndexDistal_end }
+
+  AnimationKey rot {
+   0;
+   1;
+   0;4;1.000000,-0.000000,-0.000000,0.000000;;;
+  }
+
+  AnimationKey scale {
+   1;
+   1;
+   0;3;1.000000,1.000000,1.000000;;;
+  }
+
+  AnimationKey pos {
+   2;
+   1;
+   0;3;-0.000029,0.000005,-1.408905;;;
+  }
+ }
+
+ Animation Anim- {
+  
+  { RightLittleProximal }
+
+  AnimationKey rot {
+   0;
+   1;
+   0;4;1.000000,-0.000000,0.000000,0.000000;;;
+  }
+
+  AnimationKey scale {
+   1;
+   1;
+   0;3;1.000000,1.000000,1.000000;;;
+  }
+
+  AnimationKey pos {
+   2;
+   1;
+   0;3;0.075548,-2.581425,-6.315662;;;
+  }
+ }
+
+ Animation Anim- {
+  
+  { RightLittleIntermediate }
+
+  AnimationKey rot {
+   0;
+   1;
+   0;4;1.000000,-0.000000,0.000000,0.000000;;;
+  }
+
+  AnimationKey scale {
+   1;
+   1;
+   0;3;1.000000,1.000000,1.000000;;;
+  }
+
+  AnimationKey pos {
+   2;
+   1;
+   0;3;-0.000231,0.000000,-1.232895;;;
+  }
+ }
+
+ Animation Anim- {
+  
+  { RightLittleDistal }
+
+  AnimationKey rot {
+   0;
+   1;
+   0;4;1.000000,-0.000000,0.000000,0.000000;;;
+  }
+
+  AnimationKey scale {
+   1;
+   1;
+   0;3;1.000000,1.000000,1.000000;;;
+  }
+
+  AnimationKey pos {
+   2;
+   1;
+   0;3;-0.000141,0.000007,-1.554234;;;
+  }
+ }
+
+ Animation Anim- {
+  
+  { RightLittleDistal_end }
+
+  AnimationKey rot {
+   0;
+   1;
+   0;4;1.000000,-0.000000,0.000000,0.000000;;;
+  }
+
+  AnimationKey scale {
+   1;
+   1;
+   0;3;1.000000,1.000000,1.000000;;;
+  }
+
+  AnimationKey pos {
+   2;
+   1;
+   0;3;-0.000170,-0.000009,-0.836159;;;
+  }
+ }
+
+ Animation Anim- {
+  
+  { RightMiddleProximal }
+
+  AnimationKey rot {
+   0;
+   1;
+   0;4;1.000000,-0.000000,0.000000,0.000000;;;
+  }
+
+  AnimationKey scale {
+   1;
+   1;
+   0;3;1.000000,1.000000,1.000000;;;
+  }
+
+  AnimationKey pos {
+   2;
+   1;
+   0;3;0.071833,-0.094128,-6.204281;;;
+  }
+ }
+
+ Animation Anim- {
+  
+  { RightMiddleIntermediate }
+
+  AnimationKey rot {
+   0;
+   1;
+   0;4;1.000000,-0.000000,0.000000,0.000000;;;
+  }
+
+  AnimationKey scale {
+   1;
+   1;
+   0;3;1.000000,1.000000,1.000000;;;
+  }
+
+  AnimationKey pos {
+   2;
+   1;
+   0;3;-0.000074,-0.000002,-2.018177;;;
+  }
+ }
+
+ Animation Anim- {
+  
+  { RightMiddleDistal }
+
+  AnimationKey rot {
+   0;
+   1;
+   0;4;1.000000,-0.000000,0.000000,0.000000;;;
+  }
+
+  AnimationKey scale {
+   1;
+   1;
+   0;3;1.000000,1.000000,1.000000;;;
+  }
+
+  AnimationKey pos {
+   2;
+   1;
+   0;3;0.000032,-0.000009,-2.162529;;;
+  }
+ }
+
+ Animation Anim- {
+  
+  { RightMiddleDistal_end }
+
+  AnimationKey rot {
+   0;
+   1;
+   0;4;1.000000,-0.000000,0.000000,0.000000;;;
+  }
+
+  AnimationKey scale {
+   1;
+   1;
+   0;3;1.000000,1.000000,1.000000;;;
+  }
+
+  AnimationKey pos {
+   2;
+   1;
+   0;3;-0.000221,0.000000,-1.114830;;;
+  }
+ }
+
+ Animation Anim- {
+  
+  { RightRingProximal }
+
+  AnimationKey rot {
+   0;
+   1;
+   0;4;1.000000,-0.000000,0.000000,0.000000;;;
+  }
+
+  AnimationKey scale {
+   1;
+   1;
+   0;3;1.000000,1.000000,1.000000;;;
+  }
+
+  AnimationKey pos {
+   2;
+   1;
+   0;3;0.073011,-1.356338,-6.315658;;;
+  }
+ }
+
+ Animation Anim- {
+  
+  { RightRingIntermediate }
+
+  AnimationKey rot {
+   0;
+   1;
+   0;4;1.000000,-0.000000,0.000000,0.000000;;;
+  }
+
+  AnimationKey scale {
+   1;
+   1;
+   0;3;1.000000,1.000000,1.000000;;;
+  }
+
+  AnimationKey pos {
+   2;
+   1;
+   0;3;-0.000029,-0.000001,-1.556408;;;
+  }
+ }
+
+ Animation Anim- {
+  
+  { RightRingDistal }
+
+  AnimationKey rot {
+   0;
+   1;
+   0;4;1.000000,-0.000000,0.000000,0.000000;;;
+  }
+
+  AnimationKey scale {
+   1;
+   1;
+   0;3;1.000000,1.000000,1.000000;;;
+  }
+
+  AnimationKey pos {
+   2;
+   1;
+   0;3;0.000212,0.000007,-2.016041;;;
+  }
+ }
+
+ Animation Anim- {
+  
+  { RightRingDistal_end }
+
+  AnimationKey rot {
+   0;
+   1;
+   0;4;1.000000,-0.000000,0.000000,0.000000;;;
+  }
+
+  AnimationKey scale {
+   1;
+   1;
+   0;3;1.000000,1.000000,1.000000;;;
+  }
+
+  AnimationKey pos {
+   2;
+   1;
+   0;3;0.000097,0.000001,-1.114845;;;
+  }
+ }
+
+ Animation Anim- {
+  
+  { RightThumbProximal }
+
+  AnimationKey rot {
+   0;
+   1;
+   0;4;0.948996,-0.216043,0.077834,-0.216043;;;
+  }
+
+  AnimationKey scale {
+   1;
+   1;
+   0;3;1.000000,1.000000,1.000000;;;
+  }
+
+  AnimationKey pos {
+   2;
+   1;
+   0;3;0.000082,2.433606,-3.566174;;;
+  }
+ }
+
+ Animation Anim- {
+  
+  { RightThumbIntermediate }
+
+  AnimationKey rot {
+   0;
+   1;
+   0;4;0.978820,0.130798,-0.070708,0.140723;;;
+  }
+
+  AnimationKey scale {
+   1;
+   1;
+   0;3;1.000000,1.000000,1.000000;;;
+  }
+
+  AnimationKey pos {
+   2;
+   1;
+   0;3;0.000057,-0.000008,-1.247637;;;
+  }
+ }
+
+ Animation Anim- {
+  
+  { RightThumbDistal }
+
+  AnimationKey rot {
+   0;
+   1;
+   0;4;0.999060,0.030380,-0.004162,0.030649;;;
+  }
+
+  AnimationKey scale {
+   1;
+   1;
+   0;3;1.000000,1.000000,1.000000;;;
+  }
+
+  AnimationKey pos {
+   2;
+   1;
+   0;3;-0.000061,0.000017,-1.130550;;;
+  }
+ }
+
+ Animation Anim- {
+  
+  { RightThumbDistal_end }
+
+  AnimationKey rot {
+   0;
+   1;
+   0;4;1.000000,-0.000000,0.000000,0.000000;;;
+  }
+
+  AnimationKey scale {
+   1;
+   1;
+   0;3;1.000000,1.000000,1.000000;;;
+  }
+
+  AnimationKey pos {
+   2;
+   1;
+   0;3;0.000135,-0.000017,-1.121098;;;
+  }
+ }
+
+ Animation Anim- {
+  
+  { Item }
+
+  AnimationKey rot {
+   0;
+   1;
+   0;4;0.079377,0.870668,0.475664,-0.096850;;;
+  }
+
+  AnimationKey scale {
+   1;
+   1;
+   0;3;1.000000,1.000000,1.000000;;;
+  }
+
+  AnimationKey pos {
+   2;
+   1;
+   0;3;-0.800001,0.000000,-3.600002;;;
+  }
+ }
+}

@@ -89,6 +89,7 @@ private:
 	float									_InterpolateEndTime;		//!<補間終了時間。
 	float									_InterpolateTime;		//!<補間時間。
 
+	double _EndTime;	//アニメーション終了時間
 	double _TimeRatio;	//正規化された時間の割合。
 	double _NowTime;	//現在のアニメーションの時間
 	int _CurrentFrame;		//現在のフレーム数

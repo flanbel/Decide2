@@ -26,7 +26,7 @@ void RigidBody::Release()
 
 void RigidBody::Update()
 {
-	_UpdateCollisionTrans();
+	Collision::Update();
 }
 
 void RigidBody::LateUpdate()

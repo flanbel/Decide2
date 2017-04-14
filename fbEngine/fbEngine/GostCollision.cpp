@@ -28,5 +28,5 @@ void GostCollision::Create(Collider * shape, int id)
 
 void GostCollision::Update()
 {
-	_UpdateCollisionTrans();
+	Collision::Update();
 }

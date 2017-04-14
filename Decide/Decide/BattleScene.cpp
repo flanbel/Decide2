@@ -12,9 +12,23 @@
 #include "fbEngine/SoundSource.h"
 #include "Item.h"
 #include "GameRule.h"
+#include "fbEngine/Camera.h"
 void BattleScene::Start()
 {
-	GameObjectManager::AddNew<GameCamera>("GameCamera", 0);
+	GameCamera* gamecamera = GameObjectManager::AddNew<GameCamera>("GameCamera", 0);
+
+	FOR(idx,4)
+	{
+		char pname[20] = "Player";
+		char num[2] = { (48 + idx + 1) + '\0' };
+		strcat(pname, num);
+		Player* p = (Player*)GameObjectManager::FindObject(pname);
+		if(p)
+		{
+			gamecamera->AddPlayer(p);
+		}
+	}
+
 	GameObjectManager::AddNew<GameLight>("GameLight", 0);
 	GameObjectManager::AddNew<GameShadowCamera>("GameShadowCamera", 0);
 
@@ -63,6 +77,7 @@ void BattleScene::Start()
 	//影(深度)の描画
 	_ShowDepth = GameObjectManager::AddNew<ImageObject>("ShowDepth", 4);
 	_ShowDepth->SetTexture(INSTANCE(RenderTargetManager)->GetRTTextureFromList(RTIdxE::SHADOWDEPTH));
+	_ShowDepth->SetPivot(Vector2(0, 0));
 	_ShowDepth->SetActive(false);
 #endif //_DEBUG
 }
@@ -73,11 +88,26 @@ void BattleScene::Update()
 #ifdef _DEBUG
 	if (KeyBoardInput->isPush(DIK_C))
 	{
-		//アイテム生成
-		Item* i = GameObjectManager::AddNew<Item>("item", 1);
-		i->transform->SetLocalPosition(Vector3(0, 200, 0));
 		//深度画像表示
-		//_ShowDepth->SetActive(!_ShowDepth->GetActive());
+		_ShowDepth->SetActive(!_ShowDepth->GetActive());
+	}
+
+	//レイのテスト
+	if (MouseInput->GetValue(MouseInE::L_CLICK))
+	{
+		//アイテム生成
+		Item* item = GameObjectManager::AddNew<Item>("TestItem", 1);
+
+		Vector3 start = GameObjectManager::mainCamera->ScreenToWorld(MouseInput->GetCursorPosOnWindow(g_MainWindow));
+		Vector3 dir = start - GameObjectManager::mainCamera->transform->GetPosition();
+		dir.Normalize();
+		Vector3 end = start + (dir * 1000.0f);
+		Vector3 pos = INSTANCE(PhysicsWorld)->ClosestRayTest(start, end);
+		if (pos.Length() > 0.0f)
+		{
+			pos.y += 10;
+			item->transform->SetLocalPosition(pos);
+		}
 	}
 #endif //_DEBUG
 	//この書き方はいつかバグを生みそう
@@ -102,9 +132,9 @@ void BattleScene::Update()
 			if (_ChangeScene && !_Gong->IsPlaying())
 			{
 				//全コントローラーのバイブレーションを止める
-				FOR(PLAYER_NUM)
+				FOR(idx,PLAYER_NUM)
 				{
-					XboxInput(i)->Vibration(0, 0);
+					XboxInput(idx)->Vibration(0, 0);
 				}
 				INSTANCE(SceneManager)->ChangeScene("ResultScene");
 				return;

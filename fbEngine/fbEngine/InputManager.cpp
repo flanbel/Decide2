@@ -29,10 +29,10 @@ HRESULT InputManager::Initialize()
 		return false;
 	}
 
-	FOR(4)
+	FOR(idx,XBOX_CONTROLLER_NUM)
 	{
-		_Xinput[i] = new XInput;
-		_Xinput[i]->Initialize(i);
+		_Xinput[idx] = new XInput;
+		_Xinput[idx]->Initialize(idx);
 	}
 
 	return D3D_OK;
@@ -42,8 +42,10 @@ void InputManager::Update()
 {
 	_KeyBoard->Update();
 	_Mouse->Update();
-	FOR(4)
-		_Xinput[i]->Update();
+	FOR(idx, XBOX_CONTROLLER_NUM)
+	{
+		_Xinput[idx]->Update();
+	}
 }
 
 KeyBoard * InputManager::GetKeyBoard()
@@ -63,9 +65,9 @@ XInput * InputManager::GetXInput(int idx)
 
 bool InputManager::IsPushButtonAll(int in)
 {
-	FOR(XBOX_CONTROLLER_NUM)
+	FOR(idx,XBOX_CONTROLLER_NUM)
 	{
-		if (GetXInput(i)->IsPushButton(in))
+		if (GetXInput(idx)->IsPushButton(in))
 		{
 			return true;
 		}

@@ -28,6 +28,7 @@ void Animation::Awake()
 	_InterpolateTime = 0.0f;
 	_InterpolateEndTime = 0.0f;
 	_CurrentTrackNo = 0;
+	_EndTime = -1.0f;
 }
 
 void Animation::PlayAnimation(const int& animationSetIndex)
@@ -94,6 +95,7 @@ void Animation::Update()
 	//指定されたループ数ないかどうか
 	if (_IsPlaying)
 	{
+		//フレームを増加させる
 		_CurrentFrame++;
 		if (_AnimController == nullptr)
 			return;
@@ -101,16 +103,16 @@ void Animation::Update()
 		LPD3DXANIMATIONSET aniset;
 		_AnimController->GetTrackAnimationSet(_CurrentTrackNo, &aniset);
 		//そのアニメーションを再生しきるまでの時間
-		double maxtime = aniset->GetPeriod() / (double)_PlaySpeed;
+		double maxtime = aniset->GetPeriod();
 		//現在のアニメーションの時間を取得
 		_NowTime = aniset->GetPeriodicPosition(_AnimController->GetTime());
-		double delta = Time::DeltaTime();
-		//割合
-		_TimeRatio = min(1.0f, (_NowTime + delta) / maxtime);
+		double delta = Time::DeltaTime() * (double)_PlaySpeed;
 
 		//アニメーションの時間加算
-		//_AnimController->AdvanceTime(delta, NULL);
-		_AnimController->AdvanceTime(1.0f/60.0f, NULL);
+		_AnimController->AdvanceTime(delta, NULL);
+
+		//割合を計算
+		_TimeRatio = min(1.0f, (_NowTime + delta) / maxtime);
 
 		if (_IsInterpolate) {
 			//補間中。
@@ -142,6 +144,17 @@ void Animation::Update()
 					}
 				}
 			}
+		}
+
+		//エンドタイム
+		if (0.0f < _EndTime && _EndTime < _NowTime)
+		{
+			_CurrentFrame = 0;
+			_LoopCount++;
+
+			//時間を0に戻す
+			_AnimController->SetTrackPosition(_CurrentTrackNo, 0.0f);
+			_AnimController->AdvanceTime(0, NULL);
 		}
 
 		//再生時間を超えた
