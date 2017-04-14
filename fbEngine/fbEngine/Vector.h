@@ -229,7 +229,7 @@ public:
 	 */
 	void Cross(const Vector3& in)
 	{
-		float _x = (x * in.z) - (in.y * z);
+		float _x = (y * in.z) - (in.y * z);
 		float _y = (z * in.x) - (in.z * x);
 		float _z = (x * in.y) - (in.x * y);
 		x = _x;

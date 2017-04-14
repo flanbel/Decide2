@@ -5,8 +5,8 @@
 #include "ShadowCamera.h"
 
 
-extern UINT                 g_NumBoneMatricesMax;
-extern D3DXMATRIXA16*       g_pBoneMatrices ;
+//extern UINT                 g_NumBoneMatricesMax;
+//extern D3DXMATRIXA16*       g_pBoneMatrices ;
 bool g_PreRender = false;
 
 SkinModel::SkinModel(GameObject * g, Transform * t) :
@@ -140,7 +140,7 @@ void SkinModel::DrawMeshContainer(
 		Color color[System::MAX_LIGHTNUM];
 		ZeroMemory(dir, sizeof(Vector4)*System::MAX_LIGHTNUM);
 		const vector<DirectionalLight*>& vec = GameObjectManager::mainLight->GetLight();
-		FOR(i,num)
+		FOR(i, num)
 		{
 			dir[i] = vec[i]->Direction();
 			color[i] = vec[i]->GetColor();
@@ -196,7 +196,7 @@ void SkinModel::DrawMeshContainer(
 			//バッファー
 			LPD3DXBONECOMBINATION pBoneComb = LPD3DXBONECOMBINATION(pMeshContainer->pBoneCombinationBuf->GetBufferPointer());
 			//各マテリアル
-			for (iAttrib = 0; iAttrib < pMeshContainer->NumMaterials; iAttrib++)
+			for (iAttrib = 0; iAttrib < pMeshContainer->NumAttributeGroups; iAttrib++)
 			{
 				//ボーン
 				for (DWORD iPaletteEntry = 0; iPaletteEntry < pMeshContainer->NumPaletteEntries; ++iPaletteEntry)
@@ -206,7 +206,7 @@ void SkinModel::DrawMeshContainer(
 					{
 						//骨の最終的な行列計算
 						D3DXMatrixMultiply(
-							&g_pBoneMatrices[iPaletteEntry],
+							&_BoneMatrixPallets[iPaletteEntry],
 							//骨のオフセット(移動)行列
 							&pMeshContainer->pBoneOffsetMatrices[iMatrixIndex],
 							//フレームのワールド行列
@@ -216,16 +216,14 @@ void SkinModel::DrawMeshContainer(
 				}
 
 				//骨のワールド行列配列
-				_Effect->SetMatrixArray("g_mWorldMatrixArray", g_pBoneMatrices, pMeshContainer->NumPaletteEntries);
+				_Effect->SetMatrixArray("g_mWorldMatrixArray", _BoneMatrixPallets, pMeshContainer->NumPaletteEntries);
 				//骨の数
 				_Effect->SetFloat("g_numBone", (float)pMeshContainer->NumInfl);
-				// ボーン数。
-				//_Effect->SetInt("CurNumBones", pMeshContainer->NumInfl - 1);
 
 				//ディフューズカラー取得
-				D3DXVECTOR4* Diffuse = (D3DXVECTOR4*)&pMeshContainer->pMaterials[iAttrib].MatD3D.Diffuse;
+				D3DXVECTOR4* Diffuse = (D3DXVECTOR4*)&pMeshContainer->pMaterials[pBoneComb[iAttrib].AttribId].MatD3D.Diffuse;
 				//テクスチャー
-				LPDIRECT3DTEXTURE9 texture = pMeshContainer->ppTextures[iAttrib];
+				LPDIRECT3DTEXTURE9 texture = pMeshContainer->ppTextures[pBoneComb[iAttrib].AttribId];
 				//テクスチャが格納されていればセット
 				if (texture != NULL)
 				{
@@ -234,7 +232,7 @@ void SkinModel::DrawMeshContainer(
 					_Effect->SetVector("g_Textureblendcolor", (D3DXVECTOR4*)&Color::white);
 					//とりあえず、今回はテクスチャの名前を見る
 					
-					if (strcmp(pMeshContainer->pMaterials[iAttrib].pTextureFilename, "TV_Head.png") == 0)
+					if (strcmp(pMeshContainer->pMaterials[pBoneComb[iAttrib].AttribId].pTextureFilename, "TV_Head.png") == 0)
 						_Effect->SetVector("g_Textureblendcolor", (D3DXVECTOR4*)&_TextureBlend);
 					_Effect->SetBool("Texflg", true);
 				}
@@ -348,7 +346,7 @@ void SkinModel::CreateShadow(D3DXMESHCONTAINER_DERIVED * pMeshContainer, D3DXFRA
 				{
 					//骨の最終的な行列計算
 					D3DXMatrixMultiply(
-						&g_pBoneMatrices[iPaletteEntry],
+						&_BoneMatrixPallets[iPaletteEntry],
 						//骨のオフセット(移動)行列
 						&pMeshContainer->pBoneOffsetMatrices[iMatrixIndex],
 						//フレームのワールド行列
@@ -358,11 +356,10 @@ void SkinModel::CreateShadow(D3DXMESHCONTAINER_DERIVED * pMeshContainer, D3DXFRA
 			}
 
 			//骨のワールド行列配列
-			_Effect->SetMatrixArray("g_mWorldMatrixArray", g_pBoneMatrices, pMeshContainer->NumPaletteEntries);
-			//骨の数]
+			_Effect->SetMatrixArray("g_mWorldMatrixArray", _BoneMatrixPallets, pMeshContainer->NumPaletteEntries);
+			//骨の数
 			_Effect->SetFloat("g_numBone", (float)pMeshContainer->NumInfl);
-			// ボーン数。
-			//_Effect->SetInt("CurNumBones", pMeshContainer->NumInfl - 1);
+	
 
 			//この関数を呼び出すことで、データの転送が確定する。
 			_Effect->CommitChanges();

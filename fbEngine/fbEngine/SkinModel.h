@@ -107,4 +107,9 @@ private:
 	ModelEffectE _ModelEffect;
 	//スカイボックスかどうか(いつか直す)
 	bool _SkyBox;
+
+	//最大数
+	static const int MAX_MATRIX_PALLET = 50;
+	//一時的にボーン行列を格納する作業用変数？
+	D3DXMATRIX _BoneMatrixPallets[MAX_MATRIX_PALLET];
 };
