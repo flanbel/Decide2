@@ -2,9 +2,6 @@
 #include "fbEngine/Skinmodel.h"
 #include "fbEngine/SkinmodelData.h"
 #include "fbEngine/RigidBody.h"
-#include "fbEngine/MeshCollider.h"
-
-#include "fbEngine/CollisionObject.h"
 
 void Stage::Awake()
 {
@@ -13,18 +10,11 @@ void Stage::Awake()
 	modeldata->CloneModelData(SkinModelManager::LoadModel("Island.X"));
 	model->SetModelData(modeldata);
 	model->SetModelEffect(ModelEffectE::SPECULAR,false);
-	//model->SetReceive(false);
 
 	RigidBody* rigid = AddComponent<RigidBody>();
 	MeshCollider* mesh = AddComponent<MeshCollider>();
-
+	//メッシュコライダー生成
 	mesh->Create(model);
-	rigid->Create(0, mesh,7);
-
-	//transform->localAngle.x = -90;
-}
-#include "Player.h"
-void Stage::Update()
-{
-	
+	rigid->SetFilter((short)Collision_Filter::STAGE,(short)fbCollisionFilterE::ALLFILTER - (short)Collision_Filter::DAMAGE);
+	rigid->Create(0, mesh,Collision_ID::STAGE);
 }

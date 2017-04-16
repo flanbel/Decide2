@@ -1,11 +1,7 @@
 #include "GameObjectManager.h"
 #include "GameObject.h"
 
-vector<list<GameObject*>> GameObjectManager::_GameObjects;
-list<GameObjectManager::RemoveObj> GameObjectManager::_RemoveList;
-Camera* GameObjectManager::mainCamera = nullptr;
-Light* GameObjectManager::mainLight = nullptr;
-ShadowCamera* GameObjectManager::mainShadowCamera = nullptr;
+GameObjectManager*  GameObjectManager::_Instance = nullptr;
 
 GameObject* GameObjectManager::Add(GameObject* pAdd, int priority)
 {
@@ -36,9 +32,6 @@ void GameObjectManager::StartObject()
 
 void GameObjectManager::UpdateObject()
 {
-	//削除リストを削除
-	_RemoveObject();
-
 	for (short priority = 0; priority < System::MAX_PRIORITY; priority++)
 	{
 		for each (GameObject* obj in _GameObjects[priority])
@@ -65,6 +58,9 @@ void GameObjectManager::LateUpdateObject()
 			}
 		}
 	}
+
+	//削除リストを削除
+	_RemoveObject();
 }
 
 void GameObjectManager::PreRenderObject()
@@ -130,6 +126,10 @@ void GameObjectManager::ImageRenderObject()
 
 void GameObjectManager::AddRemoveList(GameObject * obj)
 {
+	//重複チェック。
+	if (_CheckUniqueRemoveList(obj) == FALSE)
+		return;
+
 	for (short priority = 0; priority < System::MAX_PRIORITY; priority++)
 	{
 		list<GameObject*>::iterator it = _GameObjects[priority].begin();
@@ -160,6 +160,10 @@ void GameObjectManager::AddRemoveList(char * name)
 			//名前の比較
 			if (strcmp(name, (*it)->GetName()) == 0)
 			{
+				//重複チェック。
+				if (_CheckUniqueRemoveList((*it)) == FALSE)
+					return;
+
 				RemoveObj remove(it,priority);
 				_RemoveList.push_back(remove);
 				return;
@@ -211,13 +215,32 @@ bool GameObjectManager::FindObjects(char* name, GameObject ** objArray)
 	return false;
 }
 
-void GameObjectManager::_RemoveObject()
+bool GameObjectManager::_CheckUniqueRemoveList(GameObject * obj)
 {
 	for each (RemoveObj remove in _RemoveList)
 	{
-		SAFE_DELETE(*remove.it);
-		_GameObjects[remove.prio].erase(remove.it);
-	} 
+		//重複発見
+		if((*remove.iterator) == obj)
+		{
+			return FALSE;
+		}
+	}
+	//重複なし。
+	return TRUE;
+}
+
+void GameObjectManager::_RemoveObject()
+{
+	list<RemoveObj>::iterator removeIt = _RemoveList.begin();
+	while (removeIt != _RemoveList.end())
+	{
+		//オブジェクトのメモリ解放
+		SAFE_DELETE(*removeIt->iterator);
+		//_GameObjectsからイテレータ削除
+		_GameObjects[removeIt->priority].erase(removeIt->iterator);
+		//_RemoveListからイテレータ削除
+		removeIt = _RemoveList.erase(removeIt);
+	}
 	_RemoveList.clear();
 }
 
@@ -231,7 +254,7 @@ void GameObjectManager::Release()
 			//すべて追加
 			while (it != _GameObjects[priority].end())
 			{
-				if ((*it)->Discard())
+				if ((*it)->GetDiscard())
 				{
 					RemoveObj remove(it, priority);
 					_RemoveList.push_back(remove);
@@ -240,7 +263,7 @@ void GameObjectManager::Release()
 				{
 					//破棄しない
 					//次は破棄するようにする
-					(*it)->Discard(true);
+					(*it)->SetDiscard(true);
 				}
 
 				it++;

@@ -14,7 +14,7 @@ double Time::time = 0;
 
 void Time::Update()
 {
-	//今の時間を取得
+	//今の時間を取得(ミリ秒)
 	DWORD afterTime = timeGetTime();
 	//前回と今の差をデルタタイムに設定(ミリ秒を秒に変換)
 	deltaTime = (afterTime - beforeTime) / 1000.0f;

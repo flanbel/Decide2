@@ -39,19 +39,19 @@ void SceneManager::Add(Scene* pAdd)
 void SceneManager::StartScene()
 {
 //#ifdef _DEBUG
-	FPS* fps = GameObjectManager::AddNew<FPS>("fps", System::MAX_PRIORITY);
+	FPS* fps = INSTANCE(GameObjectManager)->AddNew<FPS>("fps", System::MAX_PRIORITY);
 	fps->transform->SetLocalPosition(Vector3(0, 30, 0));
 //#endif // DEBUG
 	_Scenes[_NowScene]->Start();
-	GameObjectManager::StartObject();
+	INSTANCE(GameObjectManager)->StartObject();
 }
 
 void SceneManager::UpdateScene()
 {
 	_Scenes[_NowScene]->Update();
-	GameObjectManager::UpdateObject();
+	INSTANCE(GameObjectManager)->UpdateObject();
 	PhysicsWorld::Instance()->Update();
-	GameObjectManager::LateUpdateObject();
+	INSTANCE(GameObjectManager)->LateUpdateObject();
 }
 
 void SceneManager::DrawScene()
@@ -59,21 +59,21 @@ void SceneManager::DrawScene()
 	//0番目に設定(影の深度書き込み用バッファ)
 	INSTANCE(RenderTargetManager)->ReSetRT(0, INSTANCE(RenderTargetManager)->GetRTFromList(RTIdxE::SHADOWDEPTH));
 	//事前描画(影とか深度とか輝度とか)
-	GameObjectManager::PreRenderObject();
+	INSTANCE(GameObjectManager)->PreRenderObject();
 
 	//0番目に設定(オフスクリーンレンダリング用)
 	INSTANCE(RenderTargetManager)->ReSetRT(0, _RT);
-	GameObjectManager::RenderObject();
+	INSTANCE(GameObjectManager)->RenderObject();
 	//レンダーターゲットを元に戻す
 	INSTANCE(RenderTargetManager)->BeforeRT();
 	
 	//オフスクリーンのやつ描画
 	_Sprite->ImageRender();
 	_Bloom.Render();
-	GameObjectManager::PostRenderObject();
+	INSTANCE(GameObjectManager)->PostRenderObject();
 	
 	//2Dとか？
-	GameObjectManager::ImageRenderObject();
+	INSTANCE(GameObjectManager)->ImageRenderObject();
 
 	//シーンのフェードのやつ
 	//最前面に来るように最後に描画
@@ -87,7 +87,7 @@ Scene* SceneManager::ChangeScene(int key)
 	//シーンの添え字切り替え
 	_NowScene = key;
 	//オブジェクトリリース
-	GameObjectManager::Release();
+	INSTANCE(GameObjectManager)->Release();
 	//初期化する
 	SceneManager::StartScene();
 	return _Scenes[_NowScene];

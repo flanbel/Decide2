@@ -1,4 +1,5 @@
 #include "DamageCollision.h"
+#include "Player.h"
 
 void DamageCollision::Update()
 {
@@ -6,13 +7,12 @@ void DamageCollision::Update()
 	GostCollision::Update();
 	//寿命確認
 	_CheckDeath();
+}
+
+void DamageCollision::LateUpdate()
+{
 	//当たったかどうかチェック
 	_CheckHit();
-	//当たっても削除
-	if (_IsHit)
-	{
-		GameObjectManager::AddRemoveList(gameObject);
-	}
 }
 
 void DamageCollision::Create(const float& life, const int & id, Collider * shape, DamageCollisonInfo & in)
@@ -20,6 +20,8 @@ void DamageCollision::Create(const float& life, const int & id, Collider * shape
 	_Life = life;
 	_Timer = 0.0f;
 	info = in;
+	_FilterGroup = (short)Collision_Filter::DAMAGE;
+	_FilterMask = (short)Collision_Filter::PLAYER;
 	GostCollision::Create(shape, id);
 }
 
@@ -30,31 +32,39 @@ void DamageCollision::_CheckDeath()
 		_Timer > _Life)
 	{
 		//削除
-		GameObjectManager::AddRemoveList(gameObject);
+		INSTANCE(GameObjectManager)->AddRemoveList(gameObject);
 		return;
 	}
 }
-#include "Player.h"
+
 void DamageCollision::_CheckHit()
 {
-	btCollisionObject* coll = _CollisionObject.get();
-	FOR(i,PLAYER_NUM)
+	
+	//攻撃したプレイヤーの添え字取得
+	int atkidx = _CollisionObject->getUserIndex() - Collision_ID::DAMAGE - 1;
+	//あたったかどうか？
+	bool ishit = false;
+	//当たっているやつを取得
+	btAlignedObjectArray<btCollisionObject*> pairs = GetPairCollisions();
+	FOR(i,pairs.size())
 	{
-		//自分の攻撃は無視
-		if (i == coll->getUserIndex())
-			continue;
-
-		char name[20] = "Player";
-		char idx[3] = { (i + 1) + 48,'\0' };
-		strcat(name, idx);
-		//プレイヤーと当たったかどうか？
-		const Collision* hit = INSTANCE(PhysicsWorld)->SearchCollisionByName(this, name, Collision_ID::PLAYER);
-		if(hit)
+		//あたったものがプレイヤーかどうか？
+		if((pairs[i]->getUserIndex() & Collision_ID::PLAYER) != 0)
 		{
+			Collision* coll = (Collision*)pairs[i]->getUserPointer();
 			//アップキャスト
-			Player* p = (Player*)hit->gameObject;
-			//プレイヤーにダメージを与える。
-			p->Damage(coll->getUserIndex(), info.Damage, info.Blown, info.Rigor);
+			Player* player = (Player*)coll->gameObject;
+			//自分の攻撃には当たらない。
+			if (player->GetIdx() != atkidx)
+			{
+				//プレイヤーにダメージを与える。
+				player->Damage(atkidx, info.Damage, info.Blown, info.Rigor);
+				ishit = true;
+			}
 		}
+	}
+	if (ishit)
+	{
+		INSTANCE(GameObjectManager)->AddRemoveList(gameObject);
 	}
 }

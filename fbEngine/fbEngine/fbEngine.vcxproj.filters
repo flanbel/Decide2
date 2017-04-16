@@ -46,28 +46,10 @@
     <ClInclude Include="Random.h">
       <Filter>System</Filter>
     </ClInclude>
-    <ClInclude Include="BoxCollider.h">
-      <Filter>Object\Component\3D\Physics</Filter>
-    </ClInclude>
-    <ClInclude Include="CapsuleCollider.h">
-      <Filter>Object\Component\3D\Physics</Filter>
-    </ClInclude>
     <ClInclude Include="CharacterController.h">
       <Filter>Object\Component\3D\Physics</Filter>
     </ClInclude>
     <ClInclude Include="Physics.h">
-      <Filter>Object\Component\3D\Physics</Filter>
-    </ClInclude>
-    <ClInclude Include="SphereCollider.h">
-      <Filter>Object\Component\3D\Physics</Filter>
-    </ClInclude>
-    <ClInclude Include="MeshCollider.h">
-      <Filter>Object\Component\3D\Physics</Filter>
-    </ClInclude>
-    <ClInclude Include="Collider.h">
-      <Filter>Object\Component\3D\Physics</Filter>
-    </ClInclude>
-    <ClInclude Include="CollisionAttr.h">
       <Filter>Object\Component\3D\Physics</Filter>
     </ClInclude>
     <ClInclude Include="Animation.h">
@@ -220,6 +202,27 @@
     <ClInclude Include="SpriteAnimation.h">
       <Filter>Object\Component\2D</Filter>
     </ClInclude>
+    <ClInclude Include="CollisionEnum.h">
+      <Filter>Object\Component\3D\Physics</Filter>
+    </ClInclude>
+    <ClInclude Include="BoxCollider.h">
+      <Filter>Object\Component\3D\Physics\Collider</Filter>
+    </ClInclude>
+    <ClInclude Include="CapsuleCollider.h">
+      <Filter>Object\Component\3D\Physics\Collider</Filter>
+    </ClInclude>
+    <ClInclude Include="Collider.h">
+      <Filter>Object\Component\3D\Physics\Collider</Filter>
+    </ClInclude>
+    <ClInclude Include="MeshCollider.h">
+      <Filter>Object\Component\3D\Physics\Collider</Filter>
+    </ClInclude>
+    <ClInclude Include="SphereCollider.h">
+      <Filter>Object\Component\3D\Physics\Collider</Filter>
+    </ClInclude>
+    <ClInclude Include="ColliderInclude.h">
+      <Filter>Object\Component\3D\Physics\Collider</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Object.cpp">
@@ -258,22 +261,10 @@
     <ClCompile Include="Random.cpp">
       <Filter>System</Filter>
     </ClCompile>
-    <ClCompile Include="BoxCollider.cpp">
-      <Filter>Object\Component\3D\Physics</Filter>
-    </ClCompile>
-    <ClCompile Include="CapsuleCollider.cpp">
-      <Filter>Object\Component\3D\Physics</Filter>
-    </ClCompile>
     <ClCompile Include="CharacterController.cpp">
       <Filter>Object\Component\3D\Physics</Filter>
     </ClCompile>
     <ClCompile Include="Physics.cpp">
-      <Filter>Object\Component\3D\Physics</Filter>
-    </ClCompile>
-    <ClCompile Include="SphereCollider.cpp">
-      <Filter>Object\Component\3D\Physics</Filter>
-    </ClCompile>
-    <ClCompile Include="MeshCollider.cpp">
       <Filter>Object\Component\3D\Physics</Filter>
     </ClCompile>
     <ClCompile Include="Animation.cpp">
@@ -405,6 +396,18 @@
     <ClCompile Include="SpriteAnimation.cpp">
       <Filter>Object\Component\2D</Filter>
     </ClCompile>
+    <ClCompile Include="BoxCollider.cpp">
+      <Filter>Object\Component\3D\Physics\Collider</Filter>
+    </ClCompile>
+    <ClCompile Include="CapsuleCollider.cpp">
+      <Filter>Object\Component\3D\Physics\Collider</Filter>
+    </ClCompile>
+    <ClCompile Include="MeshCollider.cpp">
+      <Filter>Object\Component\3D\Physics\Collider</Filter>
+    </ClCompile>
+    <ClCompile Include="SphereCollider.cpp">
+      <Filter>Object\Component\3D\Physics\Collider</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Object">
@@ -448,6 +451,9 @@
     </Filter>
     <Filter Include="Object\Component\3D\Physics\Collision">
       <UniqueIdentifier>{e7b0c37d-5fe3-4e3b-afbd-85c351e0c680}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Object\Component\3D\Physics\Collider">
+      <UniqueIdentifier>{3744ba91-953e-4159-bf58-0f230e2934c4}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>

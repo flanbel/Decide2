@@ -4,7 +4,7 @@
 void GameShadowCamera::Awake()
 {
 	ShadowCamera* camera = AddComponent<ShadowCamera>();
-	GameObjectManager::mainShadowCamera = camera;
+	INSTANCE(GameObjectManager)->mainShadowCamera = camera;
 
 	transform->SetLocalPosition(Vector3(-500, 760, -460));
 	transform->SetLocalAngle(Vector3(52, 48, 0));

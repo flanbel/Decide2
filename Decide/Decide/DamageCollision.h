@@ -13,13 +13,14 @@ public:
 		int StopTime;		//硬直時間
 		float Rigor;		//吹き飛び時間
 	};
-
+public:
 	DamageCollision(GameObject* g, Transform* t) :GostCollision(g, t,typeid(this).name())
 	{
 		
 	};
 	~DamageCollision() {};
 	void Update()override;
+	void LateUpdate()override;
 
 	void Create(const float& life, const int& id, Collider* shape, DamageCollisonInfo& info);
 	//げったー、セッター作るのめんどくさかった。

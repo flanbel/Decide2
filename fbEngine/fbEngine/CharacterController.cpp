@@ -3,7 +3,7 @@
 */
 
 #include "CharacterController.h"
-#include "CollisionAttr.h"
+#include "CollisionEnum.h"
 #include "Physics.h"
 
 		//衝突したときに呼ばれる関数オブジェクト(地面用)
@@ -72,7 +72,7 @@ struct SweepResultWall : public btCollisionWorld::ConvexResultCallback
 		//上方向と衝突点の法線のなす角度を求める。
 		float angle = fabsf(acosf(hitNormalTmp.Dot(Vector3::up)));
 		if (angle >= 3.1415 * 0.3f		//地面の傾斜が54度以上なので壁とみなす。
-			|| convexResult.m_hitCollisionObject->getUserIndex() == enCollisionAttr_Character	//もしくはコリジョン属性がキャラクタなので壁とみなす。
+			|| (convexResult.m_hitCollisionObject->getUserIndex() & (int)fbCollisionAttributeE::CHARACTER)	//もしくはコリジョン属性がキャラクタなので壁とみなす。
 			) {
 			isHit = true;
 			Vector3 hitPosTmp;
@@ -106,14 +106,14 @@ void CCharacterController::Init(float radius, float height)
 	//RigidBodyInfo rbInfo;
 	//rbInfo.collider = m_collider;
 	//rbInfo.mass = 0.0f;
-	m_rigidBody->Create(0.0f,m_collider,5);
+	m_rigidBody->Create(0.0f,m_collider, (int)fbCollisionAttributeE::CHARACTER);
 	btTransform& trans = m_rigidBody->GetCollisonObj()->getWorldTransform();
 	//剛体の位置を更新。
 	trans.setOrigin(btVector3(transform->GetPosition().x, transform->GetPosition().y, transform->GetPosition().z));
 	//@todo 未対応。trans.setRotation(btQuaternion(rotation.x, rotation.y, rotation.z));
-	m_rigidBody->GetCollisonObj()->setUserIndex(enCollisionAttr_Character);
+	m_rigidBody->GetCollisonObj()->setUserIndex((int)fbCollisionAttributeE::CHARACTER);
 	m_rigidBody->GetCollisonObj()->setCollisionFlags(btCollisionObject::CF_CHARACTER_OBJECT);
-	PhysicsWorld::Instance()->AddRigidBody(m_rigidBody);
+	PhysicsWorld::Instance()->AddRigidBody(m_rigidBody, (short)fbCollisionFilterE::A, (short)fbCollisionFilterE::ALLFILTER);
 }
 void CCharacterController::Execute()
 {

@@ -5,12 +5,12 @@
 
 void PlayerParameter::Awake()
 {
-	_Emblem = GameObjectManager::AddNew<ImageObject>("Emblem", 0);
-	_Frame = GameObjectManager::AddNew<ImageObject>("Frame", 0);
-	_KillT = GameObjectManager::AddNew<TextObject>("Kill", 0);
-	_DamageT = GameObjectManager::AddNew<TextObject>("Damage", 0);
-	_StockT = GameObjectManager::AddNew<TextObject>("Stock", 0);
-	_NameT = GameObjectManager::AddNew<TextObject>("Name", 0);
+	_Emblem = INSTANCE(GameObjectManager)->AddNew<ImageObject>("Emblem", 0);
+	_Frame = INSTANCE(GameObjectManager)->AddNew<ImageObject>("Frame", 0);
+	_KillT = INSTANCE(GameObjectManager)->AddNew<TextObject>("Kill", 0);
+	_DamageT = INSTANCE(GameObjectManager)->AddNew<TextObject>("Damage", 0);
+	_StockT = INSTANCE(GameObjectManager)->AddNew<TextObject>("Stock", 0);
+	_NameT = INSTANCE(GameObjectManager)->AddNew<TextObject>("Name", 0);
 	//e‚É“o˜^
 	_Emblem->transform->SetParent(transform);
 	_Frame->transform->SetParent(transform);
@@ -19,12 +19,12 @@ void PlayerParameter::Awake()
 	_KillT->transform->SetParent(transform);
 	_NameT->transform->SetParent(transform);
 	//Á‚³‚ê‚È‚¢‚æ‚¤‚É
-	_Emblem->Discard(false);
-	_Frame->Discard(false);
-	_DamageT->Discard(false);
-	_StockT->Discard(false);
-	_KillT->Discard(false);
-	_NameT->Discard(false);
+	_Emblem->SetDiscard(false);
+	_Frame->SetDiscard(false);
+	_DamageT->SetDiscard(false);
+	_StockT->SetDiscard(false);
+	_KillT->SetDiscard(false);
+	_NameT->SetDiscard(false);
 
 	_DamageT->Initialize(L"0%", 100.0f, Color::white, fbSprite::SpriteEffectE::SHADOW, "HGS–¾’©E",fbText::TextFormatE::RIGHT);
 

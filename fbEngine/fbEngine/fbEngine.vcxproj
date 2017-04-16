@@ -143,6 +143,7 @@
     <ClInclude Include="Assert.h" />
     <ClInclude Include="Bloom.h" />
     <ClInclude Include="CircleCollision.h" />
+    <ClInclude Include="ColliderInclude.h" />
     <ClInclude Include="ComponentManager.h" />
     <ClInclude Include="Effect.h" />
     <ClInclude Include="GostCollision.h" />
@@ -167,7 +168,7 @@
     <ClInclude Include="CapsuleCollider.h" />
     <ClInclude Include="CharacterController.h" />
     <ClInclude Include="Collision.h" />
-    <ClInclude Include="CollisionAttr.h" />
+    <ClInclude Include="CollisionEnum.h" />
     <ClInclude Include="CollisionObject.h" />
     <ClInclude Include="Color.h" />
     <ClInclude Include="Component.h" />

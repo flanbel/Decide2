@@ -64,8 +64,8 @@ void PlatePrimitive::Awake()
 
 void PlatePrimitive::Start()
 {
-	_Camera = GameObjectManager::mainCamera;
-	_Light = GameObjectManager::mainLight;
+	_Camera = INSTANCE(GameObjectManager)->mainCamera;
+	_Light = INSTANCE(GameObjectManager)->mainLight;
 }
 
 void PlatePrimitive::Update()

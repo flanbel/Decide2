@@ -4,7 +4,7 @@
 void GameCamera::Awake()
 {
 	camera = AddComponent<Camera>();
-	GameObjectManager::mainCamera = camera;
+	INSTANCE(GameObjectManager)->mainCamera = camera;
 	transform->SetLocalPosition(Vector3(0, 0, 0));
 	transform->SetLocalAngle(Vector3(70, 0, 0));
 	camera->SetNear(1);
@@ -105,7 +105,7 @@ void GameCamera::Update()
 	{
 		angle += 1;
 	}
-	camera->SetViewAngle(angle);
+	//camera->SetViewAngle(angle);
 
 	_UpdatePos();
 	_UpdateViewAngle();
@@ -135,8 +135,11 @@ void GameCamera::_UpdateViewAngle()
 		float dot = toP.Dot(foward) - 1.0f - D3DXToRadian(15);
 		angle = max(angle, fabs(dot));
 	}
+	float theta = D3DXToDegree(angle) * 2;
+	theta = max(15, theta);	//下限
+	theta = min(90, theta);	//上限
 	//画角設定
-	camera->SetViewAngle(D3DXToDegree(angle)*2);
+	camera->SetViewAngle(theta);
 }
 
 void GameCamera::_UpdatePos()
@@ -159,6 +162,8 @@ void GameCamera::_UpdatePos()
 	//平均ポジションを出す
 	Vector3 average = Min + Max;
 	average.Div(2);
+	//-500より後ろには向かない
+	average.z = max(average.z, -500.0f);
 
 	//注視点設定
 	Vector3 vp = camera->GetViewPoint();
@@ -178,6 +183,7 @@ void GameCamera::_UpdatePos()
 
 	//視点設定
 	Vector3 p = Vector3(average.x, average.y, Min.z) + (transform->Direction(Vector3::back) * dist);
+	p.z = max(p.z, -1000.0f);
 	Vector3 lp = transform->GetLocalPosition();
 	//線形補完
 	lp.Lerp(p, 0.5, Time::DeltaTime());

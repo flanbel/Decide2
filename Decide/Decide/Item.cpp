@@ -3,30 +3,34 @@
 #include "fbEngine/SkinmodelData.h"
 #include "fbEngine/Animation.h"
 #include "fbEngine/RigidBody.h"
-#include "fbEngine/BoxCollider.h"
-#include "DamageCollision.h"
+
 #include "AttackCollision.h"
 
 namespace
 {
-	ItemData item[] = 
+	//アイテムの情報
+	ItemData itemList[] =
 	{
 		{
 			"Item/bom.X",
-			Vector3(30,30,30)
+			Vector3(30,35,30),
+			Vector3(0,0,0)
 		},
 		{
 			"Item/StandardSowrd.X",
-			Vector3(15,50,15)
+			Vector3(15,80,15),
+			Vector3(0,40,0)
 		}
 	};
 }
 
 Item::Item(const char * name) :
 	GameObject(name),
+	_ItemIdx(-1),
 	_LifeTime(10.0f),
 	_Timer(0.0f),
 	_Move(Vector3::zero),
+	_Attack(nullptr),
 	_IsHave(false),
 	_ItemHandleMat(nullptr),
 	_HandMat(nullptr)
@@ -34,23 +38,33 @@ Item::Item(const char * name) :
 
 }
 
+Item::~Item()
+{
+	if(_Attack)
+	{
+		INSTANCE(GameObjectManager)->AddRemoveList(_Attack);
+	}
+}
+
 void Item::Awake()
 {
 	SkinModel* model = AddComponent<SkinModel>();
 	_Anim = AddComponent<Animation>();
 
-	_Rigid = AddComponent<RigidBody>();
 	BoxCollider* coll = AddComponent<BoxCollider>();
+	_Rigid = AddComponent<RigidBody>();
 
-	int idx = Random::Range(0, 1);
+	//アイテムの種類決定
+	_ItemIdx = Random::Range(0, 1);
+	coll->Create(itemList[_ItemIdx].collisionsize);
+	//フィルター設定
+	_Rigid->SetFilter((short)Collision_Filter::ITEM, (short)fbCollisionFilterE::ALLFILTER - (short)Collision_Filter::DAMAGE);
+	//コリジョン生成
+	_Rigid->Create(1, coll, Collision_ID::ITEM , Vector3::zero, itemList[_ItemIdx].offset);
 
-	int height = item[idx].collisionsize.y;
-	coll->Create(item[idx].collisionsize);
-	//ID:6
-	_Rigid->Create(1, coll, 6);
-
+	//モデルセット。
 	SkinModelData* modeldata = new SkinModelData();
-	modeldata->CloneModelData(SkinModelManager::LoadModel(item[idx].modelname), _Anim);
+	modeldata->CloneModelData(SkinModelManager::LoadModel(itemList[_ItemIdx].modelname), _Anim);
 	model->SetModelData(modeldata);
 
 	//アイテムの持ち手のフレーム取得
@@ -63,8 +77,29 @@ void Item::Awake()
 
 void Item::Update()
 {
+	if (_IsHave)
+	{
+		D3DXMATRIX world;
+		//掛ける順番が大切（子×親）
+		D3DXMatrixMultiply(&world, _ItemHandleMat, _HandMat);
+		//ワールド行列更新
+		transform->SetLocalPosition(Vector3(world._41, world._42, world._43));
+		transform->SetWorldMatrix(world);
+	}
+	//所有されてない &&
+	//投げられていない
+	else if(_Move.Length() > 0.0f)
+	{
+		_Timer += Time::DeltaTime();
+		if (_Timer >= _LifeTime)
+		{
+			//自身を削除
+			INSTANCE(GameObjectManager)->AddRemoveList(this);
+		}
+	}
+
 	//移動量がある時
-	if(_Move.Length() > 0.0f)
+	if (_Move.Length() > 0.0f)
 	{
 		//移動前のポジション保持
 		Vector3 bufpos = transform->GetLocalPosition();
@@ -73,32 +108,12 @@ void Item::Update()
 		_Rigid->Update();
 		//当たり判定
 		const Collision *coll = (const Collision*)PhysicsWorld::Instance()->FindHitCollision(_Rigid, Collision_ID::STAGE);
-		if(coll)
+		if (coll)
 		{
 			_Move = Vector3::zero;
 			transform->SetLocalPosition(bufpos);
-		}
-	}
-}
-
-void Item::LateUpdate()
-{
-	if (_IsHave)
-	{
-		D3DXMATRIX world;
-		//掛ける順番が大切（子×親）
-		D3DXMatrixMultiply(&world, _ItemHandleMat, _HandMat);
-		//ワールド行列更新
-		transform->SetWorldMatrix(world);
-	}
-	//所有されてない
-	else
-	{
-		_Timer += Time::DeltaTime();
-		if (_Timer >= _LifeTime)
-		{
-			//自身を削除
-			GameObjectManager::AddRemoveList(this);
+			//攻撃判定削除
+			INSTANCE(GameObjectManager)->AddRemoveList(_Attack);
 		}
 	}
 }
@@ -111,6 +126,8 @@ bool Item::ToHave(const D3DXMATRIX* handmat)
 		_HandMat = handmat;
 		if (_ItemHandleMat && _HandMat)
 		{
+			//他のコリジョンと衝突しないようにフラグを設定。
+			_Rigid->GetCollisonObj()->setCollisionFlags(btCollisionObject::CollisionFlags::CF_NO_CONTACT_RESPONSE);
 			_IsHave = true;
 			_Move = Vector3::zero;
 			return true;
@@ -126,24 +143,28 @@ void Item::ToSeparate(const Vector3& vec, int idx)
 	{
 		//移動量設定
 		_Move = vec;
-		//ダメージコリジョン生成
-		//あたり判定を出す
-		AttackCollision* attack = GameObjectManager::AddNew<AttackCollision>("Throw", 1);
-		Transform* t = attack->GetComponent<Transform>();
-		//前に出す
-		t->SetLocalPosition(transform->Local(Vector3(0, 60, 30)));
-		t->SetLocalAngle(transform->GetLocalAngle());
+
+		//攻撃判定生成
+		_Attack = INSTANCE(GameObjectManager)->AddNew<AttackCollision>("Throw", 1);
+		SphereCollider* sphere = _Attack->AddComponent<SphereCollider>();
+		Vector3 size = itemList[_ItemIdx].collisionsize;
+		size.Scale(1.1f);
+		sphere->Create(size.x);
+		_Attack->GetComponent<Transform>()->SetParent(this->transform);
 
 		DamageCollision::DamageCollisonInfo info;
-		//攻撃力補正
-		info.Damage = 10;
-		info.Blown = transform->Direction(Vector3(0.0f, 0.0f, 60.0f));
-		//吹き飛ばし補正
+		//ダメージ
+		info.Damage = Random::Range(6, 12);
+		//吹き飛ばし力
+		info.Blown = vec;
+		info.Blown.Normalize();
+		info.Blown.Scale(60.0f);
+		//硬直時間
 		info.Rigor = 0.2f;
-		float life = 0.2f;
-		attack->Create(0, life, Vector3(50, 50, 50), info);
-
+		float life = -1.0f;
+		_Attack->Create(sphere, idx, life, info);
 	}
+
 	Vector3 pos;
 	//手の位置に移動。
 	pos.x = _HandMat->m[3][0];
@@ -153,4 +174,6 @@ void Item::ToSeparate(const Vector3& vec, int idx)
 	//外す
 	_HandMat = nullptr;
 	_IsHave = false;
+	//変更したフラグを消す。
+	_Rigid->GetCollisonObj()->setCollisionFlags(0);
 }

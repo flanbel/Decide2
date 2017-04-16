@@ -15,41 +15,41 @@
 #include "fbEngine/Camera.h"
 void BattleScene::Start()
 {
-	GameCamera* gamecamera = GameObjectManager::AddNew<GameCamera>("GameCamera", 0);
+	GameCamera* gamecamera = INSTANCE(GameObjectManager)->AddNew<GameCamera>("GameCamera", 0);
 
 	FOR(idx,4)
 	{
 		char pname[20] = "Player";
 		char num[2] = { (48 + idx + 1) + '\0' };
 		strcat(pname, num);
-		Player* p = (Player*)GameObjectManager::FindObject(pname);
+		Player* p = (Player*)INSTANCE(GameObjectManager)->FindObject(pname);
 		if(p)
 		{
 			gamecamera->AddPlayer(p);
 		}
 	}
 
-	GameObjectManager::AddNew<GameLight>("GameLight", 0);
-	GameObjectManager::AddNew<GameShadowCamera>("GameShadowCamera", 0);
+	INSTANCE(GameObjectManager)->AddNew<GameLight>("GameLight", 0);
+	INSTANCE(GameObjectManager)->AddNew<GameShadowCamera>("GameShadowCamera", 0);
 
-	GameObjectManager::AddNew<Sky>("Sky", 0);
-	GameObjectManager::AddNew<Stage>("Stage", 1);
-	_Gong = GameObjectManager::AddNew<SoundSource>("Gong", 0);
-	_BGM = GameObjectManager::AddNew<SoundSource>("BGM", 0);
+	INSTANCE(GameObjectManager)->AddNew<Sky>("Sky", 0);
+	INSTANCE(GameObjectManager)->AddNew<Stage>("Stage", 1);
+	_Gong = INSTANCE(GameObjectManager)->AddNew<SoundSource>("Gong", 0);
+	_BGM = INSTANCE(GameObjectManager)->AddNew<SoundSource>("BGM", 0);
 
 	_Gong->Init("Asset/Sound/Gong.wav");
 	_BGM->Init("Asset/Sound/bgm_Battle.wav");
 	
 	_BGM->Play(true);
 	
-	_GameRule = (GameRule*)GameObjectManager::FindObject("GameRule");
-	_GameRule->Discard(false);
+	_GameRule = (GameRule*)INSTANCE(GameObjectManager)->FindObject("GameRule");
+	_GameRule->SetDiscard(false);
 	
 	//タイマー作成
 	if(_GameRule->GetGameRule() == GameRule::GameRuleE::TIMELIMIT)
 	{
 		//制限時間表示用のアレ
-		_GameTimerT = GameObjectManager::AddNew<TextObject>("GameTimer", 1);
+		_GameTimerT = INSTANCE(GameObjectManager)->AddNew<TextObject>("GameTimer", 1);
 		_GameTimerT->Initialize(L"", 80.0f, Color::white, fbSprite::SpriteEffectE::SHADOW, "HGS明朝E");
 		_GameTimerT->transform->SetLocalPosition(Vector3(WindowW/2, 80, 0));
 		wchar_t time[10];
@@ -64,7 +64,7 @@ void BattleScene::Start()
 	}
 
 	//カウントダウン
-	_CountDownT = GameObjectManager::AddNew<TextObject>("CountDown", 1);
+	_CountDownT = INSTANCE(GameObjectManager)->AddNew<TextObject>("CountDown", 1);
 	_CountDownT->Initialize(L"", 160.0f, Color::red, fbSprite::SpriteEffectE::SHADOW, "HGS明朝E");
 	_CountDownT->transform->SetLocalPosition(Vector3(WindowW / 2, WindowH / 2, 0.0f));
 
@@ -75,7 +75,7 @@ void BattleScene::Start()
 
 #ifdef _DEBUG
 	//影(深度)の描画
-	_ShowDepth = GameObjectManager::AddNew<ImageObject>("ShowDepth", 4);
+	_ShowDepth = INSTANCE(GameObjectManager)->AddNew<ImageObject>("ShowDepth", 4);
 	_ShowDepth->SetTexture(INSTANCE(RenderTargetManager)->GetRTTextureFromList(RTIdxE::SHADOWDEPTH));
 	_ShowDepth->SetPivot(Vector2(0, 0));
 	_ShowDepth->SetActive(false);
@@ -96,10 +96,10 @@ void BattleScene::Update()
 	if (MouseInput->GetValue(MouseInE::L_CLICK))
 	{
 		//アイテム生成
-		Item* item = GameObjectManager::AddNew<Item>("TestItem", 1);
+		Item* item = INSTANCE(GameObjectManager)->AddNew<Item>("TestItem", 1);
 
-		Vector3 start = GameObjectManager::mainCamera->ScreenToWorld(MouseInput->GetCursorPosOnWindow(g_MainWindow));
-		Vector3 dir = start - GameObjectManager::mainCamera->transform->GetPosition();
+		Vector3 start = INSTANCE(GameObjectManager)->mainCamera->ScreenToWorld(MouseInput->GetCursorPosOnWindow(g_MainWindow));
+		Vector3 dir = start - INSTANCE(GameObjectManager)->mainCamera->transform->GetPosition();
 		dir.Normalize();
 		Vector3 end = start + (dir * 1000.0f);
 		Vector3 pos = INSTANCE(PhysicsWorld)->ClosestRayTest(start, end);

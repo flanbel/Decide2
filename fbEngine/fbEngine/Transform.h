@@ -56,14 +56,7 @@ public:
 
 	//ˆø”‚Ìƒgƒ‰ƒ“ƒXƒtƒH[ƒ€‚ðŽ©•ª‚Ìe‚É“o˜^‚·‚é
 	//‘æˆêˆø”FTransform
-	void Transform::SetParent(Transform* _Parent)
-	{
-		//e‚É“o˜^
-		this->_Parent = _Parent;
-		//e‚ÌŽq‚ÉŽ©•ª‚ð“o˜^
-		_Parent->_Children.push_back(this);
-		UpdateTransform();
-	}
+	void Transform::SetParent(Transform* _Parent);
 
 	//Žq‹Ÿ‚½‚¿Žæ“¾
 	const vector<Transform*>& GetChildren()

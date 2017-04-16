@@ -1,5 +1,6 @@
 #pragma once
 
+//テクスチャ構造体
 struct TEXTURE :Noncopyable
 {
 	IDirect3DTexture9* pTexture;	//テクスチャへのポインタ
@@ -17,9 +18,9 @@ struct TEXTURE :Noncopyable
 		SAFE_DELETE(pTexture);
 	}
 
-};	//テクスチャ関係の情報が入っている構造体
+};	
 
-//すべての2Dテクスチャを管理
+//読み込んだテクスチャを管理
 class TextureManager
 {
 public:

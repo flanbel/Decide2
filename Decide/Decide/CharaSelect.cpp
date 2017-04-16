@@ -10,13 +10,13 @@ void CharaSelect::Awake()
 {
 	_Render = new RenderTarget;
 	_Render->Create(Vector2(300, 300));
-	_Back = GameObjectManager::AddNew<ImageObject>("BackImage",0);
-	_Show = GameObjectManager::AddNew<ImageObject>("Show", 0);
-	_Name = GameObjectManager::AddNew<TextObject>("Name", 0);
-	_Cursor = GameObjectManager::AddNew<ImageObject>("Cursor", 2);
-	_OK = GameObjectManager::AddNew<ImageObject>("OK", 2);
-	_ShowModel = GameObjectManager::AddNew<ShowModel>("ShowModel", 0);
-	_Sound = GameObjectManager::AddNew<SoundSource>("test", 1);
+	_Back = INSTANCE(GameObjectManager)->AddNew<ImageObject>("BackImage",0);
+	_Show = INSTANCE(GameObjectManager)->AddNew<ImageObject>("Show", 0);
+	_Name = INSTANCE(GameObjectManager)->AddNew<TextObject>("Name", 0);
+	_Cursor = INSTANCE(GameObjectManager)->AddNew<ImageObject>("Cursor", 2);
+	_OK = INSTANCE(GameObjectManager)->AddNew<ImageObject>("OK", 2);
+	_ShowModel = INSTANCE(GameObjectManager)->AddNew<ShowModel>("ShowModel", 0);
+	_Sound = INSTANCE(GameObjectManager)->AddNew<SoundSource>("test", 1);
 
 	_ShowModel->transform->SetLocalAngle(Vector3(0, 180, 0));
 	_Sound->Init("Asset/Sound/Select.wav");

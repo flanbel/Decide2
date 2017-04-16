@@ -1,6 +1,6 @@
 #include "GameRule.h"
 #include "Player.h"
-#include <algorithm>
+#include <algorithm>	//sort
 
 GameRule::GameRule(const char * name) :
 	GameObject(name),

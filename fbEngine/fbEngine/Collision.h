@@ -1,6 +1,7 @@
 #pragma once
 #include "Component.h"
-class Collider;
+#include "ColliderInclude.h"
+class ModelObject;
 //あたり判定の基底クラス
 class Collision:public Component
 {
@@ -28,29 +29,30 @@ public:
 	{
 		return _CollisionObject.get();
 	}
-	void SetHit(const bool& h)
-	{
-		_IsHit = h;
-	}
-	const bool& GetHit()
-	{
-		return _IsHit;
-	}
 	//オフセットした先のポジション取得
 	const Vector3 GetOffsetPos()
 	{
 		return transform->GetPosition() + _Offset;
 	}
+	//Createより前に設定しといて。
+	void SetFilter(short group, short mask);
+	void SetFilterGroup(short group);
+	void SetFilterMask(short mask);
 protected:
 	//コリジョンの位置や回転を更新
 	void _UpdateCollisionTrans();
 protected:
-	//当たっているかどうか。
-	bool _IsHit;
 	//ポジションからのオフセット量
 	Vector3 _Offset;
-	//コリジョンオブジェクト。
-	std::shared_ptr<btCollisionObject>	_CollisionObject;
+	//自分の属するグループ
+	short _FilterGroup;
+	//当たり判定をとるグループ
+	short _FilterMask;
 	//コリジョンの形状。
 	Collider *_Shape;
+	//コリジョンオブジェクト。
+	std::shared_ptr<btCollisionObject>	_CollisionObject;
+private:
+	//当たり判定を視覚化した3Dオブジェクト。
+	ModelObject* _CollisionModel;
 };

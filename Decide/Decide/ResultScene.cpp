@@ -7,23 +7,25 @@
 void ResultScene::Start()
 {
 	//ResultBack
-	ImageObject* back = GameObjectManager::AddNew<ImageObject>("back", 0);
+	ImageObject* back = INSTANCE(GameObjectManager)->AddNew<ImageObject>("back", 0);
 	back->SetTexture(LOADTEXTURE("ResultBack.jpg"));
 	back->transform->SetLocalPosition(Vector3(WindowW / 2, WindowH / 2, 0));
 
-	ImageObject* result = GameObjectManager::AddNew<ImageObject>("result", 1);
+	ImageObject* result = INSTANCE(GameObjectManager)->AddNew<ImageObject>("result", 1);
 	result->SetPivot(0.5f, 0.0f);
 	result->SetTexture(LOADTEXTURE("Result.png"));
 	result->transform->SetLocalPosition(Vector3(WindowW / 2-50, 10, 0));
 
 	//音の再生
-	SoundSource *sound = GameObjectManager::AddNew<SoundSource>("test", 1);
+	SoundSource *sound = INSTANCE(GameObjectManager)->AddNew<SoundSource>("test", 1);
 	sound->Init("Asset/Sound/Result.wav");
 	sound->Play(false);
 	//ゲームルール取得
-	_GameRule = (GameRule*)GameObjectManager::FindObject("GameRule");
+	_GameRule = (GameRule*)INSTANCE(GameObjectManager)->FindObject("GameRule");
 	//ランキング作成
 	_CreateRanking(_GameRule->GetRanking());
+	//シーン切り替えフラグ
+	_ChangeScene = false;
 }
 
 void ResultScene::Update()
@@ -53,7 +55,7 @@ void ResultScene::_CreateRanking(const list<GameRule::Ranking>& ranking)
 	//1位から最後まで
 	for each (GameRule::Ranking rank in ranking)
 	{
-		TextObject* rtext = GameObjectManager::AddNew<TextObject>("RankingText", 0);
+		TextObject* rtext = INSTANCE(GameObjectManager)->AddNew<TextObject>("RankingText", 0);
 		float space = 150.0f;
 		rtext->transform->SetLocalPosition(Vector3(WindowW/2, 200.0f+(space * idx), 0.0f));
 		rtext->Initialize(L"", 80.0f, Color::white, fbSprite::SpriteEffectE::SHADOW, "HGS明朝E");

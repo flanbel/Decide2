@@ -5,28 +5,37 @@ GostCollision::~GostCollision()
 {
 	if (_CollisionObject)
 	{
-		//登録されているので削除
+		//物理ワールドから削除
 		PhysicsWorld::Instance()->RemoveCollision(this);
 	}
+}
+
+void GostCollision::Awake()
+{
+	Collision::Awake();
 }
 
 void GostCollision::Create(Collider * shape, int id)
 {
 	//コリジョン生成
 	Collision::Create(new btGhostObject, shape, id);
-	//作業用変数
-	//コリジョンオブジェクト
-	btCollisionObject* coll = this->_CollisionObject.get();
-	//フラグ
-	int flags = coll->getCollisionFlags();
-	//コリジョンに衝突しても物理的挙動をしない(干渉されない。)
-	//ここでトリガー指定しないと物理的に干渉してくる、ゴーストなのに。
-	coll->setCollisionFlags(flags | btCollisionObject::CollisionFlags::CF_NO_CONTACT_RESPONSE);
-	//自身を登録
-	PhysicsWorld::Instance()->AddCollision(this);
+	//生ポインタ取得してキャスト
+	_GostObject = btGhostObject::upcast(this->_CollisionObject.get());
+	//今設定されているフラグを取得
+	int flags = _GostObject->getCollisionFlags();
+	//他のコリジョンと衝突しないようにフラグを設定。
+	_GostObject->setCollisionFlags(flags | btCollisionObject::CollisionFlags::CF_NO_CONTACT_RESPONSE);
+	//物理ワールドに登録
+	PhysicsWorld::Instance()->AddCollision(this,_FilterGroup,_FilterMask);
 }
 
 void GostCollision::Update()
 {
 	Collision::Update();
+}
+
+btAlignedObjectArray<btCollisionObject*> GostCollision::GetPairCollisions()
+{
+	//自身と重なっているコリジョン取得
+	return _GostObject->getOverlappingPairs();
 }

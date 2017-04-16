@@ -8,6 +8,7 @@ class RigidBody:public Collision
 public:
 	RigidBody(GameObject* g, Transform* t);
 	~RigidBody();
+	void Awake()override;
 	void Update()override;
 	void LateUpdate()override;
 	void Release();

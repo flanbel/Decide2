@@ -6,24 +6,24 @@
 #include "fbEngine/Sprite.h"
 void TitleScene::Start()
 {
-	//GameObjectManager::AddNew<Movie>("movie", 1);
+	//INSTANCE(GameObjectManager)->AddNew<Movie>("movie", 1);
 	//ReadCSV("");
 
 	//背景追加
-	ImageObject* titleback = GameObjectManager::AddNew<ImageObject>("TitleBack", 0);
+	ImageObject* titleback = INSTANCE(GameObjectManager)->AddNew<ImageObject>("TitleBack", 0);
 	titleback->SetTexture(LOADTEXTURE("TitleBack.png"));
 	titleback->SetPivot(0.0f, 0.0f);
 	//プリーズエンターテキスト
-	TextObject* text = GameObjectManager::AddNew<TextObject>("PleaseEnter", 1);
+	TextObject* text = INSTANCE(GameObjectManager)->AddNew<TextObject>("PleaseEnter", 1);
 	char* a = STRING(text);
 	text->Initialize(L"<PleaseEnter>", 80.0f, Color::white, fbSprite::SpriteEffectE::SHADOW, "HGS明朝E");
 	text->transform->SetLocalPosition(Vector3(WindowW/2, WindowH/2, 0));
 	//BGM
-	SoundSource *bgm = GameObjectManager::AddNew<SoundSource>("BGM", 1);
+	SoundSource *bgm = INSTANCE(GameObjectManager)->AddNew<SoundSource>("BGM", 1);
 	bgm->Init("Asset/Sound/bgm_Title.wav");
 	bgm->Play(true);
 	//決定時の効果音
-	_EnterSE = GameObjectManager::AddNew<SoundSource>("EnterSE", 1);
+	_EnterSE = INSTANCE(GameObjectManager)->AddNew<SoundSource>("EnterSE", 1);
 	_EnterSE->Init("Asset/Sound/TitleEnter.wav");
 	//シーン切り替えフラグ初期化
 	_ChangeScene = false;

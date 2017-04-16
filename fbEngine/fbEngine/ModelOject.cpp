@@ -10,7 +10,7 @@ void ModelObject::Awake()
 
 void ModelObject::Update()
 {
-
+	int a = 0;
 }
 
 void ModelObject::LoadModel(char * path)

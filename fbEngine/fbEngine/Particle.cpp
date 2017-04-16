@@ -180,7 +180,7 @@ void Particle::Init(const ParicleParameter & param,const Vector3 & emitPosition)
 {
 	_Texture = LOADTEXTURE((char*)param.texturePath);
 	_Effect = EffectManager::LoadEffect("Particle.fx");
-	this->_Camera = GameObjectManager::mainCamera;
+	this->_Camera = INSTANCE(GameObjectManager)->mainCamera;
 	transform->SetLocalScale(Vector3(param.size.x, param.size.y, 1.0f));
 	_Life = param.life;
 	_Velocity = param.initVelocity;

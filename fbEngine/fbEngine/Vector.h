@@ -227,23 +227,12 @@ public:
 	/*!
 	 * @brief	ŠOÏB
 	 */
-	void Cross(const Vector3& in)
+	Vector3 Cross(const Vector3& in)
 	{
 		float _x = (y * in.z) - (in.y * z);
 		float _y = (z * in.x) - (in.z * x);
 		float _z = (x * in.y) - (in.x * y);
-		x = _x;
-		y = _y;
-		z = _z;
-	}
-	void Cross(const Vector3& v0, const Vector3& v1)
-	{
-		float _x = (v0.y * v1.z) - (v1.y * v0.z);
-		float _y = (v0.z * v1.x) - (v1.z * v0.x);
-		float _z = (v0.x * v1.y) - (v1.x * v0.y);
-		x = _x;
-		y = _y;
-		z = _z;
+		return Vector3(_x, _y, _z);
 	}
 	/*!
 	 * @brief	’·‚³‚ğæ“¾

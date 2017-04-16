@@ -1,6 +1,53 @@
 #pragma once
 #include "Collision.h"
+#include "CollisionEnum.h"
 
+//ゴーストと重なっているペアを探すコールバック
+struct MyGhostPairCallback: public btGhostPairCallback
+{
+	//重なったときに呼ばれるコールバック
+	btBroadphasePair*	addOverlappingPair(btBroadphaseProxy* proxy0, btBroadphaseProxy* proxy1)
+	{
+		btCollisionObject* colObj0 = (btCollisionObject*)proxy0->m_clientObject;
+		btCollisionObject* colObj1 = (btCollisionObject*)proxy1->m_clientObject;
+		//ゴーストオブジェクトにアップキャスト
+		//(元がゴーストオブジェクト以外ならnullになる)
+		btGhostObject* ghost0 = btGhostObject::upcast(colObj0);
+		btGhostObject* ghost1 = btGhostObject::upcast(colObj1);
+		if (ghost0)
+		{
+			//ペア追加
+			ghost0->addOverlappingObjectInternal(proxy1, proxy0);
+		}
+		if (ghost1)
+		{
+			//ペア追加
+			ghost1->addOverlappingObjectInternal(proxy0, proxy1);
+		}
+		return 0;
+	}
+	//重なりから抜けた時に呼ばれるコールバック
+	void*	removeOverlappingPair(btBroadphaseProxy* proxy0, btBroadphaseProxy* proxy1, btDispatcher* dispatcher)
+	{
+		btCollisionObject* colObj0 = (btCollisionObject*)proxy0->m_clientObject;
+		btCollisionObject* colObj1 = (btCollisionObject*)proxy1->m_clientObject;
+		//ゴーストオブジェクトにアップキャスト
+		//(元がゴーストオブジェクト以外ならnullになる)
+		btGhostObject* ghost0 = btGhostObject::upcast(colObj0);
+		btGhostObject* ghost1 = btGhostObject::upcast(colObj1);
+		if (ghost0)
+		{
+			ghost0->removeOverlappingObjectInternal(proxy1, dispatcher, proxy0);
+		}
+		if (ghost1)
+		{
+			ghost1->removeOverlappingObjectInternal(proxy0, dispatcher, proxy1);
+		}
+		return 0;
+	}
+};
+
+//あたった中で最も近いものを返す
 struct MyContactResultCallback : public btCollisionWorld::ContactResultCallback
 {
 public:
@@ -28,11 +75,9 @@ public:
 				hitObjectTmp = (Collision*)colObj0Wrap->getCollisionObject()->getUserPointer();
 			}
 			//hitオブジェクトがある && コリジョンが指定したIDである。
-			if (hitObjectTmp && id == hitObjectTmp->GetCollisonObj()->getUserIndex()) {
+			if (hitObjectTmp && (id & hitObjectTmp->GetCollisonObj()->getUserIndex()) != 0) {
 				distSq = distTmpSq;
 				hitObject = hitObjectTmp;
-				hitObject->SetHit(true);
-				queryCollisionObject->SetHit(true);
 			}
 		}
 
@@ -73,12 +118,10 @@ public:
 		//コリジョンネーム取得
 		const char* hitname = hitObjectTmp->gameObject->GetName();
 		if (hitObjectTmp &&				//hitオブジェクトがある
-			id == hitid &&				//コリジョンが指定したIDである。
+			(id & hitid) != 0 &&		//コリジョンが指定したIDである。
 			strcmp(name,hitname) == 0)	//指定した名前と同じゲームオブジェクトである。
 		{
 			hitObject = hitObjectTmp;
-			hitObject->SetHit(true);
-			queryCollisionObject->SetHit(true);
 		}
 
 		return 0.0f;
@@ -105,7 +148,7 @@ struct SweepResultGround : public btCollisionWorld::ConvexResultCallback
 	virtual	btScalar	addSingleResult(btCollisionWorld::LocalConvexResult& convexResult, bool normalInWorldSpace)
 	{
 		if (convexResult.m_hitCollisionObject == me
-			|| convexResult.m_hitCollisionObject->getUserIndex() == 5
+			|| (convexResult.m_hitCollisionObject->getUserIndex() & (short)fbCollisionAttributeE::CHARACTER) != 0
 			) {
 			//自分に衝突した。or キャラクタ属性のコリジョンと衝突した。
 			return 0.0f;
@@ -116,7 +159,7 @@ struct SweepResultGround : public btCollisionWorld::ConvexResultCallback
 		float angle = hitNormalTmp.Dot(Vector3::up);
 		angle = fabsf(acosf(angle));
 		if (angle < D3DX_PI * 0.2f		//地面の傾斜が54度より小さいので地面とみなす。
-			|| convexResult.m_hitCollisionObject->getUserIndex() == 999 //もしくはコリジョン属性が地面と指定されている。
+			|| (convexResult.m_hitCollisionObject->getUserIndex() & (short)fbCollisionAttributeE::GROUND) != 0 //もしくはコリジョン属性が地面と指定されている。
 			) {
 			//衝突している。
 			isHit = true;

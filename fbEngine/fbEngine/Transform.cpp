@@ -277,26 +277,20 @@ void Transform::RemoveChild(Transform * t)
 	}
 }
 
+void Transform::SetParent(Transform * _Parent)
+{
+	//親に登録
+	this->_Parent = _Parent;
+	//親の子に自分を登録
+	_Parent->_Children.push_back(this);
+	UpdateTransform();
+
+	//親の設定を取得
+	gameObject->SetDiscard(_Parent->gameObject->GetDiscard());
+}
+
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //セッター・ゲッター
-
-void Transform::SetPosition(const Vector3 & v)
-{
-	_Position = v;
-	//最終的なポジションからローカルを逆算
-	if (_Parent)
-	{
-		Vector3 ppos = _Parent->GetPosition();
-		_LocalPosition = _Position - ppos;
-	}
-	else
-	{
-		//そのままローカルに
-		_LocalPosition = _Position;
-	}
-	//ワールド行列更新
-	UpdateWolrdMatrix();
-}
 
 void Transform::SetLocalPosition(const Vector3& v)
 {
@@ -322,6 +316,25 @@ void Transform::SetLocalPosition(const Vector3& v)
 	{
 		//ローカルそのまま
 		_Position = _LocalPosition;
+	}
+	//ワールド行列更新
+	UpdateWolrdMatrix();
+}
+
+void Transform::SetPosition(const Vector3 & v)
+{
+	_Position = v;
+	//最終的なポジションからローカルを逆算
+	if (_Parent)
+	{
+		//未完成
+		Vector3 ppos = _Parent->GetPosition();
+		_LocalPosition = _Position - ppos;
+	}
+	else
+	{
+		//そのままローカルに
+		_LocalPosition = _Position;
 	}
 	//ワールド行列更新
 	UpdateWolrdMatrix();
@@ -440,7 +453,7 @@ void Transform::SetRotation(const Quaternion& q)
 		Quaternion protInv = _Parent->GetRotation();
 		//逆クォータニオンにする。
 		protInv.Inverse();
-		//ローカルと掛ける
+		//ローカルを逆算
 		_LocalRotation = _Rotation / protInv;
 	}
 	else

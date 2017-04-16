@@ -191,7 +191,7 @@ void Animation::Update()
 				//アニメーション終了
 				_IsPlaying = false;
 				//最後の方で止める。
-				//SetLocalAnimationTime(_CurrentTrackNo, endtime - 0.001f);
+				SetLocalAnimationTime(_CurrentTrackNo, endtime - 0.001f);
 			}
 		}
 	}

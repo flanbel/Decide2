@@ -13,14 +13,17 @@ RigidBody::~RigidBody()
 {
 	Release();
 }
+void RigidBody::Awake()
+{
+	Collision::Awake();
+}
 void RigidBody::Release()
 {
 	if (_CollisionObject)
 	{
+		//登録されているので削除
 		PhysicsWorld::Instance()->RemoveRigidBody(this);
-		delete myMotionState;
-		_CollisionObject = NULL;
-		myMotionState = NULL;
+		SAFE_DELETE(myMotionState);
 	}
 }
 
@@ -36,6 +39,7 @@ void RigidBody::LateUpdate()
 	
 	btVector3 pos = trans.getOrigin();
 	btQuaternion rot = trans.getRotation();
+	//ポジションはずらされているので戻す。
 	transform->SetLocalPosition(Vector3(pos.x() - _Offset.x, pos.y() - _Offset.y, pos.z() - _Offset.z));
 	//クォータニオンを各軸の回転量に変換
 	//Transform->localAngle = Vector3(D3DXToDegree(asin(rot.x())*2.0f), D3DXToDegree(asin(rot.y())*2.0f), D3DXToDegree(asin(rot.z())*2.0f));
@@ -56,7 +60,7 @@ void RigidBody::Create(float mass, Collider* coll, int id, Vector3 inertia,Vecto
 	btRigidBody::btRigidBodyConstructionInfo btRbInfo(mass, myMotionState, coll->GetBody(), btVector3(inertia.x, inertia.y, inertia.z));
 	Collision::Create(new btRigidBody(btRbInfo), coll, id, off);
 	//自身を登録
-	PhysicsWorld::Instance()->AddRigidBody(this);
+	PhysicsWorld::Instance()->AddRigidBody(this, _FilterGroup, _FilterMask);
 }
 
 void RigidBody::SetGravity(Vector3 set)

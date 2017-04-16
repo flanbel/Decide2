@@ -8,13 +8,13 @@ namespace fbSprite
 	//エフェクトのフラグ
 	enum class SpriteEffectE : unsigned int
 	{
-		NONE = 0,		//なし				00000000
-		FADE = 2,		//フェードフラグ	00000010
-		FADEOUT = 2,	//フェードアウト	00000010
-		FADEIN = 3,		//フェードイン		00000011
-		SHADOW = 4,		//影描画			00000100
-		OUTLINE = 8,	//ふちどり			00001000
-		//未実装　MASK = 16,		//マスク処理		
+		NONE = BIT(0),		//なし				00000000
+		FADE = BIT(1),		//フェードフラグ	00000010
+		FADEOUT = BIT(1),	//フェードアウト	00000010
+		FADEIN = BIT(1) +1,	//フェードイン		00000011
+		SHADOW = BIT(2),	//影描画			00000100
+		OUTLINE = BIT(3),	//ふちどり			00001000
+		//未実装　MASK = 16,//マスク処理		
 	};
 }
 

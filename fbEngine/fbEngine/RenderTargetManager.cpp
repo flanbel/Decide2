@@ -1,6 +1,6 @@
 #include "RenderTargetManager.h"
 
-RenderTargetManager*  RenderTargetManager::_Instance;
+RenderTargetManager*  RenderTargetManager::_Instance = nullptr;
 
 RenderTarget::RenderTarget()
 {

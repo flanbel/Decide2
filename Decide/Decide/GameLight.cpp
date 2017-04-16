@@ -4,7 +4,7 @@
 void GameLight::Awake()
 {
 	Light* light = AddComponent<Light>();
-	GameObjectManager::mainLight = light;
+	INSTANCE(GameObjectManager)->mainLight = light;
 	int LIGHT_NUM = 4;
 	DirectionalLight* Dl[4];
 	FOR(i, LIGHT_NUM)

@@ -38,23 +38,23 @@ namespace
 
 void CharaSelectScene::Start()
 {
-	GameObjectManager::AddNew<SelectCamera>("camera", 0);
-	GameObjectManager::AddNew<GameLight>("GameLight", 0);
-	GameObjectManager::AddNew<GameShadowCamera>("GameShadowCamera", 0);
+	INSTANCE(GameObjectManager)->AddNew<SelectCamera>("camera", 0);
+	INSTANCE(GameObjectManager)->AddNew<GameLight>("GameLight", 0);
+	INSTANCE(GameObjectManager)->AddNew<GameShadowCamera>("GameShadowCamera", 0);
 	//ゲームルール
-	_GameRule = GameObjectManager::AddNew<GameRule>("GameRule", 0);
-	_GameRule->Discard(false);
+	_GameRule = INSTANCE(GameObjectManager)->AddNew<GameRule>("GameRule", 0);
+	_GameRule->SetDiscard(false);
 	//ゲームルール表示用テキスト
-	_DisplayGameRule = GameObjectManager::AddNew<TextObject>("DisplayGameRule", 1);
+	_DisplayGameRule = INSTANCE(GameObjectManager)->AddNew<TextObject>("DisplayGameRule", 1);
 	_DisplayGameRule->Initialize(L"GameRule  TimeLimit 2", 40.0f, Color::white,
 		fbSprite::SpriteEffectE::SHADOW, "HGS明朝E",fbText::TextFormatE::LEFT);
 	_DisplayGameRule->transform->SetLocalPosition(Vector3(50, 100, 0));
 	//背景画像
-	ImageObject* backGround = GameObjectManager::AddNew<ImageObject>("Back",0);
+	ImageObject* backGround = INSTANCE(GameObjectManager)->AddNew<ImageObject>("Back",0);
 	backGround->SetTexture(LOADTEXTURE("SelectBack.png"));
 	backGround->SetPivot(0.0f, 0.0f);
 	//レディファイト
-	_ReadyFight = GameObjectManager::AddNew<ImageObject>("ReadyToFight", 4);
+	_ReadyFight = INSTANCE(GameObjectManager)->AddNew<ImageObject>("ReadyToFight", 4);
 	_ReadyFight->SetTexture(LOADTEXTURE("ReadyToStart.png"));
 	_ReadyFight->transform->SetLocalPosition(Vector3(WindowW/2, WindowH/2, 0));
 	_ReadyFight->SetActive(false);
@@ -74,7 +74,7 @@ void CharaSelectScene::Start()
 	//選択のやつを生成
 	FOR(idx,PLAYER_NUM)
 	{
-		_SelectArray[idx] = GameObjectManager::AddNew<CharaSelect>("Select", 0);
+		_SelectArray[idx] = INSTANCE(GameObjectManager)->AddNew<CharaSelect>("Select", 0);
 		_SelectArray[idx]->SetIdx(idx);
 		_SelectArray[idx]->SetColor(playercolor[idx]);
 		float Space = 300.0f;
@@ -102,6 +102,7 @@ void CharaSelectScene::Update()
 				
 				break;
 			}
+			chara++;
 		}
 		//何もセットしない
 		if(chara == CHARACTER_NUM && _SelectArray[idx]->GetDecision() == false)
@@ -153,12 +154,12 @@ void CharaSelectScene::Update()
 				char num[2] = { (48 + idx + 1) + '\0' };
 				strcat(pname, num);
 				//プレイヤー生成
-				Player* p = GameObjectManager::AddNew<Player>(pname, 1);
+				Player* p = INSTANCE(GameObjectManager)->AddNew<Player>(pname, 1);
 				p->SetIdx(idx);
 				p->SetInfo(_SelectArray[idx]->GetInfo());
 				p->SetColor(_SelectArray[idx]->GetColor());
 				//シーン切り替えしても破棄しないように設定
-				p->Discard(false);
+				p->SetDiscard(false,true);
 				Array.push_back(p);
 				//ゲームルールの方にプレイヤーの情報をセット
 				_GameRule->SetPlayer(p, idx);
@@ -180,7 +181,7 @@ void CharaSelectScene::_CreateCharaFrame(const wchar_t ** nameArray,const char *
 	//キャラクタ数分フレーム作成
 	FOR (chara,CHARACTER_NUM)
 	{
-		_RingArray[chara] = GameObjectManager::AddNew<CharaRingFrame>("Frame", 0);
+		_RingArray[chara] = INSTANCE(GameObjectManager)->AddNew<CharaRingFrame>("Frame", 0);
 		//今は一体しかいないので場所は適当
 		_RingArray[chara]->transform->SetLocalPosition(Vector3(WindowW / 2, 100, 0));
 		//プレイヤ数分情報作成

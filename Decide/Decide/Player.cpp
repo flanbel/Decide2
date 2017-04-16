@@ -3,7 +3,6 @@
 #include "fbEngine/SkinmodelData.h"
 #include "fbEngine/Animation.h"
 #include "fbEngine/RigidBody.h"
-#include "fbEngine/BoxCollider.h"
 
 #include "PlayerParameter.h"
 #include "fbEngine/ParticleEmitter.h"
@@ -13,7 +12,7 @@
 #include "Item.h"
 #include "GameRule.h"
 #include "fbEngine\Camera.h"
-#include "DamageCollision.h"
+
 #include "AttackCollision.h"
 
 namespace
@@ -89,37 +88,37 @@ void Player::Awake()
 	//スリープさせない(必要かどうかわからない。)
 	_RB->setSleepingThresholds(0, 0);
 	//ゲームルール取得
-	_GameRule = (GameRule*)GameObjectManager::FindObject("GameRule");
+	_GameRule = (GameRule*)INSTANCE(GameObjectManager)->FindObject("GameRule");
 	//ストック数取得
 	_Stock = _GameRule->GetStock();
 
 	//パラメータ生成
-	_Pparameter = GameObjectManager::AddNew<PlayerParameter>("_Pparameter", 0);
+	_Pparameter = INSTANCE(GameObjectManager)->AddNew<PlayerParameter>("_Pparameter", 0);
 	_Pparameter->SetStock(_Stock);
 	_Pparameter->SetDamage(_Damage);
-	_Pparameter->Discard(false);
+	_Pparameter->SetDiscard(false);
 	//プレート生成
-	_IdxPlate = GameObjectManager::AddNew<PlatePrimitive>("plate", 4);
-	_IdxPlate->Discard(false);
+	_IdxPlate = INSTANCE(GameObjectManager)->AddNew<PlatePrimitive>("plate", 4);
+	_IdxPlate->SetDiscard(false);
 	//王冠生成
-	_CrownPlate = GameObjectManager::AddNew<PlatePrimitive>("Crown", 4);
+	_CrownPlate = INSTANCE(GameObjectManager)->AddNew<PlatePrimitive>("Crown", 4);
 	_CrownPlate->transform->SetParent(_IdxPlate->transform);
 	_CrownPlate->transform->SetLocalPosition(Vector3(10, 60, 0));
 	_CrownPlate->SetTexture(LOADTEXTURE("Crown.png"));
-	_CrownPlate->Discard(false);
+	_CrownPlate->SetDiscard(false);
 
 	_PlayerColor = Color::white;
 	//いろいろなパラメータ初期化
 	_Reset();
 
-	_Smoke = GameObjectManager::AddNew<ParticleEmitter>("SmokeEmit", 2);
-	_Smoke->Discard(false);
+	_Smoke = INSTANCE(GameObjectManager)->AddNew<ParticleEmitter>("SmokeEmit", 4);
+	_Smoke->SetDiscard(false);
 	_Smoke->transform->SetParent(transform);
 	_Smoke->Init(parm[0]);
 	_Smoke->SetEmitFlg(false);
 
-	_Fire = GameObjectManager::AddNew<ParticleEmitter>("FireEmit", 2);
-	_Fire->Discard(false);
+	_Fire = INSTANCE(GameObjectManager)->AddNew<ParticleEmitter>("FireEmit", 4);
+	_Fire->SetDiscard(false);
 	_Fire->transform->SetParent(transform);
 	_Fire->Init(parm[1]);
 	_Fire->SetEmitFlg(false);
@@ -128,14 +127,13 @@ void Player::Awake()
 void Player::Start()
 {
 	//パンチの効果音を鳴らすオブジェクト
-	//オブジェクトっておかしくね？
-	_PunchSound = GameObjectManager::AddNew<SoundSource>("PunchSound", 0);
+	_PunchSound = INSTANCE(GameObjectManager)->AddNew<SoundSource>("PunchSound", 0);
 	_PunchSound->Init("Asset/Sound/punch.wav");
 
 	float space = 300.0f;
 	_Pparameter->transform->SetLocalPosition(Vector3(180.0f + (_Playeridx * space), 600.0f, 0.0f));
-	_Model->SetCamera(GameObjectManager::mainCamera);
-	_Model->SetLight(GameObjectManager::mainLight);
+	_Model->SetCamera(INSTANCE(GameObjectManager)->mainCamera);
+	_Model->SetLight(INSTANCE(GameObjectManager)->mainLight);
 
 	char path[10];
 	Support::ToString(_Playeridx + 1, path);
@@ -148,7 +146,7 @@ void Player::Start()
 
 	_Pparameter->SetColor(_PlayerColor);
 	_Model->SetTextureBlend(_PlayerColor * 8.0f);
-
+	
 	//初期ポジ設定
 	int idx = _Playeridx + 1;
 	transform->SetLocalPosition(Vector3(-200 + (idx % 2 * 400), 200,-200 + (idx / 3 * 400)));
@@ -220,16 +218,16 @@ void Player::Update()
 
 	//頭の上あたり
 	_IdxPlate->transform->SetLocalPosition(transform->LocalPos(Vector3(-50, 150, 0)));
-	_IdxPlate->transform->LockAt(GameObjectManager::mainCamera->gameObject);
+	_IdxPlate->transform->LockAt(INSTANCE(GameObjectManager)->mainCamera->gameObject);
 	//王冠
-	//_CrownPlate->transform->LockAt(GameObjectManager::mainCamera->gameObject);
+	//_CrownPlate->transform->LockAt(INSTANCE(GameObjectManager)->mainCamera->gameObject);
 
 	//test
 	{
 		//lockatのテスト
 		if (_Playeridx != 0)
 		{
-			GameObject* p1 = GameObjectManager::FindObject("Player1");
+			GameObject* p1 = INSTANCE(GameObjectManager)->FindObject("Player1");
 			if (p1)
 				transform->LockAt(p1);
 		}
@@ -416,6 +414,11 @@ void Player::Attack()
 		//現在のフレーム取得
 		const int nowFrame = _Anim->NowFrame();
 
+		//攻撃のあたり判定
+		AttackCollision* obj;
+		//攻撃のあたり判定の情報
+		DamageCollision::DamageCollisonInfo Dinfo;
+
 		//移動量が吹き飛び値の補正になる
 		Vector3 V = _Dir;
 		V.Scale(0.4f);
@@ -425,23 +428,26 @@ void Player::Attack()
 			nowFrame == 8)
 		{
 			_PunchSound->Play(false);
-			//あたり判定を出す
-			AttackCollision* obj = GameObjectManager::AddNew<AttackCollision>("panch", 1);
-			Transform* t = obj->GetComponent<Transform>();
-			//前に出す
-			t->SetLocalPosition(transform->Local(Vector3(0, 60, 30)));
-			t->SetLocalAngle(transform->GetLocalAngle());
 
-			DamageCollision::DamageCollisonInfo info;
+			//あたり判定を出す
+			obj = INSTANCE(GameObjectManager)->AddNew<AttackCollision>("panch", 1);
+			//球状のあたり判定
+			SphereCollider* sphere = obj->AddComponent<SphereCollider>();
+			sphere->Create(30);
+			
+			//移動
+			obj->transform->SetParent(this->transform);
+			obj->transform->SetLocalPosition(Vector3(0, 60, 40));
+		
 			//攻撃力補正
-			info.Damage = Random::Range(2, 3) * _Cparameter->Power;
-			info.Blown = transform->Direction(Vector3(0.0f, 60.0f, 60.0f) + V);
+			Dinfo.Damage = Random::Range(2, 3) * _Cparameter->Power;
+			Dinfo.Blown = transform->Direction(Vector3(0.0f, 60.0f, 60.0f) + V);
 			//吹き飛ばし補正
-			info.Blown.Scale(_Cparameter->BlowCorrection);
-			info.Rigor = 0.2f;
-			info.StopTime = 5;
+			Dinfo.Blown.Scale(_Cparameter->BlowCorrection);
+			Dinfo.Rigor = 0.2f;
+			Dinfo.StopTime = 5;
 			float life = 0.2f;
-			obj->Create(_Playeridx, life, Vector3(50, 50, 50), info);
+			obj->Create(sphere,Collision_ID::DAMAGE + (_Playeridx+1), life, Dinfo);
 		}
 
 		//キックの攻撃判定
@@ -450,25 +456,24 @@ void Player::Attack()
 		{
 			_PunchSound->Play(false);
 			//あたり判定を出す
-			AttackCollision* obj = GameObjectManager::AddNew<AttackCollision>("kick", 1);
-			Transform* t = obj->GetComponent<Transform>();
-			//あたり判定の大きさ
-			Vector3 size = Vector3(60, 60, 80);
+			obj = INSTANCE(GameObjectManager)->AddNew<AttackCollision>("kick", 1);
+			//球状のあたり判定
+			SphereCollider* sphere = obj->AddComponent<SphereCollider>();
+			sphere->Create(40);
 
-			//前に出す
-			t->SetLocalPosition(transform->Local(Vector3(0, 60, (size.z / 2) + 10)));
-			t->SetLocalAngle(transform->GetLocalAngle());
+			//移動
+			obj->transform->SetParent(this->transform);
+			obj->transform->SetLocalPosition(Vector3(0, 60, 50));
 
-			DamageCollision::DamageCollisonInfo info;
 			//攻撃力補正
-			info.Damage = (Random::Range(7, 10) * (_CharagePower + 0.2f)) * _Cparameter->Power;
-			info.Blown = transform->Direction(Vector3(0.0f, 120.0f, 180.0f) + V);
+			Dinfo.Damage = (Random::Range(7, 10) * (_CharagePower + 0.2f)) * _Cparameter->Power;
+			Dinfo.Blown = transform->Direction(Vector3(0.0f, 120.0f, 180.0f) + V);
 			//吹き飛ばし補正
-			info.Blown.Scale(_Cparameter->BlowCorrection * (_CharagePower + 0.5f));
-			info.Rigor = 0.6f;
-			info.StopTime = 10;
+			Dinfo.Blown.Scale(_Cparameter->BlowCorrection * (_CharagePower + 0.5f));
+			Dinfo.Rigor = 0.6f;
+			Dinfo.StopTime = 10;
 			float life = 0.2f;
-			obj->Create(_Playeridx, life, size, info);
+			obj->Create(sphere, Collision_ID::DAMAGE + (_Playeridx + 1), life, Dinfo);
 		}
 
 		//剣の攻撃判定
@@ -476,25 +481,23 @@ void Player::Attack()
 			nowFrame <= 30 && (nowFrame % 5) == 0)
 		{
 			//あたり判定を出す
-			AttackCollision* obj = GameObjectManager::AddNew<AttackCollision>("sword", 1);
-			Transform* t = obj->GetComponent<Transform>();
-			//前に出す
-			/*t->SetParent(transform);
-			t->SetLocalPosition(Vector3(0, 60, 30);*/
-			t->SetLocalPosition(transform->Local(Vector3(0, 60, 30)));
-			t->SetLocalAngle(transform->GetLocalAngle());
-			Vector3 size = Vector3(70, 70, 40);
+			obj = INSTANCE(GameObjectManager)->AddNew<AttackCollision>("sword", 1);
+			//球状のあたり判定
+			SphereCollider* sphere = obj->AddComponent<SphereCollider>();
+			sphere->Create(35);
+			//移動
+			obj->transform->SetParent(this->transform);
+			obj->transform->SetLocalPosition(Vector3(0, 60, 30));
 
-			DamageCollision::DamageCollisonInfo info;
 			//攻撃力補正
-			info.Damage = Random::Range(1, 2) * _Cparameter->Power;
-			info.Blown = transform->Direction(Vector3(60.0f, 90.0f, 0.0f) + V);
+			Dinfo.Damage = Random::Range(1, 2) * _Cparameter->Power;
+			Dinfo.Blown = transform->Direction(Vector3(60.0f, 90.0f, 0.0f) + V);
 			//吹き飛ばし補正
-			info.Blown.Scale(_Cparameter->BlowCorrection);
-			info.Rigor = 0.1f;
-			info.StopTime = 1;
-			float life = 0.01f;
-			obj->Create(_Playeridx, life, size, info);
+			Dinfo.Blown.Scale(_Cparameter->BlowCorrection);
+			Dinfo.Rigor = 0.1f;
+			Dinfo.StopTime = 1;
+			float life = 0.05f;
+			obj->Create(sphere, Collision_ID::DAMAGE + (_Playeridx + 1), life, Dinfo);
 		}
 	}
 }
@@ -588,7 +591,7 @@ void Player::Move()
 			}
 
 			//カメラからみた向きに変換
-			Camera* c = GameObjectManager::mainCamera;
+			Camera* c = INSTANCE(GameObjectManager)->mainCamera;
 			_Dir = c->transform->Direction(_Dir) * speed * Time::DeltaTime();
 			//Yの移動量を消す
 			_Move = Vector3(_Dir.x, 0.0f, _Dir.z);
@@ -724,15 +727,15 @@ void Player::ItemAction()
 		if (KeyBoardInput->isPush(DIK_X) || XboxInput(_Playeridx)->IsPushButton(XINPUT_GAMEPAD_RIGHT_SHOULDER))
 		{
 			//アイテムを離す
-			_HaveItem->ToSeparate(_Move*3.0f);
+			_HaveItem->ToSeparate(_Move*3.0f, Collision_ID::DAMAGE + (_Playeridx + 1));
 			_HaveItem = nullptr;
 		}
 	}
 	//アイテムを持ってない
 	else
 	{
-		//アイテム(ID:6)と当たっているか？
-		const Collision *coll = (const Collision*)PhysicsWorld::Instance()->FindHitCollision(_Rigid, 6);
+		//アイテムと当たっているか？
+		const Collision *coll = (const Collision*)INSTANCE(PhysicsWorld)->FindHitCollision(_Rigid, Collision_ID::ITEM);
 		//当たっている
 		if (coll)
 		{
@@ -830,7 +833,7 @@ void Player::_GravityCheck(const float & movey)
 		end = start + Vector3(0, MoveY, 0);
 
 		//ステージ(地面)とのあたり判定
-		const SweepResultGround hit = PhysicsWorld::Instance()->FindOverlappedStage(_RB, start, end);
+		const SweepResultGround hit = INSTANCE(PhysicsWorld)->FindOverlappedStage(_RB, start, end);
 		//地面と当たった
 		if (hit.isHit)
 		{

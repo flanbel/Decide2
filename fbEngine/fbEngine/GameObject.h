@@ -59,19 +59,24 @@ public:
 	{
 		return _Active;
 	}
-
-	void Discard(const bool& b)
+	//破棄フラグをセットする。
+	//第二引数をtrueにすると子にまでセットする。
+	void SetDiscard(const bool& b,const bool& child = false)
 	{
 		_Discard = b;
+		if(child)
+		{
+			for each (Transform* t in transform->GetChildren())
+			{
+				//全ての子に親と同じ値を設定
+				t->gameObject->SetDiscard(_Discard);
+			}
+		}
+
 		
-		//for each (Transform* t in transform->GetChildren())
-		//{
-		//	//子に全てに親と同じ値を設定
-		//	t->gameObject->Discard(_Discard);
-		//}
 	}
 
-	const bool& Discard()
+	const bool& GetDiscard()
 	{
 		return _Discard;
 	}

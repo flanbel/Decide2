@@ -10,11 +10,11 @@ class ShadowCamera;
 //エフェクトをかけるか？
 enum ModelEffectE
 {
-	NONE = 0,				//なし
-	CAST_SHADOW = 1,		//影を作る
-	RECEIVE_SHADOW = 2,		//影を落とす
-	SPECULAR = 4,			//鏡面反射
-	TOON = 8,				//トゥーン
+	NONE = BIT(0),				//なし
+	CAST_SHADOW = BIT(1),		//影を作る
+	RECEIVE_SHADOW = BIT(2),		//影を落とす
+	SPECULAR = BIT(3),			//鏡面反射
+	TOON = BIT(4),				//トゥーン
 };
 
 //モデルの描画を行うクラス

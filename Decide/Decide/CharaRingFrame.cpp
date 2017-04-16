@@ -5,8 +5,8 @@
 
 void CharaRingFrame::Awake()
 {
-	ImageObject* icon = GameObjectManager::AddNew<ImageObject>("icon", 0);
-	ring = GameObjectManager::AddNew<ImageObject>("frame", 0);
+	ImageObject* icon = INSTANCE(GameObjectManager)->AddNew<ImageObject>("icon", 0);
+	ring = INSTANCE(GameObjectManager)->AddNew<ImageObject>("frame", 0);
 
 	ring->transform->SetParent(transform);
 	TEXTURE* ringtex = LOADTEXTURE("ring.png");

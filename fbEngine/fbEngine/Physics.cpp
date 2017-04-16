@@ -2,7 +2,7 @@
 #include "RigidBody.h"
 #include "Collision.h"
 
-PhysicsWorld* PhysicsWorld::_Instance;
+PhysicsWorld* PhysicsWorld::_Instance = nullptr;
 
 PhysicsWorld::PhysicsWorld()
 {
@@ -23,6 +23,7 @@ PhysicsWorld::~PhysicsWorld()
 	collisionDispatcher.release();
 	collisionConfig.release();
 }
+
 void PhysicsWorld::Start()
 {
 	//物理エンジンを初期化。
@@ -44,32 +45,32 @@ void PhysicsWorld::Start()
 		constraintSolver.get(),
 		collisionConfig.get()
 		));
-	//
-	dynamicWorld->setGravity(btVector3(0, -980.8, 0));
+	//物理ワールドの重力設定
+	dynamicWorld->setGravity(btVector3(0.0f, -9.8f*100, 0.0f));
+	//ゴーストコリジョンがペアを見つけるときに使うコールバック設定。
+	//これを設定しないとゴーストオブジェクトは重なったペアを見つけることはできない。
+	dynamicWorld->getPairCache()->setInternalGhostPairCallback(new MyGhostPairCallback);
+
 }
 void PhysicsWorld::Update()
 {
 	dynamicWorld->stepSimulation((btScalar)Time::DeltaTime());
 	dynamicWorld->updateAabbs();
 }
-void PhysicsWorld::Render()
-{
 
-}
-void PhysicsWorld::AddRigidBody(RigidBody* rb)
+void PhysicsWorld::AddRigidBody(RigidBody * rb, short group, short mask)
 {
-	dynamicWorld->addRigidBody((btRigidBody*)rb->GetCollisonObj());
+	dynamicWorld->addRigidBody((btRigidBody*)rb->GetCollisonObj(),group,mask);
 }
+
 void PhysicsWorld::RemoveRigidBody(RigidBody* rb)
 {
 	dynamicWorld->removeRigidBody((btRigidBody*)rb->GetCollisonObj());
 }
 
-void PhysicsWorld::AddCollision(Collision * coll)
+void PhysicsWorld::AddCollision(Collision* coll, short group, short mask)
 {
-	//コリジョンのタイプを確認
-	int type = coll->GetCollisonObj()->getInternalType();
-	dynamicWorld->addCollisionObject(coll->GetCollisonObj());
+	dynamicWorld->addCollisionObject(coll->GetCollisonObj(),group,mask);
 }
 
 void PhysicsWorld::RemoveCollision(Collision * coll)
@@ -81,7 +82,7 @@ const Vector3 PhysicsWorld::ClosestRayTest(const Vector3& f, const Vector3& t)
 {
 	//始点と終点を設定
 	btVector3 from(f.x, f.y, f.z), to(t.x, t.y, t.z);
-	//最も近かったを返す
+	//最も近かったを返すコールバック作成
 	btCollisionWorld::ClosestRayResultCallback call(from, to);
 	call.m_hitPointWorld = btVector3(0, 0, 0);
 	//レイを飛ばす
@@ -125,13 +126,4 @@ const SweepResultGround PhysicsWorld::FindOverlappedStage(btCollisionObject * co
 	callback.startPos.Set(s);
 	dynamicWorld->convexSweepTest((const btConvexShape*)colliObject->getCollisionShape(), start, end, callback);
 	return callback;
-}
-
-PhysicsWorld* PhysicsWorld::Instance()
-{
-	if(_Instance == nullptr)
-	{
-		_Instance = new PhysicsWorld();
-	}
-	return _Instance;
 }
