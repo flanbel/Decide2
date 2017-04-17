@@ -69,6 +69,7 @@ VS_OUTPUT vs_main(VS_INPUT In)
 */
 float4 ps_main(VS_OUTPUT In) : COLOR0
 {
+	//テクスチャからカラー取得
 	float4 color = tex2D(g_textureSampler, In.uv);
 	
 	//消す色と同じ色ならピクセルキル

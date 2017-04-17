@@ -1,15 +1,15 @@
 #include "TextureManager.h"
 
-map<UINT64, TEXTURE*> TextureManager::textureMap;
+map<UINT64, TEXTURE*> TextureManager::_TextureMap;
 
 //関数の前方定義
 HRESULT SetTexture(TEXTURE& tex, char* path);
 
 TextureManager::~TextureManager()
 {
-	map<UINT64, TEXTURE*>::iterator it = textureMap.begin();
+	map<UINT64, TEXTURE*>::iterator it = _TextureMap.begin();
 
-	while (it != textureMap.end())
+	while (it != _TextureMap.end())
 	{
 		//テクスチャ解放
 		it->second->Release();
@@ -23,7 +23,7 @@ TEXTURE* TextureManager::LoadTexture(char* filename)
 
 	UINT64 hush = Support::MakeHash(filename);
 	//一致するものなし
-	if (textureMap[hush] == nullptr)
+	if (_TextureMap[hush] == nullptr)
 	{
 		tex = new TEXTURE();
 		char path[128] = "Asset/Texture/";
@@ -34,7 +34,7 @@ TEXTURE* TextureManager::LoadTexture(char* filename)
 		if (SUCCEEDED(SetTexture(*tex,path)))
 		{
 			//mapに登録
-			textureMap[hush] = tex;
+			_TextureMap[hush] = tex;
 		}
 		//読み込み失敗(画像がないとか)
 		else
@@ -47,7 +47,7 @@ TEXTURE* TextureManager::LoadTexture(char* filename)
 	}
 	else
 	{
-		tex = textureMap[hush];
+		tex = _TextureMap[hush];
 	}
 
 	return tex;
@@ -55,10 +55,13 @@ TEXTURE* TextureManager::LoadTexture(char* filename)
 
 HRESULT SetTexture(TEXTURE& tex,char* path)
 {
+	//テクスチャの情報
 	D3DXIMAGE_INFO info;
+	D3DXGetImageInfoFromFileA(path,&info);
+	D3DCAPS9 cap;
+	(*graphicsDevice()).GetDeviceCaps(&cap);
+	PALETTEENTRY palette[256];
 	
-	//戻り値受け取り
-	HRESULT hr;
 	////情報取得
 	//D3DXGetImageInfoFromFile(
 	//	path,	//テクスチャパス
@@ -72,7 +75,7 @@ HRESULT SetTexture(TEXTURE& tex,char* path)
 	//);
 
 	//テクスチャ読込　各情報をセット(画像のサイズとか)
-	hr = D3DXCreateTextureFromFileEx(
+	HRESULT hr = D3DXCreateTextureFromFileEx(
 		graphicsDevice(),			//グラフィックデバイスへのポインタ
 		path,						//ファイルパス
 		D3DX_DEFAULT,				//幅、D3DX_DEFAULT ならファイルから取得
@@ -81,14 +84,14 @@ HRESULT SetTexture(TEXTURE& tex,char* path)
 		0,							//使い方0以外だとレンダーターゲットとして使えたりする。
 		D3DFMT_UNKNOWN,				//フォーマット,D3DFMT_UNKNOWN だとファイルから取得する
 		D3DPOOL_DEFAULT,			//テクスチャの配置先のメモリ指定 よくわからんからデフォで
-		D3DX_DEFAULT,				//フィルタリングの指定
+		D3DX_FILTER_LINEAR,			//フィルタリングの指定 線形補完を指定
 		D3DX_DEFAULT,				//ミップフィルター？
 		0x00000000,					//透明にする色(透明な黒を指定)
 		&info,						//ファイルのデータを格納するポインタ
-		NULL,						//パレット？？？
+		palette,					//パレット？？？
 		&tex.pTexture);				//作成されたテクスチャへのポインタ
 
-									// テクスチャサイズの取得
+	// テクスチャサイズの取得
 	tex.Size = Vector2((float)info.Width, (float)info.Height);
 
 	return hr;

@@ -1,4 +1,5 @@
 #pragma once
+#include "_Object\Noncopyable.h"
 
 //レンダーターゲットの情報
 struct RenderTarget:Noncopyable

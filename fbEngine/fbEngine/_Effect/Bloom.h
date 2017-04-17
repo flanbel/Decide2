@@ -1,5 +1,5 @@
 #pragma once
-#include "_Support\RenderTargetManager.h"
+
 class Vertex;
 class Effect;
 

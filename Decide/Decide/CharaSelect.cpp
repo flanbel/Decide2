@@ -3,7 +3,6 @@
 #include "fbEngine\_Object\_GameObject\ImageObject.h"
 #include "fbEngine\_Object\_GameObject\TextObject.h"
 #include "fbEngine\_Object\_GameObject\SoundSource.h"
-#include "fbEngine\_Support\RenderTargetManager.h"
 
 #include "ShowModel.h"
 void CharaSelect::Awake()

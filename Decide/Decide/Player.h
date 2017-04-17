@@ -10,6 +10,7 @@ class ParticleEmitter;
 class Item;
 class GameRule;
 class DamageCollision;
+
 //プレイヤークラス
 class Player :public GameObject
 {
@@ -33,20 +34,13 @@ public:
 	void Awake()override;
 	void Start()override;
 	void Update()override;
-	
-	void ChangeState(PStateE s);		//ステート切り替え
-	void PlayAnimation(int idx, float time, int loop = -1);
-	void AnimationControl();		//ステートによって再生するアニメーションを指定
-	void Attack();
-	void Move();
-	void Jump();
+		
 	//外部からダメージを加える
 	void Damage(const int& idx,const float& damage,const Vector3& blow,const float& rigor);
-	void Blown();
-	void ItemAction();
-	//落ちた時の処理
-	void Death();
+	//ステート切り替え
+	void ChangeState(PStateE s);
 
+	
 	void SetIdx(int idx)
 	{
 		_Playeridx = idx;
@@ -69,24 +63,51 @@ public:
 
 	const Vector3 GetDir();
 private:
-	//初期化
-	void _Reset();
+	//ステートによって再生するアニメーションを指定
+	void _AnimationControl();
+	//攻撃
+	void _Attack();
+	//アイテム関連
+	void _ItemAction();
+	//移動
+	void _Move();
+	//ジャンプ
+	void _Jump();
+	//吹き飛ばす
+	void _BlowOff();
+	//落ちた時の処理
+	void _Death();
 	//重力処理
 	void _GravityCheck(const float& movey);
+	//アニメーション再生。
+	void _PlayAnimation(int idx, float time, int loop = -1);
+	//初期化
+	void _Reset();
 private:
-	//コンポーネントとかアドレスの保持が必要なものたち
+	//モデル
 	SkinModel* _Model;
+	//アニメーション
 	Animation* _Anim;
+	//剛体
 	RigidBody* _Rigid;
+	//剛体
 	btRigidBody* _RB;
+	//プレイヤーのダメージとか残機とか
 	PlayerParameter* _Pparameter;
+	//キャラクターの能力
 	const CharacterParam* _Cparameter;
+	//アイテムをもつフレーム
 	D3DXFRAME_DERIVED* _HandFrame;
+	//持っているアイテム
 	Item* _HaveItem;
-	//リジットボディの高さ
-	float _Height;
 	//ゲームルール
 	GameRule* _GameRule;
+
+	//アニメーションの補完時間と遷移時間
+	float _InterpolateTime, _TransitionTime;
+
+	//リジットボディの高さ
+	float _Height;
 	//蓄積しているダメージ
 	int _Damage;
 	//残機
@@ -100,7 +121,7 @@ private:
 	//アクション中かどうか(攻撃とか)
 	bool _IsAction;
 	//ジャンプ中か否か
-	bool _Jump;
+	bool _isJump;
 	//ジャンプ数
 	int _JumpCount;
 	//チャージ率
@@ -115,7 +136,7 @@ private:
 	ParticleEmitter *_Smoke, *_Fire;
 
 	//最終的な移動量
-	Vector3 _Move;
+	Vector3 _Movement;
 	//重力
 	float _Gravity;
 	//進行

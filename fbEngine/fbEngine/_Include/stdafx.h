@@ -59,7 +59,6 @@ static const float FontSize = 300.0f;
 
 //Include
 #include "_Include\Definition.h"
-#include "_Include\CollisionInclude.h"
 
 //System
 #include "_System\System.h"
@@ -72,28 +71,25 @@ static const float FontSize = 300.0f;
 //Input
 #include "_Inputs\InputManager.h"
 
-//Scene
-#include "_Scene\SceneManager.h"
-
 //Support
 #include "_Support/Assert.h"
 #include "_Support/Support.h"
 #include "_Support/Time.h"
 #include "_Support/Random.h"
-#include "_Support\RenderTargetManager.h"
 
 //Resource
 #include "_Resource\TextureManager.h"
+#include "_Object\_Component\_3D\Animation.h"
 #include "_Resource\SkinModelData.h"
 #include "_Resource\SkinModelManager.h"
-#include "_Object\_Component\_Sound\SoundEngine.h"
 
 //Object
+#include "_Support\RenderTargetManager.h"
 
 //Component
 #include "_Object\_Component\Transform.h"
-#include "_Object\_Component\_3D\Animation.h"
 #include "_Object\_Component\_3D\SkinModel.h"
+#include "_Object\_Component\_Sound\SoundEngine.h"
 
 //GameOject
 #include "_Object\_GameObject\GameObjectManager.h"
@@ -101,7 +97,11 @@ static const float FontSize = 300.0f;
 //Physics
 #include "../bulletPhysics/src/btBulletDynamicsCommon.h"
 #include "../bulletPhysics/src/BulletCollision/CollisionDispatch/btGhostObject.h"
+#include "_Include\CollisionInclude.h"
 #include "_Object\_Component\_Physics\Physics.h"
+
+//Scene
+#include "_Scene\SceneManager.h"
 
 extern HWND g_MainWindow;	//ウィンドウハンドル
 extern Vector2 g_WindowSize;

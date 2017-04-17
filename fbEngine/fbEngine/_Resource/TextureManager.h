@@ -1,5 +1,6 @@
 #pragma once
 #include "_Object/Noncopyable.h"
+
 //テクスチャ構造体
 struct TEXTURE :Noncopyable
 {
@@ -33,7 +34,7 @@ public:
 	static TEXTURE* LoadTexture(char* filename);
 private:
 	//テクスチャを格納するmap
-	static map<UINT64,TEXTURE*> textureMap;
+	static map<UINT64,TEXTURE*> _TextureMap;
 };
 
 //テクスチャ読み込み

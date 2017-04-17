@@ -5,7 +5,6 @@
 #pragma once
 #include "GameObject.h"
 #include "_Value\NameKey.h"
-#include "_Object\_Component\_Sound\SoundEngine.h"
 #include "_Object\_Component\_Sound\WaveFile.h"
 /*!
  * @brief	âπåπÉNÉâÉXÅB

@@ -24,27 +24,24 @@ public:
 		//ユニークポインタ破棄
 		_AnimationSets.release();
 		_BlendRateTable.release();
+		_EndTime.release();
 	}
 	
 	void Initialize(ID3DXAnimationController* anim);
 	void Awake();
 	void Update();
-
+	//アニメーション再生(補完なし)
 	void PlayAnimation(const int& animationSetIndex);
-	/*!
-	*@brief	アニメーションの再生。アニメーションの補完が行われます。
-	*@param[in]		animationSetIndex	再生したいアニメーションのインデックス。
-	*@param[in]		_InterpolateTimer		補間時間。
-	//第三引数　ループ数
-	*/
-	void PlayAnimation(int animationSetIndex, float _InterpolateTimer,int loopnum = -1);
-	/*!
-	*@brief	アニメーションセットの取得。
-	*/
-	int GetNumAnimationSet() const
-	{
-		return _NumAnimSet;
-	}
+	//アニメーション再生(補完あり)
+	//第1引数　再生したいアニメーションのインデックス
+	//第2引数　補間時間
+	//第3引数　ループ数
+	void PlayAnimation(int animationSetIndex, float interpolateTime,int loopnum = -1);
+	//アニメーション再生(補完あり)
+	//第1引数　再生したいアニメーションのインデックス
+	//第2引数　補間時間
+	//第3引数　ループ数
+	void PlayAnimation(int animationSetIndex, float interpolateTime, float transitionTime,int loopnum = -1);
 	//現在再生中のアニメーション番号取得
 	int GetPlayAnimNo() const
 	{
@@ -61,7 +58,7 @@ public:
 		return _LocalAnimationTime;
 	}
 
-	int NowFrame()
+	double NowFrame()
 	{
 		return _CurrentFrame;
 	}
@@ -74,16 +71,23 @@ public:
 	void SetAnimeSpeed(float sp)
 	{
 		_PlaySpeed = sp;
-		//_AnimController->SetTrackSpeed(_CurrentTrackNo, sp);
 	}
 	/*!
 	*@brief	アニメーション終了時間設定
 	*@param[in]		idx	アニメーションセットの番号。
 	*@param[in]		endtime		終了時間。
 	*/
-	void SetAnimationEndTime(int idx,double endtime)
+	void SetAnimationEndTime(UINT idx,double endtime)
 	{
-		_EndTime[idx] = endtime;
+		//範囲内か？
+		if (idx < _NumAnimSet)
+			_EndTime[idx] = endtime;
+	}
+	double GetAnimationEndTime(UINT idx)
+	{
+		//範囲内か？
+		if (idx < _NumAnimSet)
+			return _EndTime[idx];
 	}
 	//アニメーションのローカルタイム設定
 	void SetLocalAnimationTime(UINT track,double t)
@@ -110,7 +114,7 @@ private:
 	std::unique_ptr<double[]> _EndTime;	//各アニメーションの終了時間を格納した配列
 	double _TimeRatio;					//正規化された時間の割合。
 	double _LocalAnimationTime;			//ローカルなアニメーションの経過時間
-	int _CurrentFrame;					//アニメーションが再生されて現在何フレーム目か。
+	double _CurrentFrame;					//アニメーションが再生されて現在何フレーム目か。
 	float _PlaySpeed;					//再生速度
 	int _LoopNum;						//アニメーションをループさせる数。
 	int _LoopCount;						//ループ数をカウントする。

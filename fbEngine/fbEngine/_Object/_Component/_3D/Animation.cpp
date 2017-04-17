@@ -8,10 +8,6 @@ void Animation::Initialize(ID3DXAnimationController* anim)
 	_BlendRateTable.reset(new float[_NumMaxTracks]);
 	_AnimationSets.reset(new ID3DXAnimationSet*[_NumAnimSet]);
 	_EndTime.reset(new double[_NumAnimSet]);
-	FOR(i,_NumAnimSet)
-	{
-		_EndTime[i] = -1.0f;
-	}
 	FOR(i, _NumMaxTracks)
 	{
 		_BlendRateTable[i] = 1.0f;
@@ -23,6 +19,8 @@ void Animation::Initialize(ID3DXAnimationController* anim)
 	{
 		//アニメーションセットを取得して配列に格納
 		_AnimController->GetAnimationSet(i, &_AnimationSets[i]);
+		//終了時間取得
+		_EndTime[i] = _AnimationSets[i]->GetPeriod();
 	}
 }
 
@@ -71,7 +69,7 @@ void Animation::PlayAnimation(const int& animationSetIndex)
 	}
 }
 
-void Animation::PlayAnimation(int animationSetIndex, float Timer, int lnum)
+void Animation::PlayAnimation(int animationSetIndex, float interpolateTime, int lnum)
 {
 	if (animationSetIndex < _NumAnimSet) {
 		if (_AnimController) {
@@ -88,7 +86,8 @@ void Animation::PlayAnimation(int animationSetIndex, float Timer, int lnum)
 			//補完時間初期化
 			_InterpolateTimer = 0.0f;
 			//補完終了時間終了
-			_InterpolateEndTime = Timer;
+			_InterpolateEndTime = interpolateTime;
+
 			//トラックNo変更
 			_CurrentTrackNo = (_CurrentTrackNo + 1) % _NumMaxTracks;
 			//トラックを有効にする。
@@ -100,6 +99,14 @@ void Animation::PlayAnimation(int animationSetIndex, float Timer, int lnum)
 	}
 	else {
 		//TK_LOG("warning!!! animationSetIndex is over range!!!!!");
+	}
+}
+
+void Animation::PlayAnimation(int animationSetIndex, float interpolateTime, float transitionTime, int loopnum)
+{
+	if(transitionTime <= _TimeRatio)
+	{
+		PlayAnimation(animationSetIndex, interpolateTime, loopnum);
 	}
 }
 
@@ -150,7 +157,7 @@ void Animation::Update()
 		}
 
 		//フレームを増加させる
-		_CurrentFrame++;
+		_CurrentFrame += 1.0f;//delta / (1.0 / 60.0);
 		//現在のトラックのアニメーションセット取得
 		LPD3DXANIMATIONSET aniset;
 		//設定されているトラックからアニメーションセット取得
@@ -167,23 +174,13 @@ void Animation::Update()
 		//割合を計算
 		_TimeRatio = min(1.0f, _LocalAnimationTime / endtime);
 
-		SetLocalAnimationTime(_CurrentTrackNo, _LocalAnimationTime);
-		FOR(i, _NumMaxTracks)
-		{
-			D3DXTRACK_DESC desc;
-			_AnimController->GetTrackDesc(i, &desc);
-			int a = 0;
-		}
-
 		//アニメーション終了時間を超えた。
-		if (endtime <= _LocalAnimationTime) {
+		if (endtime <= _LocalAnimationTime) 
+		{
 			//経過したフレーム初期化
 			_CurrentFrame = 0;
 			//ループ数増加
 			_LoopCount++;
-
-			//アニメーション時間をリセット
-			SetLocalAnimationTime(_CurrentTrackNo, _LocalAnimationTime - endtime);
 
 			if (_LoopNum != -1 &&		//無限ループではない
 				_LoopCount >= _LoopNum)	//カウントが指定した数以上になった
@@ -193,6 +190,16 @@ void Animation::Update()
 				//最後の方で止める。
 				SetLocalAnimationTime(_CurrentTrackNo, endtime - 0.001f);
 			}
+			else
+			{
+				//アニメーション時間をリセット
+				SetLocalAnimationTime(_CurrentTrackNo, _LocalAnimationTime - endtime);
+			}
+		}
+		else
+		{
+			//普通に加算
+			SetLocalAnimationTime(_CurrentTrackNo, _LocalAnimationTime);
 		}
 	}
 }
