@@ -1,5 +1,5 @@
 #pragma once
-#include "fbEngine/GameObject.h"
+#include "fbEngine/_Object\_GameObject/GameObject.h"
 //ƒQ[ƒ€ƒ‰ƒCƒg
 class GameLight :public GameObject
 {

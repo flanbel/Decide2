@@ -1,5 +1,5 @@
 #pragma once
-#include "fbEngine/GostCollision.h"
+#include "fbEngine\_Object\_Component\_Physics\GostCollision.h"
 
 class DamageCollision:public GostCollision
 {

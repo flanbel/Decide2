@@ -1,20 +1,20 @@
 #include "CharaSelectScene.h"
-#include "fbEngine/ImageObject.h"
-#include "fbEngine/TextObject.h"
+
+#include "fbEngine\_Object\_GameObject\ImageObject.h"
+#include "fbEngine\_Object\_GameObject\TextObject.h"
+
+#include "fbEngine\_Object\_Component\_2D\CircleCollision.h"
+
 #include "CharaSelect.h"
 #include "CharaRingFrame.h"
 #include "Character.h"
-#include "fbEngine/SkinModelData.h"
-#include "fbEngine/Animation.h"
-#include "SelectCamera.h"
 #include "GameLight.h"
+#include "SelectCamera.h"
 #include "GameShadowCamera.h"
 #include "Player.h"
-#include "BattleScene.h"
 #include "GameRule.h"
 
-#include "fbEngine/CircleCollision.h"
-#include "fbEngine/Sprite.h"
+#include "BattleScene.h"
 
 namespace
 {

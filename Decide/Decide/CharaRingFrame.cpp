@@ -1,7 +1,7 @@
 #include "CharaRingFrame.h"
-#include "fbEngine/ImageObject.h"
-#include "fbEngine/CircleCollision.h"
-#include "fbEngine/Sprite.h"
+
+#include "fbEngine\_Object\_GameObject\ImageObject.h"
+#include "fbEngine\_Object\_Component\_2D\CircleCollision.h"
 
 void CharaRingFrame::Awake()
 {

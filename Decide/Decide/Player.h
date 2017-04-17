@@ -1,14 +1,12 @@
 #pragma once
-#include "fbEngine/GameObject.h"
+#include "fbEngine/_Object\_GameObject/GameObject.h"
 #include "Character.h"
 
-class SkinModel;
-class Animation;
+class SoundSource;
+
 class PlayerParameter;
-class SoundSource;;
 class PlatePrimitive;
 class ParticleEmitter;
-struct D3DXFRAME_DERIVED;
 class Item;
 class GameRule;
 class DamageCollision;

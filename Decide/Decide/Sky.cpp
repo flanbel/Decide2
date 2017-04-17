@@ -1,10 +1,6 @@
 #include "Sky.h"
-#include "fbEngine/Skinmodel.h"
-#include "fbEngine/SkinmodelData.h"
-#include "fbEngine/RigidBody.h"
-#include "fbEngine/MeshCollider.h"
 
-#include "fbEngine/CollisionObject.h"
+#include "fbEngine\_Object\_Component\_3D\SkinModel.h"
 
 void Sky::Awake()
 {

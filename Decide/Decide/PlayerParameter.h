@@ -1,8 +1,8 @@
 #pragma once
-#include "fbEngine/GameObject.h"
+#include "fbEngine/_Object\_GameObject/GameObject.h"
 
-class TextObject;
-class ImageObject;
+#include "fbEngine\_Object\_GameObject\ImageObject.h"
+#include "fbEngine\_Object\_GameObject\TextObject.h"
 
 //パーセントを表示したいなぁ
 class PlayerParameter:public GameObject

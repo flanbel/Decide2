@@ -1,12 +1,10 @@
 #pragma once
-#include "fbEngine/GameObject.h"
+#include "fbEngine/_Object\_GameObject/GameObject.h"
 #include "Character.h"
 
 class ImageObject;
 class TextObject;
 class ShowModel;
-class SkinModel;
-class Animation;
 struct RenderTarget;
 class SoundSource;
 

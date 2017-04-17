@@ -1,18 +1,13 @@
 #include "Player.h"
-#include "fbEngine/Skinmodel.h"
-#include "fbEngine/SkinmodelData.h"
-#include "fbEngine/Animation.h"
-#include "fbEngine/RigidBody.h"
 
 #include "PlayerParameter.h"
-#include "fbEngine/ParticleEmitter.h"
-#include "fbEngine/PlatePrimitive.h"
-#include "fbEngine/FontManager.h"
-#include "fbEngine/SoundSource.h"
+#include "fbEngine\_Object\_GameObject\ParticleEmitter.h"
+#include "fbEngine\_Object\_GameObject\PlatePrimitive.h"
+#include "fbEngine\_Object\_GameObject\SoundSource.h"
+#include "fbEngine\_Object\_Component\_3D\Camera.h"
+
 #include "Item.h"
 #include "GameRule.h"
-#include "fbEngine\Camera.h"
-
 #include "AttackCollision.h"
 
 namespace

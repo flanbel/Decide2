@@ -1,7 +1,6 @@
 #pragma once
-#include "fbEngine/GameObject.h"
-class SkinModel;
-class Animation;
+#include "fbEngine/_Object/_GameObject/GameObject.h"
+
 //オフスクリーンレンダリング
 class ShowModel:public GameObject
 {

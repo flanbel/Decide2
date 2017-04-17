@@ -1,8 +1,4 @@
 #include "Item.h"
-#include "fbEngine/Skinmodel.h"
-#include "fbEngine/SkinmodelData.h"
-#include "fbEngine/Animation.h"
-#include "fbEngine/RigidBody.h"
 
 #include "AttackCollision.h"
 

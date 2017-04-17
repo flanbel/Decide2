@@ -2,7 +2,7 @@
 //
 
 #include "Decide.h"
-#include "fbEngine/Game.h"
+#include "fbEngine/_System/Game.h"
 #include "GameSystem.h"
 
 #define MAX_LOADSTRING 100

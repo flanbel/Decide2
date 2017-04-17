@@ -1,4 +1,5 @@
 #pragma once
+#include "fbEngine/_Object/_GameObject/GameObject.h"
 class Player;
 //ƒQ[ƒ€‚ÌI—¹”»’è‚Æ‚©‚à
 class GameRule:public GameObject

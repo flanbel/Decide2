@@ -1,5 +1,5 @@
 #pragma once
-#include "fbEngine/GameObject.h"
+#include "fbEngine/_Object\_GameObject/GameObject.h"
 #include "Character.h"
 class ImageObject;
 class CircleCollision;

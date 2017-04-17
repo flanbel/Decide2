@@ -1,5 +1,5 @@
 #include "GameLight.h"
-#include "fbEngine/Light.h"
+#include "_Object\_Component\_3D\Light.h"
 
 void GameLight::Awake()
 {

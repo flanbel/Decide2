@@ -1,8 +1,8 @@
 #include "ResultScene.h"
-#include "fbEngine/TextObject.h"
-#include "fbEngine/SoundSource.h"
-#include "fbEngine/ImageObject.h"
-#include "fbEngine/Sprite.h"
+
+#include "fbEngine/_Object/_GameObject/TextObject.h"
+#include "fbEngine/_Object/_GameObject/SoundSource.h"
+#include "fbEngine/_Object/_GameObject/ImageObject.h"
 
 void ResultScene::Start()
 {

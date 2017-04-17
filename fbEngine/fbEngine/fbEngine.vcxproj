@@ -18,6 +18,146 @@
       <Platform>x64</Platform>
     </ProjectConfiguration>
   </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="_Effect\Bloom.cpp" />
+    <ClCompile Include="_Effect\EffectManager.cpp" />
+    <ClCompile Include="_Include\stdafx.cpp" />
+    <ClCompile Include="_Inputs\InputManager.cpp" />
+    <ClCompile Include="_Inputs\KeyBoard .cpp" />
+    <ClCompile Include="_Inputs\Mouse.cpp" />
+    <ClCompile Include="_Inputs\XInput.cpp" />
+    <ClCompile Include="_Object\Object.cpp" />
+    <ClCompile Include="_Object\Vertex.cpp" />
+    <ClCompile Include="_Object\_Component\Component.cpp" />
+    <ClCompile Include="_Object\_Component\ComponentManager.cpp" />
+    <ClCompile Include="_Object\_Component\Transform.cpp" />
+    <ClCompile Include="_Object\_Component\_2D\CircleCollision.cpp" />
+    <ClCompile Include="_Object\_Component\_2D\FontManager.cpp" />
+    <ClCompile Include="_Object\_Component\_2D\Sprite.cpp" />
+    <ClCompile Include="_Object\_Component\_2D\SpriteAnimation.cpp" />
+    <ClCompile Include="_Object\_Component\_2D\SquareCollision.cpp" />
+    <ClCompile Include="_Object\_Component\_2D\Text.cpp" />
+    <ClCompile Include="_Object\_Component\_3D\Animation.cpp" />
+    <ClCompile Include="_Object\_Component\_3D\Camera.cpp" />
+    <ClCompile Include="_Object\_Component\_3D\Light.cpp" />
+    <ClCompile Include="_Object\_Component\_3D\ShadowCamera.cpp" />
+    <ClCompile Include="_Object\_Component\_3D\SkinModel.cpp" />
+    <ClCompile Include="_Object\_Component\_Physics\BoxCollider.cpp" />
+    <ClCompile Include="_Object\_Component\_Physics\CapsuleCollider.cpp" />
+    <ClCompile Include="_Object\_Component\_Physics\CharacterController.cpp" />
+    <ClCompile Include="_Object\_Component\_Physics\Collision.cpp" />
+    <ClCompile Include="_Object\_Component\_Physics\GostCollision.cpp" />
+    <ClCompile Include="_Object\_Component\_Physics\MeshCollider.cpp" />
+    <ClCompile Include="_Object\_Component\_Physics\Physics.cpp" />
+    <ClCompile Include="_Object\_Component\_Physics\RigidBody.cpp" />
+    <ClCompile Include="_Object\_Component\_Physics\SphereCollider.cpp" />
+    <ClCompile Include="_Object\_Component\_Sound\SoundEngine.cpp" />
+    <ClCompile Include="_Object\_Component\_Sound\WaveFile.cpp" />
+    <ClCompile Include="_Object\_Component\_Sound\WaveFileBank.cpp" />
+    <ClCompile Include="_Object\_GameObject\CollisionObject.cpp" />
+    <ClCompile Include="_Object\_GameObject\FPS.cpp" />
+    <ClCompile Include="_Object\_GameObject\GameObject.cpp" />
+    <ClCompile Include="_Object\_GameObject\GameObjectManager.cpp" />
+    <ClCompile Include="_Object\_GameObject\ImageObject.cpp" />
+    <ClCompile Include="_Object\_GameObject\ModelOject.cpp" />
+    <ClCompile Include="_Object\_GameObject\Movie.cpp" />
+    <ClCompile Include="_Object\_GameObject\Particle.cpp" />
+    <ClCompile Include="_Object\_GameObject\ParticleEmitter.cpp" />
+    <ClCompile Include="_Object\_GameObject\PlatePrimitive.cpp" />
+    <ClCompile Include="_Object\_GameObject\SoundSource.cpp" />
+    <ClCompile Include="_Object\_GameObject\TextObject.cpp" />
+    <ClCompile Include="_Resource\Material.cpp" />
+    <ClCompile Include="_Resource\SkinModelData.cpp" />
+    <ClCompile Include="_Resource\SkinModelManager.cpp" />
+    <ClCompile Include="_Resource\TextureManager.cpp" />
+    <ClCompile Include="_Scene\Scene.cpp" />
+    <ClCompile Include="_Scene\SceneManager.cpp" />
+    <ClCompile Include="_Support\Random.cpp" />
+    <ClCompile Include="_Support\RenderTargetManager.cpp" />
+    <ClCompile Include="_Support\Support.cpp" />
+    <ClCompile Include="_Support\Time.cpp" />
+    <ClCompile Include="_System\Game.cpp" />
+    <ClCompile Include="_System\GraphicsDevice.cpp" />
+    <ClCompile Include="_Value\Color.cpp" />
+    <ClCompile Include="_Value\Vector.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="targetver.h" />
+    <ClInclude Include="_Effect\Bloom.h" />
+    <ClInclude Include="_Effect\Effect.h" />
+    <ClInclude Include="_Effect\EffectManager.h" />
+    <ClInclude Include="_Include\CollisionInclude.h" />
+    <ClInclude Include="_Include\CollisionEnum.h" />
+    <ClInclude Include="_Include\Definition.h" />
+    <ClInclude Include="_Include\PhysicsCallback.h" />
+    <ClInclude Include="_Include\stdafx.h" />
+    <ClInclude Include="_Include\VertexDefinition.h" />
+    <ClInclude Include="_Inputs\InputManager.h" />
+    <ClInclude Include="_Inputs\KeyBoard .h" />
+    <ClInclude Include="_Inputs\Mouse.h" />
+    <ClInclude Include="_Inputs\XInput.h" />
+    <ClInclude Include="_Object\Noncopyable.h" />
+    <ClInclude Include="_Object\Object.h" />
+    <ClInclude Include="_Object\Vertex.h" />
+    <ClInclude Include="_Object\_Component\Component.h" />
+    <ClInclude Include="_Object\_Component\ComponentManager.h" />
+    <ClInclude Include="_Object\_Component\Transform.h" />
+    <ClInclude Include="_Object\_Component\_2D\CircleCollision.h" />
+    <ClInclude Include="_Object\_Component\_2D\Collisiont2D.h" />
+    <ClInclude Include="_Object\_Component\_2D\FontManager.h" />
+    <ClInclude Include="_Object\_Component\_2D\Sprite.h" />
+    <ClInclude Include="_Object\_Component\_2D\SpriteAnimation.h" />
+    <ClInclude Include="_Object\_Component\_2D\SquareCollision.h" />
+    <ClInclude Include="_Object\_Component\_2D\Text.h" />
+    <ClInclude Include="_Object\_Component\_3D\Animation.h" />
+    <ClInclude Include="_Object\_Component\_3D\Camera.h" />
+    <ClInclude Include="_Object\_Component\_3D\Light.h" />
+    <ClInclude Include="_Object\_Component\_3D\ShadowCamera.h" />
+    <ClInclude Include="_Object\_Component\_3D\SkinModel.h" />
+    <ClInclude Include="_Object\_Component\_Physics\BoxCollider.h" />
+    <ClInclude Include="_Object\_Component\_Physics\CapsuleCollider.h" />
+    <ClInclude Include="_Object\_Component\_Physics\CharacterController.h" />
+    <ClInclude Include="_Object\_Component\_Physics\Collider.h" />
+    <ClInclude Include="_Object\_Component\_Physics\Collision.h" />
+    <ClInclude Include="_Object\_Component\_Physics\GostCollision.h" />
+    <ClInclude Include="_Object\_Component\_Physics\MeshCollider.h" />
+    <ClInclude Include="_Object\_Component\_Physics\Physics.h" />
+    <ClInclude Include="_Object\_Component\_Physics\RigidBody.h" />
+    <ClInclude Include="_Object\_Component\_Physics\SphereCollider.h" />
+    <ClInclude Include="_Object\_Component\_Sound\SoundEngine.h" />
+    <ClInclude Include="_Object\_Component\_Sound\WaveFile.h" />
+    <ClInclude Include="_Object\_Component\_Sound\WaveFileBank.h" />
+    <ClInclude Include="_Object\_GameObject\CollisionObject.h" />
+    <ClInclude Include="_Object\_GameObject\FPS.h" />
+    <ClInclude Include="_Object\_GameObject\GameObject.h" />
+    <ClInclude Include="_Object\_GameObject\GameObjectManager.h" />
+    <ClInclude Include="_Object\_GameObject\ImageObject.h" />
+    <ClInclude Include="_Object\_GameObject\ModelOject.h" />
+    <ClInclude Include="_Object\_GameObject\Movie.h" />
+    <ClInclude Include="_Object\_GameObject\Particle.h" />
+    <ClInclude Include="_Object\_GameObject\ParticleEmitter.h" />
+    <ClInclude Include="_Object\_GameObject\PlatePrimitive.h" />
+    <ClInclude Include="_Object\_GameObject\SoundSource.h" />
+    <ClInclude Include="_Object\_GameObject\TextObject.h" />
+    <ClInclude Include="_Resource\Material.h" />
+    <ClInclude Include="_Resource\SkinModelData.h" />
+    <ClInclude Include="_Resource\SkinModelManager.h" />
+    <ClInclude Include="_Resource\TextureManager.h" />
+    <ClInclude Include="_Scene\Scene.h" />
+    <ClInclude Include="_Scene\SceneManager.h" />
+    <ClInclude Include="_Support\Assert.h" />
+    <ClInclude Include="_Support\PIXPerfTag.h" />
+    <ClInclude Include="_Support\Random.h" />
+    <ClInclude Include="_Support\RenderTargetManager.h" />
+    <ClInclude Include="_Support\Support.h" />
+    <ClInclude Include="_Support\Time.h" />
+    <ClInclude Include="_System\Game.h" />
+    <ClInclude Include="_System\GraphicsDevice.h" />
+    <ClInclude Include="_System\System.h" />
+    <ClInclude Include="_Value\Color.h" />
+    <ClInclude Include="_Value\NameKey.h" />
+    <ClInclude Include="_Value\Vector.h" />
+  </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{4AAF1D36-4EBD-4A5C-923B-8A29C5EA6FF3}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>
@@ -71,11 +211,11 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-    <IncludePath>C:\Program Files %28x86%29\Microsoft DirectX SDK %28June 2010%29\Include;$(IncludePath)</IncludePath>
+    <IncludePath>C:\Program Files %28x86%29\Microsoft DirectX SDK %28June 2010%29\Include;$(SolutionDir)../fbEngine/bulletPhysics/src;$(IncludePath)</IncludePath>
     <LibraryPath>C:\Program Files %28x86%29\Microsoft DirectX SDK %28June 2010%29\Lib\x86;$(SolutionDir)bulletPhysics\lib\Debug;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
-    <IncludePath>C:\Program Files %28x86%29\Microsoft DirectX SDK %28June 2010%29\Include;$(ProjectDir)/bulletPhysics/src;$(IncludePath)</IncludePath>
+    <IncludePath>C:\Program Files %28x86%29\Microsoft DirectX SDK %28June 2010%29\Include;$(SolutionDir)../fbEngine/bulletPhysics/src;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -84,8 +224,8 @@
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>WIN32;_DEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <SDLCheck>true</SDLCheck>
-      <ForcedIncludeFiles>stdafx.h</ForcedIncludeFiles>
-      <AdditionalIncludeDirectories>$(SolutionDir)../fbEngine/bulletPhysics/src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <ForcedIncludeFiles>$(ProjectDir)_Include\stdafx.h</ForcedIncludeFiles>
+      <AdditionalIncludeDirectories>$(ProjectDir)</AdditionalIncludeDirectories>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
     </ClCompile>
     <Link>
@@ -113,9 +253,9 @@
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <PreprocessorDefinitions>WIN32;NDEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <SDLCheck>true</SDLCheck>
-      <ForcedIncludeFiles>stdafx.h</ForcedIncludeFiles>
+      <ForcedIncludeFiles>$(ProjectDir)_Include\stdafx.h</ForcedIncludeFiles>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
-      <AdditionalIncludeDirectories>$(SolutionDir)../fbEngine/bulletPhysics/src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -139,150 +279,6 @@
       <OptimizeReferences>true</OptimizeReferences>
     </Link>
   </ItemDefinitionGroup>
-  <ItemGroup>
-    <ClInclude Include="Assert.h" />
-    <ClInclude Include="Bloom.h" />
-    <ClInclude Include="CircleCollision.h" />
-    <ClInclude Include="ColliderInclude.h" />
-    <ClInclude Include="ComponentManager.h" />
-    <ClInclude Include="Effect.h" />
-    <ClInclude Include="GostCollision.h" />
-    <ClInclude Include="InputManager.h" />
-    <ClInclude Include="KeyBoard .h" />
-    <ClInclude Include="Material.h" />
-    <ClInclude Include="ModelOject.h" />
-    <ClInclude Include="Mouse.h" />
-    <ClInclude Include="Movie.h" />
-    <ClInclude Include="Particle.h" />
-    <ClInclude Include="PhysicsCallback.h" />
-    <ClInclude Include="SpriteAnimation.h" />
-    <ClInclude Include="Vertex.h" />
-    <ClInclude Include="ShadowCamera.h" />
-    <ClInclude Include="SoundEngine.h" />
-    <ClInclude Include="SoundSource.h" />
-    <ClInclude Include="SquareCollision.h" />
-    <ClInclude Include="Collisiont2D.h" />
-    <ClInclude Include="Animation.h" />
-    <ClInclude Include="BoxCollider.h" />
-    <ClInclude Include="Camera.h" />
-    <ClInclude Include="CapsuleCollider.h" />
-    <ClInclude Include="CharacterController.h" />
-    <ClInclude Include="Collision.h" />
-    <ClInclude Include="CollisionEnum.h" />
-    <ClInclude Include="CollisionObject.h" />
-    <ClInclude Include="Color.h" />
-    <ClInclude Include="Component.h" />
-    <ClInclude Include="EffectManager.h" />
-    <ClInclude Include="FontManager.h" />
-    <ClInclude Include="FPS.h" />
-    <ClInclude Include="GameObject.h" />
-    <ClInclude Include="GraphicsDevice.h" />
-    <ClInclude Include="Collider.h" />
-    <ClInclude Include="ImageObject.h" />
-    <ClInclude Include="Light.h" />
-    <ClInclude Include="MeshCollider.h" />
-    <ClInclude Include="Noncopyable.h" />
-    <ClInclude Include="Object.h" />
-    <ClInclude Include="Game.h" />
-    <ClInclude Include="GameObjectManager.h" />
-    <ClInclude Include="Physics.h" />
-    <ClInclude Include="PIXPerfTag.h" />
-    <ClInclude Include="Random.h" />
-    <ClInclude Include="RenderTargetManager.h" />
-    <ClInclude Include="RigidBody.h" />
-    <ClInclude Include="Scene.h" />
-    <ClInclude Include="SceneManager.h" />
-    <ClInclude Include="SkinModel.h" />
-    <ClInclude Include="SkinModelData.h" />
-    <ClInclude Include="SkinModelManager.h" />
-    <ClInclude Include="SphereCollider.h" />
-    <ClInclude Include="Sprite.h" />
-    <ClInclude Include="PlatePrimitive.h" />
-    <ClInclude Include="stdafx.h" />
-    <ClInclude Include="Support.h" />
-    <ClInclude Include="System.h" />
-    <ClInclude Include="targetver.h" />
-    <ClInclude Include="Text.h" />
-    <ClInclude Include="TextObject.h" />
-    <ClInclude Include="TextureManager.h" />
-    <ClInclude Include="Time.h" />
-    <ClInclude Include="ParticleEmitter.h" />
-    <ClInclude Include="NameKey.h" />
-    <ClInclude Include="Transform.h" />
-    <ClInclude Include="Vector.h" />
-    <ClInclude Include="VertexDefinition.h" />
-    <ClInclude Include="WaveFile.h" />
-    <ClInclude Include="WaveFileBank.h" />
-    <ClInclude Include="XInput.h" />
-  </ItemGroup>
-  <ItemGroup>
-    <ClCompile Include="Animation.cpp" />
-    <ClCompile Include="Bloom.cpp" />
-    <ClCompile Include="BoxCollider.cpp" />
-    <ClCompile Include="Camera.cpp" />
-    <ClCompile Include="CapsuleCollider.cpp" />
-    <ClCompile Include="CharacterController.cpp" />
-    <ClCompile Include="CircleCollision.cpp" />
-    <ClCompile Include="Collision.cpp" />
-    <ClCompile Include="CollisionObject.cpp" />
-    <ClCompile Include="Color.cpp" />
-    <ClCompile Include="Component.cpp" />
-    <ClCompile Include="ComponentManager.cpp" />
-    <ClCompile Include="EffectManager.cpp" />
-    <ClCompile Include="FontManager.cpp" />
-    <ClCompile Include="FPS.cpp" />
-    <ClCompile Include="GameObject.cpp" />
-    <ClCompile Include="GostCollision.cpp" />
-    <ClCompile Include="GraphicsDevice.cpp" />
-    <ClCompile Include="ImageObject.cpp" />
-    <ClCompile Include="InputManager.cpp" />
-    <ClCompile Include="KeyBoard .cpp" />
-    <ClCompile Include="Light.cpp" />
-    <ClCompile Include="Material.cpp" />
-    <ClCompile Include="MeshCollider.cpp" />
-    <ClCompile Include="ModelOject.cpp" />
-    <ClCompile Include="Mouse.cpp" />
-    <ClCompile Include="Movie.cpp" />
-    <ClCompile Include="Object.cpp" />
-    <ClCompile Include="Game.cpp" />
-    <ClCompile Include="GameObjectManager.cpp" />
-    <ClCompile Include="Particle.cpp" />
-    <ClCompile Include="Physics.cpp" />
-    <ClCompile Include="PlatePrimitive.cpp" />
-    <ClCompile Include="Random.cpp" />
-    <ClCompile Include="RenderTargetManager.cpp" />
-    <ClCompile Include="RigidBody.cpp" />
-    <ClCompile Include="Scene.cpp" />
-    <ClCompile Include="SceneManager.cpp" />
-    <ClCompile Include="ShadowCamera.cpp" />
-    <ClCompile Include="SkinModel.cpp" />
-    <ClCompile Include="SkinModelData.cpp" />
-    <ClCompile Include="SkinModelManager.cpp" />
-    <ClCompile Include="SoundEngine.cpp" />
-    <ClCompile Include="SoundSource.cpp" />
-    <ClCompile Include="SphereCollider.cpp" />
-    <ClCompile Include="Sprite.cpp" />
-    <ClCompile Include="SpriteAnimation.cpp" />
-    <ClCompile Include="SquareCollision.cpp" />
-    <ClCompile Include="stdafx.cpp">
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
-    </ClCompile>
-    <ClCompile Include="Support.cpp" />
-    <ClCompile Include="Text.cpp" />
-    <ClCompile Include="TextObject.cpp" />
-    <ClCompile Include="TextureManager.cpp" />
-    <ClCompile Include="Time.cpp" />
-    <ClCompile Include="ParticleEmitter.cpp" />
-    <ClCompile Include="Transform.cpp" />
-    <ClCompile Include="Vector.cpp" />
-    <ClCompile Include="Vertex.cpp" />
-    <ClCompile Include="WaveFile.cpp" />
-    <ClCompile Include="WaveFileBank.cpp" />
-    <ClCompile Include="XInput.cpp" />
-  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>

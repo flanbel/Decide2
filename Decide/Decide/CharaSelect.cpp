@@ -1,11 +1,11 @@
 #include "CharaSelect.h"
-#include "fbEngine/ImageObject.h"
-#include "fbEngine/TextObject.h"
+
+#include "fbEngine\_Object\_GameObject\ImageObject.h"
+#include "fbEngine\_Object\_GameObject\TextObject.h"
+#include "fbEngine\_Object\_GameObject\SoundSource.h"
+#include "fbEngine\_Support\RenderTargetManager.h"
+
 #include "ShowModel.h"
-#include "fbEngine/SkinModel.h"
-#include "fbEngine/Animation.h"
-#include "fbEngine/RenderTargetManager.h"
-#include "fbEngine/SoundSource.h"
 void CharaSelect::Awake()
 {
 	_Render = new RenderTarget;

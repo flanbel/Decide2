@@ -1,5 +1,5 @@
 #include "GameCamera.h"
-#include "fbEngine/Camera.h"
+#include "fbEngine\_Object\_Component\_3D\Camera.h"
 
 void GameCamera::Awake()
 {

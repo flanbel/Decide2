@@ -1,5 +1,5 @@
 #pragma once
-#include "fbEngine/GameObject.h"
+#include "fbEngine/_Object\_GameObject/GameObject.h"
 //ƒQ[ƒ€‚Åg‚¤‰e‚ğì‚é‚½‚ß‚ÌƒJƒƒ‰
 class GameShadowCamera :public GameObject
 {

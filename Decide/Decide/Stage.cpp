@@ -1,7 +1,7 @@
 #include "Stage.h"
-#include "fbEngine/Skinmodel.h"
-#include "fbEngine/SkinmodelData.h"
-#include "fbEngine/RigidBody.h"
+
+#include "fbEngine\_Object\_Component\_3D\SkinModel.h"
+#include "fbEngine\_Object\_Component\_Physics\RigidBody.h"
 
 void Stage::Awake()
 {

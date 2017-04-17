@@ -1,18 +1,20 @@
 #include "BattleScene.h"
 
-#include "GameCamera.h"
+
+#include "fbEngine\_Object\_GameObject\ImageObject.h"
+#include "fbEngine\_Object\_GameObject\TextObject.h"
+#include "fbEngine\_Object\_GameObject\SoundSource.h"
+#include "fbEngine\_Object\_Component\_3D\Camera.h"
+
 #include "GameLight.h"
+#include "GameCamera.h"
 #include "GameShadowCamera.h"
+#include "GameRule.h"
+#include "Item.h"
 #include "Player.h"
 #include "Stage.h"
 #include "Sky.h"
-#include "fbEngine/ImageObject.h"
-#include "fbEngine/TextObject.h"
-#include "fbEngine/Sprite.h"
-#include "fbEngine/SoundSource.h"
-#include "Item.h"
-#include "GameRule.h"
-#include "fbEngine/Camera.h"
+
 void BattleScene::Start()
 {
 	GameCamera* gamecamera = INSTANCE(GameObjectManager)->AddNew<GameCamera>("GameCamera", 0);

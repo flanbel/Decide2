@@ -1,7 +1,6 @@
 #pragma once
-#include "fbEngine/GameObject.h"
-class SkinModelData;
-class Animation;
+#include "fbEngine/_Object\_GameObject/GameObject.h"
+
 //キャラクターのパラメーター
 struct CharacterParam
 {

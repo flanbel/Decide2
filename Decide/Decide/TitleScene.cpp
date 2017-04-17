@@ -1,9 +1,10 @@
 #include "TitleScene.h"
-#include "fbEngine/ImageObject.h"
-#include "fbEngine/TextObject.h"
-#include "fbEngine/Movie.h"
-#include "fbEngine/SoundSource.h"
-#include "fbEngine/Sprite.h"
+
+#include "fbEngine/_Object/_GameObject/ImageObject.h"
+#include "fbEngine/_Object/_GameObject/TextObject.h"
+#include "fbEngine/_Object/_GameObject/Movie.h"
+#include "fbEngine/_Object/_GameObject/SoundSource.h"
+
 void TitleScene::Start()
 {
 	//INSTANCE(GameObjectManager)->AddNew<Movie>("movie", 1);

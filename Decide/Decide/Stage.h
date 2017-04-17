@@ -1,5 +1,6 @@
 #pragma once
-#include "fbEngine/GameObject.h"
+#include "fbEngine/_Object/_GameObject/GameObject.h"
+
 class Stage:public GameObject
 {
 public:

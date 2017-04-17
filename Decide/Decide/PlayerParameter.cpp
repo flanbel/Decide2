@@ -1,7 +1,4 @@
 #include "PlayerParameter.h"
-#include "fbEngine/Sprite.h"
-#include "fbEngine/TextObject.h"
-#include "fbEngine/ImageObject.h"
 
 void PlayerParameter::Awake()
 {
