@@ -54,6 +54,7 @@ using namespace std;
 #include <list>
 #include <typeinfo>
 #include <memory>		//スマートポインタ
+#include <algorithm>
 
 static const float FontSize = 300.0f;
 

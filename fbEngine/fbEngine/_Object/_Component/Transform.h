@@ -74,6 +74,7 @@ public:
 	void SetAngle(const Vector3& v);
 	void SetLocalRotation(const Quaternion& q);
 	void SetRotation(const Quaternion& q);
+	void SetRotateMatrix(const D3DXMATRIX r);
 	void SetWorldMatrix(D3DXMATRIX w);
 
 	Vector3&	GetLocalPosition();
@@ -95,7 +96,7 @@ private:
 	Vector3	_LocalPosition;	//ローカルポジション
 	Vector3	_Scale;			//最終スケール
 	Vector3	_LocalScale;	//ローカルスケール
-	Vector3	_Angle;			//角度
+	Vector3	_Angle;			//角度		（あてにしない方がいいかも）
 	Vector3	_LocalAngle;	//ローカル角度
 	Quaternion _Rotation;		//回転（クウォータニオン）
 	Quaternion _LocalRotation;	//ローカル回転（クウォータニオン）

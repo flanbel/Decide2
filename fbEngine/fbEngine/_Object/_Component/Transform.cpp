@@ -1,7 +1,7 @@
 #include "Transform.h"
 
 Transform::Transform(GameObject * g, Transform * t) :
-	Component(g, t, typeid(this).name()),
+	Component(g, t, typeid(this).name(),0),
 	_Parent(nullptr),
 	_LocalPosition(Vector3::zero),
 	_Position(Vector3::zero),
@@ -50,7 +50,7 @@ void Transform::Start()
 
 void Transform::Update()
 {
-	//UpdateTransform();
+	
 }
 
 //子供を検索する関数
@@ -131,10 +131,11 @@ void Transform::UpdateTransform()
 		//スケール値
 		_Scale = _LocalScale * _Parent->_Scale;
 		//オイラー角
-		Vector3 pang = _Parent->GetAngle();
+		Vector3 pang = _Parent->_Angle;
 		_Angle = _LocalAngle + pang;
 		//クォータニオン生成
-		_Rotation.SetEuler(_Angle);
+		//_Rotation.SetEuler(_Angle);
+		_Rotation = _LocalRotation * _Parent->GetRotation();
 	}
 	else {
 		//ローカルをそのまま
@@ -220,17 +221,18 @@ void Transform::LockAt(GameObject * obj)
 {
 	//注視点と視点
 	D3DXVECTOR3 target, eye;
+	D3DXMATRIX view;
 	obj->transform->_Position.CopyFrom(target);
 	this->_Position.CopyFrom(eye);
 	//回転行列初期化
-	D3DXMatrixIdentity(&_RotateMatrix);
+	D3DXMatrixIdentity(&view);
 	//視点から見た上方向取得
 	Vector3 vup = this->Direction(Vector3::up);
 	//ターゲットから見た自分
 	//第四引数は視点の上方向
-	D3DXMatrixLookAtLH(&_RotateMatrix, &target, &eye, (D3DXVECTOR3*)&vup);
+	D3DXMatrixLookAtLH(&view, &target, &eye, (D3DXVECTOR3*)&Vector3::up);
 	//ビュー行列を逆行列にしてワールド行列に
-	D3DXMatrixInverse(&_RotateMatrix, NULL, &_RotateMatrix);
+	D3DXMatrixInverse(&_RotateMatrix, NULL, &view);
 	// オフセットを切って回転行列だけにしてしまう
 	_RotateMatrix._41 = 0.0f;   
 	_RotateMatrix._42 = 0.0f;
@@ -241,8 +243,9 @@ void Transform::LockAt(GameObject * obj)
 	D3DXQuaternionRotationMatrix(&q, &_RotateMatrix);
 	//メンバ変数のクォータニオンにコピー
 	_Rotation = q;
+	SetRotation(_Rotation);
 	//クォータニオンからオイラー角を求める
-	SetAngle(_Rotation.GetAngle());
+	//SetAngle(_Rotation.GetAngle());
 	//ワールド行列を求める。
 	UpdateWolrdMatrix();
 }
@@ -426,11 +429,9 @@ void Transform::SetLocalRotation(const Quaternion & q)
 	//親がいるかどうか？
 	if (_Parent) {
 		//親のクォータニオン取得
-		Quaternion protInv = _Parent->GetRotation();
-		//逆クォータニオンにする。
-		protInv.Inverse();
+		Quaternion prot = _Parent->GetRotation();
 		//ローカルと掛ける
-		_Rotation = _LocalRotation * protInv;
+		_Rotation = _LocalRotation * prot;
 	}
 	else
 	{
@@ -453,7 +454,7 @@ void Transform::SetRotation(const Quaternion& q)
 		//逆クォータニオンにする。
 		protInv.Inverse();
 		//ローカルを逆算
-		_LocalRotation = _Rotation / protInv;
+		_LocalRotation = _Rotation * protInv;
 	}
 	else
 	{
@@ -464,6 +465,16 @@ void Transform::SetRotation(const Quaternion& q)
 	_RotateMatrix = _Rotation.GetRotationMatrix();
 	//ワールド行列更新
 	UpdateWolrdMatrix();
+}
+
+void Transform::SetRotateMatrix(const D3DXMATRIX r)
+{
+	_RotateMatrix = r;
+	//回転行列からクォータニオン生成
+	D3DXQUATERNION q;
+	D3DXQuaternionRotationMatrix(&q, &_RotateMatrix);
+	//メンバ変数のクォータニオンにコピー
+	_Rotation = q;
 }
 
 void Transform::SetWorldMatrix(D3DXMATRIX w)

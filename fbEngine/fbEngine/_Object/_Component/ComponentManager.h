@@ -21,6 +21,8 @@ public:
 	{
 		T* component = new T(g, t);
 		_Components.push_back(component);
+		//sort‚·‚é
+		std::stable_sort(_Components.begin(), _Components.end());
 		component->Awake();
 		return component;
 	}

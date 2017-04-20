@@ -277,16 +277,22 @@ public:
 		z /= d;
 	}
 	//線形補完
-	//補完先、かかる時間、割合
-	void Lerp(const Vector3& in,float time,float wariai)
+	//補完先、割合(0.0f~1.0f)
+	void Lerp(const Vector3& in,float wariai)
 	{
-		//差を求める
-		Vector3 diff = in - (*this);
-		//1あたりの
-		diff.Div(time);
-		//割合分
-		diff.Scale(wariai);
-		this->Add(diff);
+		Vector3 a, b;
+		//割り
+		a = (*this) * (1.0f - wariai);
+		b = in * wariai;
+
+		*this = a + b;
+	}
+
+	void operator += (Vector3 in)
+	{
+		this->x += in.x;
+		this->y += in.y;
+		this->z += in.z;
 	}
 
 	Vector3 operator + (Vector3 in) const
@@ -331,6 +337,15 @@ public:
 		out.x = this->x / in.x;
 		out.y = this->y / in.y;
 		out.z = this->z / in.z;
+		return out;
+	}
+
+	Vector3 operator / (float in) const
+	{
+		Vector3 out;
+		out.x = this->x / in;
+		out.y = this->y / in;
+		out.z = this->z / in;
 		return out;
 	}
 };
@@ -578,9 +593,25 @@ public:
 	{
 		Vector3 ang;
 		//θをラジアンに変換する(ToDegree)
+		//この式は間違い。
 		ang.x = D3DXToDegree(asin(this->x) * 2.0f);
 		ang.y = D3DXToDegree(asin(this->y) * 2.0f);
 		ang.z = D3DXToDegree(asin(this->z) * 2.0f);
 		return ang;
+	}
+	Quaternion operator * (const Quaternion& in)
+	{
+		float pw, px, py, pz;
+		float qw, qx, qy, qz;
+		Quaternion out;
+
+		pw = w; px = x; py = y; pz = z;
+		qw = in.w; qx = in.x; qy = in.y; qz = in.z;
+
+		out.w = pw * qw - px * qx - py * qy - pz * qz;
+		out.x = pw * qx + px * qw + py * qz - pz * qy;
+		out.y = pw * qy - px * qz + py * qw + pz * qx;
+		out.z = pw * qz + px * qy - py * qx + pz * qw;
+		return out;
 	}
 };

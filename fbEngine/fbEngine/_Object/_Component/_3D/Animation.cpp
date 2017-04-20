@@ -37,7 +37,7 @@ void Animation::Awake()
 	_PlaySpeed = 1.0f;
 }
 
-void Animation::PlayAnimation(const int& animationSetIndex)
+void Animation::PlayAnimation(const UINT& animationSetIndex)
 {
 	if (animationSetIndex < _NumAnimSet) {
 		if (_AnimController) {
@@ -69,7 +69,7 @@ void Animation::PlayAnimation(const int& animationSetIndex)
 	}
 }
 
-void Animation::PlayAnimation(int animationSetIndex, float interpolateTime, int lnum)
+void Animation::PlayAnimation(const UINT& animationSetIndex, const float& interpolateTime, const int& lnum)
 {
 	if (animationSetIndex < _NumAnimSet) {
 		if (_AnimController) {
@@ -102,7 +102,7 @@ void Animation::PlayAnimation(int animationSetIndex, float interpolateTime, int 
 	}
 }
 
-void Animation::PlayAnimation(int animationSetIndex, float interpolateTime, float transitionTime, int loopnum)
+void Animation::PlayAnimation(const UINT& animationSetIndex, const float& interpolateTime, const float& transitionTime, const int& loopnum)
 {
 	if(transitionTime <= _TimeRatio)
 	{

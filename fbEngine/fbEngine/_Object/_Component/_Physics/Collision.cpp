@@ -68,6 +68,7 @@ void Collision::Create(btCollisionObject * collision, Collider * shape, const in
 	//ƒ‚ƒfƒ‹‚ª‚ ‚é‚Ì‚È‚ç
 	if (_CollisionModel)
 	{
+		_CollisionModel->GetSkinModel()->SetModelEffect(ModelEffectE::NONE);
 		//”¼“§–¾‚ÈÔ‚Éİ’èB
 		_CollisionModel->GetSkinModel()->SetAllBlend(Color(1.0f, 0.0f, 0.0f, 0.5f));
 		//q‚Éİ’è

@@ -84,7 +84,7 @@ void Item::Update()
 	}
 	//Š—L‚³‚ê‚Ä‚È‚¢ &&
 	//“Š‚°‚ç‚ê‚Ä‚¢‚È‚¢
-	else if(_Move.Length() > 0.0f)
+	else if(_Move.Length() <= 0.0f)
 	{
 		_Timer += Time::DeltaTime();
 		if (_Timer >= _LifeTime)

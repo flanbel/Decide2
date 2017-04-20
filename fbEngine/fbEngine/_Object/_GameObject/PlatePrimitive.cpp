@@ -82,8 +82,8 @@ void PlatePrimitive::Render()
 	//サイズを設定
 	D3DXMatrixScaling(&matSize, _Size.x, _Size.y, 1.0f);
 	//ピボット分移動
-	matWorld._41 = _Pivot.x;
-	matWorld._42 = _Pivot.y;
+	matWorld._41 = -_Pivot.x;//左にずらす
+	matWorld._42 = _Pivot.y;//上にずらす
 	//_Pivot * サイズ　*　ワールド(スケール　*　回転　*　ポジション)
 	matWorld = matWorld * matSize * transform->GetWorldMatrix();
 

@@ -61,6 +61,7 @@ Player::Player(const char * name) :
 	_LastAttack(-1),
 	_isJump(false),
 	_IsAction(false),
+	_IsAlive(false),
 	_Gravity(0),
 	_InterpolateTime(0.0f),
 	_TransitionTime(0.0f)
@@ -95,18 +96,16 @@ void Player::Awake()
 	_Pparameter->SetDamage(_Damage);
 	_Pparameter->SetDiscard(false);
 	//プレート生成
-	_IdxPlate = INSTANCE(GameObjectManager)->AddNew<PlatePrimitive>("plate", 4);
+	_IdxPlate = INSTANCE(GameObjectManager)->AddNew<PlatePrimitive>("plate", 0);
 	_IdxPlate->SetDiscard(false);
 	//王冠生成
-	_CrownPlate = INSTANCE(GameObjectManager)->AddNew<PlatePrimitive>("Crown", 4);
+	_CrownPlate = INSTANCE(GameObjectManager)->AddNew<PlatePrimitive>("Crown", 0);
 	_CrownPlate->transform->SetParent(_IdxPlate->transform);
-	_CrownPlate->transform->SetLocalPosition(Vector3(10, 60, 0));
+	_CrownPlate->transform->SetLocalPosition(Vector3(0, 60, 0));
 	_CrownPlate->SetTexture(LOADTEXTURE("Crown.png"));
 	_CrownPlate->SetDiscard(false);
 
 	_PlayerColor = Color::white;
-	//いろいろなパラメータ初期化
-	_Reset();
 
 	_Smoke = INSTANCE(GameObjectManager)->AddNew<ParticleEmitter>("SmokeEmit", 4);
 	_Smoke->SetDiscard(false);
@@ -153,90 +152,97 @@ void Player::Start()
 	//初期ポジ設定
 	int idx = _Playeridx + 1;
 	transform->SetLocalPosition(Vector3(-200 + (idx % 2 * 400), 200,-200 + (idx / 3 * 400)));
+	
+	//いろいろなパラメータ初期化
+	_Reset();
+	_IsAlive = true;
 }
 
 void Player::Update()
 {
-	//開始前じゃないなら
-	if (_GameRule->GetGameState() != GameRule::GameStateE::BEFORE_GAME)
+	if (_IsAlive)
 	{
-		_ItemAction();
-		_Move();
-
-		//ステートパターン実装したい。
-		//TODO::アニメーションの機能に盛り込むとかして消したい。
-		if (_IsAction)
+		//開始前じゃないなら
+		if (_GameRule->GetGameState() != GameRule::GameStateE::BEFORE_GAME)
 		{
-			//n割り再生したら遷移開始
-			float normalTime;
-			normalTime = 0.7f;
-			if (_State == PStateE::KICK &&
-				_Anim->GetTimeRatio() > normalTime)
-			{
-				//遷移時間設定
-				_TransitionTime = _Anim->GetAnimationEndTime(_Anim->GetPlayAnimNo()) * (1.0f - normalTime);
-				ChangeState(PStateE::STAY);
-			}
+			_ItemAction();
+			_Move();
 
-			if (_State == PStateE::PUNCH &&
-				_Anim->GetTimeRatio() > normalTime)
+			//ステートパターン実装したい。
+			//TODO::アニメーションの機能に盛り込むとかして消したい。
+			if (_IsAction)
 			{
-				//遷移時間設定
-				_TransitionTime = _Anim->GetAnimationEndTime(_Anim->GetPlayAnimNo()) * (1.0f - normalTime);
-				ChangeState(PStateE::STAY);
-			}
-
-			normalTime = 0.8f;
-			if (_State == PStateE::SLASH)
-			{
-				//遷移時間設定
-				_TransitionTime = _Anim->GetAnimationEndTime(_Anim->GetPlayAnimNo()) * (1.0f - normalTime);
-				//前に移動(適当)
-				_Movement.Add(transform->Direction(Vector3(0, 0, 5.0f)));
-				if (_Anim->GetTimeRatio() > normalTime)
+				//n割り再生したら遷移開始
+				float normalTime;
+				normalTime = 0.7f;
+				if (_State == PStateE::KICK &&
+					_Anim->GetTimeRatio() > normalTime)
 				{
+					//遷移時間設定
+					_TransitionTime = _Anim->GetAnimationEndTime(_Anim->GetPlayAnimNo()) * (1.0f - normalTime);
 					ChangeState(PStateE::STAY);
 				}
+
+				if (_State == PStateE::PUNCH &&
+					_Anim->GetTimeRatio() > normalTime)
+				{
+					//遷移時間設定
+					_TransitionTime = _Anim->GetAnimationEndTime(_Anim->GetPlayAnimNo()) * (1.0f - normalTime);
+					ChangeState(PStateE::STAY);
+				}
+
+				normalTime = 0.8f;
+				if (_State == PStateE::SLASH)
+				{
+					//遷移時間設定
+					_TransitionTime = _Anim->GetAnimationEndTime(_Anim->GetPlayAnimNo()) * (1.0f - normalTime);
+					//前に移動(適当)
+					_Movement.Add(transform->Direction(Vector3(0, 0, 5.0f)));
+					if (_Anim->GetTimeRatio() > normalTime)
+					{
+						ChangeState(PStateE::STAY);
+					}
+				}
 			}
+
+			_Attack();
+
+			_Jump();
+			_BlowOff();
 		}
 
-		_Attack();
-
-		_Jump();
-		_BlowOff();
-	}
-
-	//Y軸の移動量保存
-	float moveY = _Movement.y;
-	//Y軸移動はしない
-	_Movement.y = 0.0f;
-	if (_Movement.Length() > 0)
-	{
-		//XZ軸の移動
-		transform->SetLocalPosition(transform->GetLocalPosition() + _Movement);
-	}
-
-	_GravityCheck(moveY);
-
-	_AnimationControl();
-
-	//場外にでたときの処理。
-	_Death();
-
-	//頭の上あたり
-	_IdxPlate->transform->SetLocalPosition(transform->LocalPos(Vector3(-50, 150, 0)));
-	_IdxPlate->transform->LockAt(INSTANCE(GameObjectManager)->mainCamera->gameObject);
-	//王冠
-	//_CrownPlate->transform->LockAt(INSTANCE(GameObjectManager)->mainCamera->gameObject);
-
-	//test
-	{
-		//lockatのテスト
-		if (_Playeridx != 0)
+		//Y軸の移動量保存
+		float moveY = _Movement.y;
+		//Y軸移動はしない
+		_Movement.y = 0.0f;
+		if (_Movement.Length() > 0)
 		{
-			GameObject* p1 = INSTANCE(GameObjectManager)->FindObject("Player1");
-			if (p1)
-				transform->LockAt(p1);
+			//XZ軸の移動
+			transform->SetLocalPosition(transform->GetLocalPosition() + _Movement);
+		}
+
+		_GravityCheck(moveY);
+
+		_AnimationControl();
+
+		//場外にでたときの処理。
+		_Death();
+
+		//頭の上あたり
+		_IdxPlate->transform->SetLocalPosition(transform->LocalPos(Vector3(0, 150, 0)));
+		_IdxPlate->transform->LockAt(INSTANCE(GameObjectManager)->mainCamera->gameObject);
+	}
+	else
+	{
+		_RespawnTimer += Time::DeltaTime();
+		if(_RespawnTimer > 3.0f)
+		{
+			//生き返る。
+			_IsAlive = true;
+			_Model->enable = true
+;
+			//スタートポジションに移動(適当)
+			transform->SetLocalPosition(Vector3(0, 200, 0));
 		}
 	}
 }
@@ -738,11 +744,16 @@ void Player::_Death()
 			//UIの数値更新
 			_Pparameter->SetStock(_Stock);
 		}
-
 		//スコア更新
 		_GameRule->UpdateScore(_LastAttack);
 
 		_Reset();
+		
+		{
+			_IsAlive = false;
+			_Model->enable = false;
+		}
+
 
 		//残機が0なら(負数なら残機無限)
 		if (_Stock == 0)
@@ -776,13 +787,12 @@ void Player::_Reset()
 	_CharagePower = 0.0f;
 	_Damage = 0;
 	_Rigor = 0;
+	_RespawnTimer = 0;
 	_Pparameter->SetDamage(_Damage);
 	_Blown = Vector3::zero;
 	_Movement = Vector3::zero;
 	_Dir = Vector3::zero;
 
-	//スタートポジションに移動(適当)
-	transform->SetLocalPosition(Vector3(0, 200, 0));
 	transform->SetLocalAngle(Vector3::zero);
 }
 

@@ -10,7 +10,7 @@
 bool g_PreRender = false;
 
 SkinModel::SkinModel(GameObject * g, Transform * t) :
-	Component(g, t, typeid(this).name()),
+	Component(g, t, typeid(this).name(),100),
 	_Effect(nullptr),
 	_ModelDate(nullptr),
 	_Camera(nullptr),

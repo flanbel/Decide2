@@ -58,6 +58,10 @@ public:
 	void AddKillCount();
 	int GetKillCount();
 	int GetStockCount();
+	bool GetAlive()
+	{
+		return _IsAlive;
+	}
 	//一位かどうか？
 	void No1(bool f);
 
@@ -147,6 +151,10 @@ private:
 	float _Rigor;
 	//硬直のタイマー
 	float _RigorTimer;
+	//生きている
+	bool _IsAlive;
+	//復活時間
+	float _RespawnTimer;
 
 	//各効果音　
 	SoundSource *_PunchSound;

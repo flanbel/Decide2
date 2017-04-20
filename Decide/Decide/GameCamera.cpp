@@ -9,6 +9,8 @@ void GameCamera::Awake()
 	transform->SetLocalAngle(Vector3(70, 0, 0));
 	camera->SetNear(1);
 	camera->SetFar(1500);
+
+	camera->SetViewPoint(Vector3(0, 200, 0));
 }
 
 void GameCamera::Update()
@@ -122,22 +124,27 @@ void GameCamera::_UpdateViewAngle()
 	float angle = 0.0f;
 	for each (Player* p in _PlayerList)
 	{
-		Vector3 ppos = p->transform->GetPosition();
-		Vector3 pos = transform->GetPosition();
+		if (p->GetAlive())
+		{
+			//カメラ座標系に変換
+			D3DXMATRIX view;
+			D3DXMatrixInverse(&view, NULL, &transform->GetWorldMatrix());
+			D3DXVECTOR4 player;
+			//座標をカメラ座標系に変換
+			D3DXVec3Transform(&player, (D3DXVECTOR3*)&p->transform->GetPosition(), &view);
 
-		//カメラからプレイヤーへのベクトル計算
-		Vector2 toP = Vector2(ppos.x - pos.x, ppos.z - pos.z);
-		Vector2 foward = Vector2(transform->Direction(Vector3::front).x, transform->Direction(Vector3::front).z);
-		toP.Normalize();
-		foward.Normalize();
-		//カメラの前向きのベクトルと内積をとる
-		//角度が大きいなら更新
-		float dot = toP.Dot(foward) - 1.0f - D3DXToRadian(15);
-		angle = max(angle, fabs(dot));
+			float xzD, yzD;
+			//x/zでtangentθを計算して、atanでθを求める。
+			xzD = atan(player.x / player.z);
+			yzD = atan(player.y / player.z);
+			//大きい方をとる。
+			float dot = max(xzD, yzD);
+			angle = max(angle, dot);
+		}
 	}
 	float theta = D3DXToDegree(angle) * 2;
-	theta = max(15, theta);	//下限
-	theta = min(90, theta);	//上限
+	theta = max(40, theta);	//下限
+	theta = min(89, theta);	//上限
 	//画角設定
 	camera->SetViewAngle(theta);
 }
@@ -147,45 +154,65 @@ void GameCamera::_UpdatePos()
 	Vector3 Min, Max;
 	Min = Vector3(9999, 9999, 9999);
 	Max = Vector3(-9999, -9999, -9999);
-
+	//最低値と最大値を計算する。
 	for each (Player* p in _PlayerList)
 	{
-		Min.x = min(Min.x, p->transform->GetPosition().x);
-		Min.y = min(Min.y, p->transform->GetPosition().y);
-		Min.z = min(Min.z, p->transform->GetPosition().z);
+		if (p->GetAlive())
+		{
+			Min.x = min(Min.x, p->transform->GetPosition().x);
+			Min.y = min(Min.y, p->transform->GetPosition().y);
+			Min.z = min(Min.z, p->transform->GetPosition().z);
 
-		Max.x = max(Max.x, p->transform->GetPosition().x);
-		Max.y = max(Max.y, p->transform->GetPosition().y);
-		Max.z = max(Max.z, p->transform->GetPosition().z);
+			Max.x = max(Max.x, p->transform->GetPosition().x);
+			Max.y = max(Max.y, p->transform->GetPosition().y);
+			Max.z = max(Max.z, p->transform->GetPosition().z);
+		}
 	}
 
 	//平均ポジションを出す
-	Vector3 average = Min + Max;
-	average.Div(2);
+	Vector3 average = (Min + Max) / 2.0f;
+	//0の時
+	if(!(average.Length() > 0.0f))
+	{
+		average = Vector3(0, 130, 0);
+		Min.z = 0.0f;
+	}
 	//-500より後ろには向かない
 	average.z = max(average.z, -500.0f);
 
+	static Vector3 pre = Vector3::zero;
+
+	Vector3 currpos = camera->GetViewPoint();//現在位置
+	Vector3 trgpos = average;//ターゲット位置
+	Vector3 prevtrgpos = pre;//直前のターゲットの位置
+	float deltatime = 1.0f/60.0f;//時間変化
+	float springConst = 2.0f;//フックの定数
+	float dampConst = 2.0f;//ダンピング定数
+	float springLen = 10;//バネの長さ？
+
+	Vector3 disp;		//変位
+	Vector3 velocity;	//速度
+	float forceMag;		//力の大きさ
+	
+	//バネの力計算
+	disp = currpos - trgpos;
+	if (disp.Length() > 0.0f)
+	{
+		Vector3 dot = disp;//内積用
+		velocity = (prevtrgpos - trgpos) * deltatime;
+		forceMag = springConst * (springLen - disp.Length()) + dampConst*(dot.Dot(velocity) / disp.Length());
+
+		//バネの力を適用
+		disp.Normalize();
+		disp = disp * forceMag * deltatime;
+		currpos += disp;
+	}
+	pre = trgpos;
 	//注視点設定
-	Vector3 vp = camera->GetViewPoint();
-	//線形補完する
-	vp.Lerp(average, 1, Time::DeltaTime());
-	camera->SetViewPoint(vp);
+	camera->SetViewPoint(currpos);
 
 	static float dist = 500.0f;
-	/*if (KeyBoardInput->isPressed(DIK_O))
-	{
-		dist -= 3;
-	}
-	if (KeyBoardInput->isPressed(DIK_L))
-	{
-		dist += 3;
-	}*/
-
 	//視点設定
-	Vector3 p = Vector3(average.x, average.y, Min.z) + (transform->Direction(Vector3::back) * dist);
-	p.z = max(p.z, -1000.0f);
-	Vector3 lp = transform->GetLocalPosition();
-	//線形補完
-	lp.Lerp(p, 0.5, Time::DeltaTime());
-	transform->SetLocalPosition(lp);
+	Vector3 p = Vector3(currpos.x, currpos.y, Min.z) + (transform->Direction(Vector3::back) * dist);
+	transform->SetLocalPosition(p);
 }

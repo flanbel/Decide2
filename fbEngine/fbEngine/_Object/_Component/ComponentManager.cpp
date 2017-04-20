@@ -7,21 +7,17 @@ ComponentManager::~ComponentManager()
 
 void ComponentManager::Start() const
 {
-	vector<Component*>::const_iterator it = _Components.begin();
-	while (it != _Components.end())
+	for each (Component* c in _Components)
 	{
-		if ((*it)->enable)
+		if (c->enable)
 		{
-			(*it)->Start();
+			c->Start();
 		}
-		it++;
 	}
 }
 
 void ComponentManager::Update() const
 {
-	
-
 	vector<Component*>::const_iterator it = _Components.begin();
 	while (it != _Components.end())
 	{
