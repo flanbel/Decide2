@@ -11,9 +11,11 @@
 #include "GameShadowCamera.h"
 #include "GameRule.h"
 #include "Item.h"
+#include "ItemEmitter.h"
 #include "Player.h"
 #include "Stage.h"
 #include "Sky.h"
+#include "ItemList.h"
 
 void BattleScene::Start()
 {
@@ -36,6 +38,15 @@ void BattleScene::Start()
 
 	INSTANCE(GameObjectManager)->AddNew<Sky>("Sky", 0);
 	INSTANCE(GameObjectManager)->AddNew<Stage>("Stage", 1);
+
+	//Ž–‘O‚Éƒ‚ƒfƒ‹‚ðƒ[ƒh‚µ‚Ä‚¨‚­‚±‚Æ‚ÅƒQ[ƒ€’†‚ÉŽ~‚Ü‚é‚±‚Æ‚ð–h‚®H
+	FOR(i, ITEM_MAX_NUM)
+		SkinModelManager::LoadModel(ItemInfo::itemList[i].modelname);
+
+	ItemEmitter* itemEmitter = INSTANCE(GameObjectManager)->AddNew<ItemEmitter>("ItemEmitter", 0);
+	itemEmitter->transform->SetPosition(Vector3(0, 250, 0));
+	itemEmitter->Initialize(3.0f, Vector3(300,0,300));
+
 	_Gong = INSTANCE(GameObjectManager)->AddNew<SoundSource>("Gong", 0);
 	_BGM = INSTANCE(GameObjectManager)->AddNew<SoundSource>("BGM", 0);
 

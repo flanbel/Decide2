@@ -1,105 +1,12 @@
 #include "Item.h"
 
-#include "AttackCollision.h"
+#include "ItemList.h"
 #include "Player.h"
-#include "fbEngine\_Object\_GameObject\AnimationPlate.h"
-#include "fbEngine\_Object\_GameObject\SoundSource.h"
-
-//アイテムの最大数
-static const int ITEM_MAX_NUM = 2;
-
-namespace
-{
-	//アイテムの情報
-	ItemData itemList[ITEM_MAX_NUM] =
-	{
-		{
-			"Item/StandardSowrd.X",
-			Vector3(15,80,15),
-			Vector3(0,40,0),
-			0,
-			fbEngine::ItemTypeE::Slash
-		},
-		{
-			"Item/bom.X",
-			Vector3(30,35,30),
-			Vector3(0,0,0),
-			1,
-			fbEngine::ItemTypeE::Throw
-		}
-	};
-}
-
-//無名空間だとフレンド関数にできなかったので名前を付けた。
-namespace
-{
-	//各アイテムの投げられてヒットした時の動作を設定
-	void Standard(Item* item, vector<Collision*> colls)
-	{
-		//あたったやつに小ダメージを与える。
-		FOR(i, colls.size())
-		{
-			//属性を確認
-			if ((colls[i]->GetCollisonObj()->getUserIndex() & Collision_Attribute::PLAYER) != 0)
-			{
-				Player* player = (Player*)colls[i]->gameObject;
-				Vector3 blow = item->GetMove();
-				blow.Normalize();
-				blow.Scale(30.0f);
-				player->Damage(item->GetOwner(), Random::Range(6, 14), blow, 0.5f);
-			}
-		}
-	};
-
-	void Bom(Item* item, vector<Collision*> colls)
-	{
-		//爆発アニメーション生成
-		AnimationPlate *bomber = INSTANCE(GameObjectManager)->AddNew<AnimationPlate>("Bomber", 4);
-		bomber->transform->SetPosition(item->transform->GetPosition());
-		bomber->SetTexture(LOADTEXTURE("bomber.jpg"));
-		bomber->SetSplit(6, 4, 6 * 4);
-		bomber->SetSize(Vector2(256, 256));
-		bomber->SetBlendMode(fbEngine::BlendModeE::Add);
-		bomber->Play(1.0f, 1);
-		bomber->SetBlendColor(Color::white * 1.8f);
-		bomber->SetDelete(true);
-
-		//爆発の効果音再生
-		SoundSource* bomberSE = INSTANCE(GameObjectManager)->AddNew<SoundSource>("PunchSound", 0);
-		bomberSE->Init("Asset/Sound/bomb3.wav");
-		bomberSE->SetDelete(true);
-		bomberSE->Play(false);
-
-		//爆発の当たり判定を出す。
-		AttackCollision* damage = INSTANCE(GameObjectManager)->AddNew<AttackCollision>("damage", 0);
-		damage->transform->SetPosition(item->transform->GetPosition());
-		SphereCollider* sphere = damage->AddComponent<SphereCollider>();
-		sphere->Create(60.0f);
-		DamageCollision::DamageCollisonInfo info;
-		info.Damage = Random::Range(20, 45);
-		info.Blown = item->GetMove() + Vector3(0, 20, 0);
-		info.Blown.Normalize();
-		info.Blown.Scale(180);
-		info.Rigor = 1;
-		float life = 0.2f;
-		damage->Create(sphere, item->GetOwner(), Collision_Attribute::DAMAGE, life, info);
-
-		//爆発したのでオブジェクトはなくなる
-		INSTANCE(GameObjectManager)->AddRemoveList(item);
-	};
-
-	//関数ポインタの配列
-	void(*ItemActionArray[ITEM_MAX_NUM])(Item* item, vector<Collision*> colls) =
-	{
-		&Standard,
-		&Bom
-	};
-}
 
 Item::Item(const char * name) :
 	GameObject(name),
 	_ItemID(-1),
-	_LifeTime(10.0f),
+	_LifeTime(15.0f),
 	_Timer(0.0f),
 	_Move(Vector3::zero),
 	_IsHave(false),
@@ -124,16 +31,16 @@ void Item::Awake()
 
 	//アイテムの種類決定
 	_ItemID = Random::Range(0, ITEM_MAX_NUM - 1);
-	_ItemType = itemList[_ItemID].itemtype;
-	coll->Create(itemList[_ItemID].collisionsize);
+	_ItemType = ItemInfo::itemList[_ItemID].itemtype;
+	coll->Create(ItemInfo::itemList[_ItemID].collisionsize);
 	//フィルター設定
 	_Rigid->SetFilter((short)Collision_Filter::ITEM, (short)fbCollisionFilterE::ALLFILTER - (short)Collision_Filter::DAMAGE);
 	//コリジョン生成
-	_Rigid->Create(1, coll, Collision_Attribute::ITEM , Vector3::zero, itemList[_ItemID].offset);
+	_Rigid->Create(1, coll, Collision_Attribute::ITEM , Vector3::zero, ItemInfo::itemList[_ItemID].offset);
 
 	//モデルセット。
 	SkinModelData* modeldata = new SkinModelData();
-	modeldata->CloneModelData(SkinModelManager::LoadModel(itemList[_ItemID].modelname), _Anim);
+	modeldata->CloneModelData(SkinModelManager::LoadModel(ItemInfo::itemList[_ItemID].modelname), _Anim);
 	model->SetModelData(modeldata);
 
 	//アイテムの持ち手のフレーム取得
@@ -197,7 +104,7 @@ void Item::ToSeparate(const Vector3& vec, int idx)
 		//移動量設定
 		_Move = vec;
 		//アイテムタイプに合った関数取得
-		_ItemAction = ItemActionArray[itemList[_ItemID].actiontype];
+		_ItemAction = ItemInfo::itemList[_ItemID].itemAction;
 	}
 	//置く
 	else

@@ -8,6 +8,7 @@
 #include "fbEngine\_Object\_Component\_3D\Camera.h"
 
 #include "Item.h"
+#include "ItemList.h"
 #include "GameRule.h"
 #include "AttackCollision.h"
 
@@ -163,7 +164,7 @@ void Player::Start()
 	
 	//初期ポジ設定
 	int idx = _Playeridx + 1;
-	transform->SetLocalPosition(Vector3(-200 + (idx % 2 * 400), 200,-200 + (idx / 3 * 400)));
+	transform->SetPosition(Vector3(-200 + (idx % 2 * 400), 200,-200 + (idx / 3 * 400)));
 	
 	//いろいろなパラメータ初期化
 	_Reset();
@@ -235,7 +236,7 @@ void Player::Update()
 
 		_GravityCheck(moveY);
 
-		_AnimationControl();
+		
 
 		//場外にでたときの処理。
 		_Death();
@@ -252,10 +253,10 @@ void Player::Update()
 		{
 			//生き返る。
 			_IsAlive = true;
-			_Model->enable = true
-;
+			_Model->enable = true;
+			_IdxPlate->SetActive(true);
 			//スタートポジションに移動(適当)
-			transform->SetLocalPosition(Vector3(0, 200, 0));
+			transform->SetPosition(Vector3(0, 200, 0));
 		}
 	}
 }
@@ -333,6 +334,7 @@ void Player::ChangeState(PStateE next)
 		break;
 	}
 	_State = next;
+	_AnimationControl();
 }
 
 void Player::Damage(const int& idx, const float& damage, const Vector3& blow, const float& rigor)
@@ -631,12 +633,12 @@ void Player::_ItemAction()
 		{
 			switch (_HaveItem->GetItemType())
 			{
-			case fbEngine::ItemTypeE::Throw:
+			case ItemInfo::ItemTypeE::Throw:
 				//アイテムを離す
 				_HaveItem->ToSeparate(transform->GetForward() * 10.0f + _Movement * 2.0f, _Playeridx);
 				_HaveItem = nullptr;
 				break;
-			case fbEngine::ItemTypeE::Slash:
+			case ItemInfo::ItemTypeE::Slash:
 				ChangeState(PStateE::SLASH);
 				break;
 			default:
@@ -733,7 +735,8 @@ void Player::_Move()
 			Camera* c = INSTANCE(GameObjectManager)->mainCamera;
 			_Dir = c->transform->Direction(_Dir) * speed * Time::DeltaTime();
 			//Yの移動量を消す
-			_Movement = Vector3(_Dir.x, 0.0f, _Dir.z);
+			_Dir.y = 0;
+			_Movement = _Dir;
 			_Movement.Normalize();
 			_Movement.Scale(speed * Time::DeltaTime());
 
@@ -841,6 +844,7 @@ void Player::_Death()
 		{
 			_IsAlive = false;
 			_Model->enable = false;
+			_IdxPlate->SetActive(false);
 		}
 
 
@@ -893,9 +897,9 @@ void Player::_GravityCheck(const float & movey)
 	_Gravity += addGravity;
 	double MoveY = movey + _Gravity;
 	//重力が発生している
-	if (MoveY < -0.1f)
+	if (MoveY < 0.0f)
 	{
-		//地面との判定
+		//始点と終点
 		Vector3 start, end;
 		//コリジョンの中心
 		start = transform->GetPosition() + Vector3(0, (_Height / 2), 0);
@@ -908,9 +912,10 @@ void Player::_GravityCheck(const float & movey)
 		if (hit.isHit)
 		{
 			//ヒットした位置に着地
-			Vector3 lpos = transform->GetLocalPosition();
-			lpos.y = hit.hitPos.y;
-			transform->SetLocalPosition(lpos);
+			Vector3 pos = transform->GetPosition();
+			pos.y = hit.hitPos.y;
+			transform->SetPosition(pos);
+			//ジャンプ終了
 			_isJump = false;
 			_JumpCount = 0;
 			_Gravity = 0;

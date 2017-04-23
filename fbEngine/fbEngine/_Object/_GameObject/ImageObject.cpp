@@ -9,6 +9,10 @@ void ImageObject::SetTexture(TEXTURE * t)
 {
 	_Sprite->SetTexture(t);
 }
+void ImageObject::SetSize(const Vector2 & size)
+{
+	_Sprite->SetSize(size);
+}
 TEXTURE * ImageObject::GetTexture()
 {
 	return _Sprite->GetTexture();
@@ -37,4 +41,9 @@ void ImageObject::SetEffectFlg(const fbSprite::SpriteEffectE& e)
 void ImageObject::SetEffectFlg(const fbSprite::SpriteEffectE& e, bool f)
 {
 	_Sprite->SetEffectFlg((DWORD)e,f);
+}
+
+void ImageObject::SetDoubleSided(const bool & f)
+{
+	_Sprite->SetDoubleSided(f);
 }

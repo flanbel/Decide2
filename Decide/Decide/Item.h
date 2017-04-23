@@ -1,28 +1,6 @@
 #pragma once
 #include "fbEngine/_Object\_GameObject/GameObject.h"
 
-namespace fbEngine
-{
-	enum ItemTypeE
-	{
-		Throw,	//投げるタイプ
-		Slash,	//振るタイプ
-	};
-}
-
-namespace
-{
-	//アイテムのデータ
-	struct ItemData
-	{
-		char* modelname;		//モデルのパス
-		Vector3 collisionsize;	//当たり判定の大きさ
-		Vector3 offset;			//当たり判定の移動量
-		int actiontype;			//投げた時に使う関数のタイプ
-		int itemtype;			//アイテムのタイプ
-	};
-}
-
 class Item:public GameObject
 {
 public:

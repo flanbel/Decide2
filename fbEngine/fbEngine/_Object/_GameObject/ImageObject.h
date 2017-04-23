@@ -10,6 +10,7 @@ public:
 	void Awake()override;
 
 	void SetTexture(TEXTURE* t);
+	void SetSize(const Vector2& size);
 	TEXTURE* GetTexture();
 	void SetPivot(const Vector2& v);
 	void SetPivot(const float& x, const float& y);
@@ -21,6 +22,8 @@ public:
 	void SetEffectFlg(const fbSprite::SpriteEffectE& e);
 	//trueなら足す、falseなら引く
 	void SetEffectFlg(const fbSprite::SpriteEffectE& e,bool f);
+	//両面描画フラグセット
+	void SetDoubleSided(const bool& f);
 private:
 	Sprite* _Sprite;
 };

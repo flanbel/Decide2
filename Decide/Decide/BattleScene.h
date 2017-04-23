@@ -5,6 +5,7 @@ class TextObject;
 class Player;
 class SoundSource;
 class GameRule;
+
 class BattleScene : public Scene
 {
 public:

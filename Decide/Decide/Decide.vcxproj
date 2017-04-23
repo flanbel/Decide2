@@ -166,6 +166,8 @@
     <ClInclude Include="GameShadowCamera.h" />
     <ClInclude Include="GameSystem.h" />
     <ClInclude Include="Item.h" />
+    <ClInclude Include="ItemEmitter.h" />
+    <ClInclude Include="ItemList.h" />
     <ClInclude Include="PlayerParameter.h" />
     <ClInclude Include="Player.h" />
     <ClInclude Include="Resource.h" />
@@ -191,6 +193,7 @@
     <ClCompile Include="GameRule.cpp" />
     <ClCompile Include="GameShadowCamera.cpp" />
     <ClCompile Include="Item.cpp" />
+    <ClCompile Include="ItemEmitter.cpp" />
     <ClCompile Include="PlayerParameter.cpp" />
     <ClCompile Include="Player.cpp" />
     <ClCompile Include="CharaSelect.cpp" />

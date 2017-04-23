@@ -14,7 +14,8 @@ Sprite::Sprite(GameObject * g, Transform * t) :
 	_FadeTime(10.0f),
 	_FTimer(0.0f),
 	_FadeLine(1.0f),
-	_SpriteEffect(((DWORD)fbSprite::SpriteEffectE::NONE))
+	_SpriteEffect(((DWORD)fbSprite::SpriteEffectE::NONE)),
+	_DoubleSided(false)
 {
 	
 }
@@ -87,26 +88,45 @@ void Sprite::ImageRender()
 			_CreateShadow();
 	}
 
+	//描画
+	_RenderSprite();
+}
+
+void Sprite::SetEffectFlg(const DWORD& e)
+{
+	_SpriteEffect = e;
+}
+
+bool Sprite::SetEffectFlg(const DWORD& e, bool f)
+{
+	//既に有効かどうか？
+	if ((_SpriteEffect & e) > 0 && f == false)
+	{
+		//無効に
+		_SpriteEffect = _SpriteEffect - e;
+		return true;
+	}
+	else if ((_SpriteEffect & e) == 0 && f == true)
+	{
+		//有効に
+		_SpriteEffect = _SpriteEffect + e;
+		return true;
+	}
+	return false;
+}
+
+void Sprite::_RenderSprite()
+{
 	//シェーダファイル読み込み
 	_Effect = EffectManager::LoadEffect("Sprite.fx");
 
 	D3DXMATRIX  matWorld, matSize, matScale, matRot, matTrans;
-	//初期化
-	//D3DXMatrixIdentity(&matWorld);
 	//画像のサイズを設定
-	D3DXMatrixScaling(&matSize, _Texture->Size.x, _Texture->Size.y, 1.0f);
+	D3DXMatrixScaling(&matSize, _Size.x, _Size.y, 1.0f);
 	//設定されたスケールを設定
 	D3DXMatrixScaling(&matScale, transform->GetScale().x, transform->GetScale().y, transform->GetScale().z);
 	//回転
 	D3DXMatrixRotationZ(&matRot, D3DXToRadian(transform->GetAngle().z));
-	/*static float r = 0.0f;
-	if (KeyBoardInput->isPressed(DIK_UP))
-		r += 0.01f;
-	if (KeyBoardInput->isPressed(DIK_DOWN))
-		r -= 0.01f;
-	if (KeyBoardInput->isPressed(DIK_RIGHT))
-		r = 0.0f;
-	D3DXMatrixRotationX(&matRot, D3DXToRadian(r));*/
 	//移動
 	D3DXMatrixTranslation(&matTrans, transform->GetPosition().x, transform->GetPosition().y, transform->GetPosition().z);
 
@@ -139,6 +159,15 @@ void Sprite::ImageRender()
 
 	D3DXMATRIX wp = matWorld * (proj*adjustment);
 
+	if (_DoubleSided)
+	{
+		//両面描画
+		(*graphicsDevice()).SetRenderState(D3DRS_CULLMODE, D3DCULL_NONE);
+	}else
+	{
+		//表面描画
+		(*graphicsDevice()).SetRenderState(D3DRS_CULLMODE, D3DCULL_CCW);
+	}
 	(*graphicsDevice()).SetRenderState(D3DRS_ALPHABLENDENABLE, TRUE);
 	(*graphicsDevice()).SetRenderState(D3DRS_SRCBLEND, D3DBLEND_SRCALPHA);
 	(*graphicsDevice()).SetRenderState(D3DRS_DESTBLEND, D3DBLEND_INVSRCALPHA);
@@ -164,12 +193,12 @@ void Sprite::ImageRender()
 	_Effect->SetFloat("g_Pivoty", _Pivot.y);
 
 	//色設定
-	_Effect->SetValue("g_BlendColor",_BlendColor,sizeof(Color));
+	_Effect->SetValue("g_BlendColor", _BlendColor, sizeof(Color));
 	//透明色設定
 	_Effect->SetValue("g_ClipColor", _ClipColor, sizeof(Color));
 	Vector4 flg = { (float)((int)_SpriteEffect & 2),0,0,0 };
 	//フラグ送信
-	_Effect->SetValue("g_EffectFlg", &flg,sizeof(Vector4));
+	_Effect->SetValue("g_EffectFlg", &flg, sizeof(Vector4));
 	//消えるアレボーダーライン的なアレ
 	_Effect->SetFloat("g_FadeLine", _FadeLine);
 
@@ -185,29 +214,7 @@ void Sprite::ImageRender()
 	(*graphicsDevice()).SetRenderState(D3DRS_ALPHABLENDENABLE, FALSE);
 	(*graphicsDevice()).SetRenderState(D3DRS_SRCBLEND, D3DBLEND_ONE);
 	(*graphicsDevice()).SetRenderState(D3DRS_DESTBLEND, D3DBLEND_ZERO);
-}
-
-void Sprite::SetEffectFlg(const DWORD& e)
-{
-	_SpriteEffect = e;
-}
-
-bool Sprite::SetEffectFlg(const DWORD& e, bool f)
-{
-	//既に有効かどうか？
-	if ((_SpriteEffect & e) > 0 && f == false)
-	{
-		//無効に
-		_SpriteEffect = _SpriteEffect - e;
-		return true;
-	}
-	else if ((_SpriteEffect & e) == 0 && f == true)
-	{
-		//有効に
-		_SpriteEffect = _SpriteEffect + e;
-		return true;
-	}
-	return false;
+	(*graphicsDevice()).SetRenderState(D3DRS_CULLMODE, D3DCULL_CCW);
 }
 
 void Sprite::Fade()
@@ -237,13 +244,10 @@ void Sprite::_CreateShadow()
 {
 	//変更前に値を保存
 	Color colorbuf = _BlendColor;
-	DWORD effectbuf = _SpriteEffect;
 	Vector3 posbuf, pos;
 	pos = posbuf = transform->GetPosition();
 	//色を黒に
 	_BlendColor = Color::black;
-	//フラグを消す(通常描画)
-	_SpriteEffect = (DWORD)fbSprite::SpriteEffectE::NONE;
 	//ずらす量
 	Vector2 offset = Vector2(_Texture->Size.x * 0.05f, _Texture->Size.y * 0.05f);
 	
@@ -251,11 +255,10 @@ void Sprite::_CreateShadow()
 	pos.y += offset.y * transform->GetScale().y;
 	transform->SetPosition(pos);
 
-	ImageRender();
+	_RenderSprite();
 
 	//戻す
 	_BlendColor = colorbuf;
-	_SpriteEffect = effectbuf;
 	transform->SetPosition(posbuf);
 }
 
@@ -263,13 +266,10 @@ void Sprite::_CreateOutLine()
 {
 	//変更前に値を保存
 	Color colorbuf = _BlendColor;
-	DWORD effectbuf = _SpriteEffect;
 	Vector3 posbuf, pos;
 	pos = posbuf = transform->GetPosition();
 	//色を黒に
 	_BlendColor = Color::black;
-	//フラグを消す(通常描画)
-	_SpriteEffect = (DWORD)fbSprite::SpriteEffectE::NONE;
 	//移動量
 	float offset = 1.0f;
 	//上下左右に移動させて描画
@@ -293,12 +293,11 @@ void Sprite::_CreateOutLine()
 			break;
 		}
 		transform->SetPosition(pos);
-		ImageRender();
+		_RenderSprite();
 		transform->SetPosition(posbuf);
 	}
 
 	//戻す
 	_BlendColor = colorbuf;
-	_SpriteEffect = effectbuf;
 	transform->SetPosition(posbuf);
 }

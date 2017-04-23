@@ -19,9 +19,9 @@ namespace
 
 	enum class Collision_Filter : short
 	{
-		PLAYER = (Collision_Filter)fbCollisionFilterE::A,
-		STAGE = (Collision_Filter)fbCollisionFilterE::B,
-		ITEM = (Collision_Filter)fbCollisionFilterE::C,
-		DAMAGE = (Collision_Filter)fbCollisionFilterE::D,
+		PLAYER = (short)fbCollisionFilterE::A,
+		STAGE = (short)fbCollisionFilterE::B,
+		ITEM = (short)fbCollisionFilterE::C,
+		DAMAGE = (short)fbCollisionFilterE::D,
 	};
 }

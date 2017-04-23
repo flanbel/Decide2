@@ -32,7 +32,8 @@ int Random::Range(int min,int max) {
 		}//+
 		else
 		{
-			ret = (rand() % max) + min;
+			int tmp = fabs(min) + max;
+			ret = (rand() % tmp) + min;
 		}
 	}
 	//+

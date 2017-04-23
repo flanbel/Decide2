@@ -134,7 +134,16 @@ namespace fbPhysicsCallback
 				//属性が一致するか？マスクをとる
 				if ((attribute & hitObjectTmp->GetCollisonObj()->getUserIndex()) != 0)
 				{
-					//コリジョンを更新
+					//重複チェック
+					for each (Collision* coll in hitObjects)
+					{
+						//アドレス比較
+						if(coll == hitObjectTmp)
+						{
+							return 0.0f;
+						}
+					}
+					//コリジョンを追加
 					hitObjects.push_back(hitObjectTmp);
 				}
 			}

@@ -30,6 +30,12 @@ public:
 	void SetTexture(TEXTURE* tex)
 	{
 		_Texture = tex;
+		if (_Texture)
+			_Size = _Texture->Size;
+	}
+	void SetSize(const Vector2& size)
+	{
+		_Size = size;
 	}
 	TEXTURE* GetTexture()
 	{
@@ -57,8 +63,14 @@ public:
 	//trueなら足す、falseなら引く
 	//戻り値は成功したかどうか？
 	bool SetEffectFlg(const DWORD& e, bool f);
-
+	//両面描画フラグセット
+	void SetDoubleSided(const bool& f)
+	{
+		_DoubleSided = f;
+	}
 private:
+	//描画する
+	void _RenderSprite();
 	//フェードさせる
 	void Fade();
 	//影の生成
@@ -70,6 +82,8 @@ private:
 	Effect* _Effect;
 	//テクスチャ
 	TEXTURE* _Texture;
+	//画像サイズ
+	Vector2 _Size;
 	//基点
 	Vector2 _Pivot;
 	//UVxyはuをzwはvを表す。
@@ -86,6 +100,8 @@ private:
 	float _FadeLine;
 	//スプライトにかけるエフェクトのフラグ
 	DWORD _SpriteEffect;
+	//両面描画
+	bool _DoubleSided;
 
 	//頂点
 	static Vertex* _Vertex;

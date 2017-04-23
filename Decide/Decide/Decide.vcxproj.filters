@@ -94,6 +94,12 @@
     <ClInclude Include="FSM\PlayerState.h">
       <Filter>Object\GameObject\Player\FSM</Filter>
     </ClInclude>
+    <ClInclude Include="ItemEmitter.h">
+      <Filter>Object\GameObject</Filter>
+    </ClInclude>
+    <ClInclude Include="ItemList.h">
+      <Filter>Object\GameObject</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="Decide.rc">
@@ -169,6 +175,9 @@
     </ClCompile>
     <ClCompile Include="PlayerParameter.cpp">
       <Filter>Object\GameObject\Player</Filter>
+    </ClCompile>
+    <ClCompile Include="ItemEmitter.cpp">
+      <Filter>Object\GameObject</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>
