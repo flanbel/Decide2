@@ -9,16 +9,12 @@ static const int CHARACTER_NUM = 1;
 
 namespace
 {
-	enum Collision_ID
+	enum Collision_Attribute
 	{
 		PLAYER = fbCollisionAttributeE::CHARACTER,
 		STAGE = fbCollisionAttributeE::GROUND,
 		ITEM = BIT(3),
 		DAMAGE = BIT(5),
-		ATTACK_1P,
-		ATTACK_2P,
-		ATTACK_3P,
-		ATTACK_4P,
 	};
 
 	enum class Collision_Filter : short

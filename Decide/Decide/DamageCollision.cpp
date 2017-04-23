@@ -1,5 +1,6 @@
 #include "DamageCollision.h"
 #include "Player.h"
+#include "fbEngine\_Object\_GameObject\AnimationPlate.h"
 
 void DamageCollision::Update()
 {
@@ -15,8 +16,9 @@ void DamageCollision::LateUpdate()
 	_CheckHit();
 }
 
-void DamageCollision::Create(const float& life, const int & id, Collider * shape, DamageCollisonInfo & in)
+void DamageCollision::Create(const int& owner, const float& life, const int & id, Collider * shape, DamageCollisonInfo & in)
 {
+	_OwnerIdx = owner;
 	_Life = life;
 	_Timer = 0.0f;
 	info = in;
@@ -39,9 +41,6 @@ void DamageCollision::_CheckDeath()
 
 void DamageCollision::_CheckHit()
 {
-	
-	//攻撃したプレイヤーの添え字取得
-	int atkidx = _CollisionObject->getUserIndex() - Collision_ID::DAMAGE - 1;
 	//あたったかどうか？
 	bool ishit = false;
 	//当たっているやつを取得
@@ -49,16 +48,30 @@ void DamageCollision::_CheckHit()
 	FOR(i,pairs.size())
 	{
 		//あたったものがプレイヤーかどうか？
-		if((pairs[i]->getUserIndex() & Collision_ID::PLAYER) != 0)
+		if((pairs[i]->getUserIndex() & Collision_Attribute::PLAYER) != 0)
 		{
 			Collision* coll = (Collision*)pairs[i]->getUserPointer();
 			//アップキャスト
 			Player* player = (Player*)coll->gameObject;
 			//自分の攻撃には当たらない。
-			if (player->GetIdx() != atkidx)
+			if (player->GetIdx() != _OwnerIdx)
 			{
+				//ヒットエフェクト生成
+				AnimationPlate *hit = INSTANCE(GameObjectManager)->AddNew<AnimationPlate>("HitEffect", 4);
+				hit->transform->SetPosition(coll->GetOffsetPos());
+
+				hit->SetTexture(LOADTEXTURE("HitB.bmp"));
+				hit->SetSplit(4, 3, 4 * 3);
+
+				hit->SetSize(Vector2(128, 128));
+				hit->SetBlendMode(fbEngine::BlendModeE::Add);
+				hit->Play(0.35f, 1);
+				hit->SetBlendColor(Color::yellow * 3.0f);
+				hit->SetDelete(true);
+
 				//プレイヤーにダメージを与える。
-				player->Damage(atkidx, info.Damage, info.Blown, info.Rigor);
+				player->Damage(_OwnerIdx, info.Damage, info.Blown, info.Rigor);
+
 				ishit = true;
 			}
 		}

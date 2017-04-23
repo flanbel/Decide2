@@ -41,6 +41,11 @@ public:
 	{
 		Set(r, g, b, a);
 	}
+	//float型コンストラクタ 0.0f~1.0fの間で指定。
+	Color(const float& r, const float& g, const float& b)
+	{
+		Set(r, g, b, 1.0f);
+	}
 	//int型コンストラクタ 0~255で指定。
 	Color(const int& r, const int& g, const int& b, const int& a)
 	{
@@ -78,11 +83,12 @@ public:
 		c.a = a;
 	}
 
-	Color operator * (float f)
+	Color operator * (float f) const
 	{
-		this->r *= f;
-		this->g *= f;
-		this->b *= f;
-		return *this;
+		Color out = *this;
+		out.r = this->r * f;
+		out.g = this->g * f;
+		out.b = this->b * f;
+		return out;
 	}
 };

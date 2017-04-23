@@ -65,34 +65,13 @@ void Particle::Update()
 	transform->Update();
 	if (_IsBillboard) {
 		//ビルボード処理を行う。
-		//カメラの回転行列取得
-		//const D3DXMATRIX& mCameraRot = _Camera->transform->GetRotateMatrix();
-		//Quaternion qRot;
-		//qRot.SetRotation(Vector3(mCameraRot.m[2][0], mCameraRot.m[2][1], mCameraRot.m[2][2]), _RotateZ);
-		//D3DXMATRIX rot;
-		////クォータニオンから行列作成
-		//D3DXMatrixRotationQuaternion(&rot,(D3DXQUATERNION*)&qRot);
-		//
-		//D3DXMATRIX world,trans;
-		//D3DXMatrixIdentity(&trans);
-		////移動行列作成
-		//Vector3 pos = transform->GetPosition();
-		//trans.m[3][0] = pos.x;
-		//trans.m[3][1] = pos.y;
-		//trans.m[3][2] = pos.z;
-		////回転行列？
-		//D3DXMatrixMultiply(
-		//	&world,
-		//	&mCameraRot,
-		//	&rot);
-		////移動行列をかける
-		//D3DXMatrixMultiply(
-		//	&world,
-		//	&world,
-		//	&rot);
-
-		//transform->SetWorldMatrix(world);
-		transform->LockAt(_Camera->gameObject);
+		const D3DXMATRIX& mCameraRot = _Camera->transform->GetRotateMatrix();
+		Quaternion qRot;
+		qRot.SetRotation(Vector3(mCameraRot.m[2][0], mCameraRot.m[2][1], mCameraRot.m[2][2]), 0.0f);
+		D3DXMATRIX rot;
+		D3DXMatrixRotationQuaternion(&rot, (D3DXQUATERNION*)&qRot);
+		rot = mCameraRot*rot;
+		transform->SetRotateMatrix(rot);
 	}
 	
 

@@ -4,10 +4,6 @@ GameObjectManager*  GameObjectManager::_Instance = nullptr;
 
 GameObject* GameObjectManager::Add(GameObject* pAdd, int priority)
 {
-	if(_GameObjects.size() <= 0)
-	{
-		_GameObjects.resize(System::MAX_PRIORITY);
-	}
 	GameObject* obj = pAdd;
 	_GameObjects.at(priority).push_back(obj);
 	obj->Awake();
@@ -16,7 +12,7 @@ GameObject* GameObjectManager::Add(GameObject* pAdd, int priority)
 
 void GameObjectManager::StartObject()
 {
-	for (short priority = 0; priority < System::MAX_PRIORITY; priority++)
+	for (short priority = 0; priority <= System::MAX_PRIORITY; priority++)
 	{
 		for each (GameObject* obj in _GameObjects[priority])
 		{
@@ -31,7 +27,7 @@ void GameObjectManager::StartObject()
 
 void GameObjectManager::UpdateObject()
 {
-	for (short priority = 0; priority < System::MAX_PRIORITY; priority++)
+	for (short priority = 0; priority <= System::MAX_PRIORITY; priority++)
 	{
 		for each (GameObject* obj in _GameObjects[priority])
 		{
@@ -46,7 +42,7 @@ void GameObjectManager::UpdateObject()
 
 void GameObjectManager::LateUpdateObject()
 {
-	for (short priority = 0; priority < System::MAX_PRIORITY; priority++)
+	for (short priority = 0; priority <= System::MAX_PRIORITY; priority++)
 	{
 		for each (GameObject* obj in _GameObjects[priority])
 		{
@@ -65,7 +61,7 @@ void GameObjectManager::LateUpdateObject()
 void GameObjectManager::PreRenderObject()
 {
 	//レンダーターゲットセット
-	for (short priority = 0; priority < System::MAX_PRIORITY; priority++)
+	for (short priority = 0; priority <= System::MAX_PRIORITY; priority++)
 	{
 		for each (GameObject* obj in _GameObjects[priority])
 		{
@@ -80,7 +76,7 @@ void GameObjectManager::PreRenderObject()
 
 void GameObjectManager::RenderObject()
 {
-	for (short priority = 0; priority < System::MAX_PRIORITY; priority++)
+	for (short priority = 0; priority <= System::MAX_PRIORITY; priority++)
 	{
 		for each (GameObject* obj in _GameObjects[priority])
 		{
@@ -95,7 +91,7 @@ void GameObjectManager::RenderObject()
 
 void GameObjectManager::PostRenderObject()
 {
-	for (short priority = 0; priority < System::MAX_PRIORITY; priority++)
+	for (short priority = 0; priority <= System::MAX_PRIORITY; priority++)
 	{
 		for each (GameObject* obj in _GameObjects[priority])
 		{
@@ -110,7 +106,7 @@ void GameObjectManager::PostRenderObject()
 
 void GameObjectManager::ImageRenderObject()
 {
-	for (short priority = 0; priority < System::MAX_PRIORITY; priority++)
+	for (short priority = 0; priority <= System::MAX_PRIORITY; priority++)
 	{
 		for each (GameObject* obj in _GameObjects[priority])
 		{
@@ -129,7 +125,7 @@ void GameObjectManager::AddRemoveList(GameObject * obj)
 	if (_CheckUniqueRemoveList(obj) == FALSE)
 		return;
 
-	for (short priority = 0; priority < System::MAX_PRIORITY; priority++)
+	for (short priority = 0; priority <= System::MAX_PRIORITY; priority++)
 	{
 		list<GameObject*>::iterator it = _GameObjects[priority].begin();
 
@@ -150,7 +146,7 @@ void GameObjectManager::AddRemoveList(GameObject * obj)
 
 void GameObjectManager::AddRemoveList(char * name)
 {
-	for (short priority = 0; priority < System::MAX_PRIORITY; priority++)
+	for (short priority = 0; priority <= System::MAX_PRIORITY; priority++)
 	{
 		list<GameObject*>::iterator it = _GameObjects[priority].begin();
 
@@ -175,7 +171,7 @@ void GameObjectManager::AddRemoveList(char * name)
 
 GameObject* GameObjectManager::FindObject(char* name)
 {
-	for (short priority = 0; priority < System::MAX_PRIORITY; priority++)
+	for (short priority = 0; priority <= System::MAX_PRIORITY; priority++)
 	{
 		list<GameObject*>::iterator it = _GameObjects[priority].begin();
 
@@ -196,7 +192,7 @@ GameObject* GameObjectManager::FindObject(char* name)
 
 bool GameObjectManager::FindObjects(char* name, GameObject ** objArray)
 {
-	for (short priority = 0; priority < System::MAX_PRIORITY; priority++)
+	for (short priority = 0; priority <= System::MAX_PRIORITY; priority++)
 	{
 		list<GameObject*>::iterator it = _GameObjects[priority].begin();
 
@@ -245,7 +241,7 @@ void GameObjectManager::_RemoveObject()
 
 void GameObjectManager::Release()
 {
-	for (short priority = 0; priority < System::MAX_PRIORITY; priority++)
+	for (short priority = 0; priority <= System::MAX_PRIORITY; priority++)
 	{
 		if (_GameObjects.size() > 0)
 		{

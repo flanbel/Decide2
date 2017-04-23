@@ -63,6 +63,11 @@ void SkinModel::DrawFrame(LPD3DXFRAME pFrame)
 
 void SkinModel::Awake()
 {
+	
+}
+
+void SkinModel::Start()
+{
 	//mainのものが設定されているならセットされる。
 	_Camera = INSTANCE(GameObjectManager)->mainCamera;
 	_Light = INSTANCE(GameObjectManager)->mainLight;

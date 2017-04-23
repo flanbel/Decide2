@@ -174,6 +174,7 @@ void GameCamera::_UpdatePos()
 	//0の時
 	if(!(average.Length() > 0.0f))
 	{
+		//中心を見る。
 		average = Vector3(0, 130, 0);
 		Min.z = 0.0f;
 	}
@@ -185,7 +186,7 @@ void GameCamera::_UpdatePos()
 	Vector3 currpos = camera->GetViewPoint();//現在位置
 	Vector3 trgpos = average;//ターゲット位置
 	Vector3 prevtrgpos = pre;//直前のターゲットの位置
-	float deltatime = 1.0f/60.0f;//時間変化
+	float deltatime = Time::DeltaTime();//時間変化
 	float springConst = 2.0f;//フックの定数
 	float dampConst = 2.0f;//ダンピング定数
 	float springLen = 10;//バネの長さ？

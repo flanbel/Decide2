@@ -24,17 +24,24 @@ void Animation::Initialize(ID3DXAnimationController* anim)
 	}
 }
 
+Animation::Animation(GameObject * g, Transform * t) :
+	Component(g, t, typeid(this).name()),
+	_AnimController(nullptr),
+	_NumAnimSet(0),
+	_IsBlending(false),
+	_IsInterpolate(false),
+	_NumMaxTracks(0),
+	_InterpolateTimer(0.0f),
+	_InterpolateEndTime(0.0f),
+	_CurrentTrackNo(0),
+	_PlaySpeed(1.0f)
+{
+
+}
+
 void Animation::Awake()
 {
-	_AnimController = nullptr;
-	_NumAnimSet = 0;
-	_IsBlending = false;
-	_IsInterpolate = false;
-	_NumMaxTracks = 0;
-	_InterpolateTimer = 0.0f;
-	_InterpolateEndTime = 0.0f;
-	_CurrentTrackNo = 0;
-	_PlaySpeed = 1.0f;
+	
 }
 
 void Animation::PlayAnimation(const UINT& animationSetIndex)

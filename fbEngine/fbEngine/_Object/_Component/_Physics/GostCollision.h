@@ -20,6 +20,10 @@ public:
 	void Update()override;
 	//ゴーストオブジェクトと重なっているコリジョンを取得する。
 	btAlignedObjectArray<btCollisionObject*> GetPairCollisions();
+	//他のコリジョンが接触した時に呼ばれる
+	virtual void OnCollisionEnter(Collision* coll) {};
+	//触れているコリジョンが離れた時に呼び出される。
+	virtual void OnCollisionExit(Collision* coll) {};
 protected:
 	//ゴーストへのポインタ(_CollisionObjectをキャストしただけ。)
 	btGhostObject* _GostObject;

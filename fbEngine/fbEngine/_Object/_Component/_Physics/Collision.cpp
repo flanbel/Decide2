@@ -54,12 +54,12 @@ void Collision::Create(btCollisionObject * collision, Collider * shape, const in
 	{
 	case 0:	//box
 		//当たり判定を視覚化したオブジェクト生成
-		_CollisionModel = INSTANCE(GameObjectManager)->AddNew<ModelObject>("ShowCollision", 3);
+		_CollisionModel = INSTANCE(GameObjectManager)->AddNew<ModelObject>("ShowCollision", 10);
 		_CollisionModel->LoadModel("Debug/BoxCollision.X");
 		break;
 	case 8:	//sphere
 		//当たり判定を視覚化したオブジェクト生成
-		_CollisionModel = INSTANCE(GameObjectManager)->AddNew<ModelObject>("ShowCollision", 3);
+		_CollisionModel = INSTANCE(GameObjectManager)->AddNew<ModelObject>("ShowCollision", 10);
 		_CollisionModel->LoadModel("Debug/SphereCollision.X");
 		break;
 	default:

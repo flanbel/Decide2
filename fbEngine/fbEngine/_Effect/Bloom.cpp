@@ -42,8 +42,8 @@ void Bloom::Create()
 	if (_IsEnable)
 	{
 		//内部解像度のサイズを計算
-		int w = g_WindowSize.x / 2;
-		int h = g_WindowSize.y / 2;
+		int w = g_WindowSize.x;
+		int h = g_WindowSize.y;
 
 		//輝度レンダリングターゲットの作成
 		_LuminanceRT = new RenderTarget();

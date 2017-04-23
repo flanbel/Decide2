@@ -144,9 +144,6 @@
     <ClCompile Include="_Object\_GameObject\ParticleEmitter.cpp">
       <Filter>Object\GameObject</Filter>
     </ClCompile>
-    <ClCompile Include="_Object\_GameObject\PlatePrimitive.cpp">
-      <Filter>Object\GameObject</Filter>
-    </ClCompile>
     <ClCompile Include="_Object\_GameObject\SoundSource.cpp">
       <Filter>Object\GameObject</Filter>
     </ClCompile>
@@ -175,9 +172,6 @@
       <Filter>Object\Component\Physics</Filter>
     </ClCompile>
     <ClCompile Include="_Object\_Component\_Physics\CapsuleCollider.cpp">
-      <Filter>Object\Component\Physics</Filter>
-    </ClCompile>
-    <ClCompile Include="_Object\_Component\_Physics\CharacterController.cpp">
       <Filter>Object\Component\Physics</Filter>
     </ClCompile>
     <ClCompile Include="_Object\_Component\_Physics\Collision.cpp">
@@ -222,14 +216,23 @@
     <ClCompile Include="_Object\_Component\_2D\Sprite.cpp">
       <Filter>Object\Component\2D</Filter>
     </ClCompile>
-    <ClCompile Include="_Object\_Component\_2D\SpriteAnimation.cpp">
-      <Filter>Object\Component\2D</Filter>
-    </ClCompile>
     <ClCompile Include="_Object\_Component\_2D\SquareCollision.cpp">
       <Filter>Object\Component\2D</Filter>
     </ClCompile>
     <ClCompile Include="_Object\_Component\_2D\Text.cpp">
       <Filter>Object\Component\2D</Filter>
+    </ClCompile>
+    <ClCompile Include="_Object\_Component\_2D\TextureAnimator.cpp">
+      <Filter>Object\Component\2D</Filter>
+    </ClCompile>
+    <ClCompile Include="_Object\_Component\_3D\PlatePrimitive.cpp">
+      <Filter>Object\Component\3D</Filter>
+    </ClCompile>
+    <ClCompile Include="_Object\_GameObject\Plate.cpp">
+      <Filter>Object\GameObject</Filter>
+    </ClCompile>
+    <ClCompile Include="_Object\_GameObject\AnimationPlate.cpp">
+      <Filter>Object\GameObject</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -353,9 +356,6 @@
     <ClInclude Include="_Object\_GameObject\ParticleEmitter.h">
       <Filter>Object\GameObject</Filter>
     </ClInclude>
-    <ClInclude Include="_Object\_GameObject\PlatePrimitive.h">
-      <Filter>Object\GameObject</Filter>
-    </ClInclude>
     <ClInclude Include="_Object\_GameObject\SoundSource.h">
       <Filter>Object\GameObject</Filter>
     </ClInclude>
@@ -384,9 +384,6 @@
       <Filter>Object\Component\Physics</Filter>
     </ClInclude>
     <ClInclude Include="_Object\_Component\_Physics\CapsuleCollider.h">
-      <Filter>Object\Component\Physics</Filter>
-    </ClInclude>
-    <ClInclude Include="_Object\_Component\_Physics\CharacterController.h">
       <Filter>Object\Component\Physics</Filter>
     </ClInclude>
     <ClInclude Include="_Object\_Component\_Physics\Collider.h">
@@ -437,9 +434,6 @@
     <ClInclude Include="_Object\_Component\_2D\Sprite.h">
       <Filter>Object\Component\2D</Filter>
     </ClInclude>
-    <ClInclude Include="_Object\_Component\_2D\SpriteAnimation.h">
-      <Filter>Object\Component\2D</Filter>
-    </ClInclude>
     <ClInclude Include="_Object\_Component\_2D\SquareCollision.h">
       <Filter>Object\Component\2D</Filter>
     </ClInclude>
@@ -455,6 +449,18 @@
     </ClInclude>
     <ClInclude Include="_Include\Definition.h">
       <Filter>Include</Filter>
+    </ClInclude>
+    <ClInclude Include="_Object\_Component\_2D\TextureAnimator.h">
+      <Filter>Object\Component\2D</Filter>
+    </ClInclude>
+    <ClInclude Include="_Object\_Component\_3D\PlatePrimitive.h">
+      <Filter>Object\Component\3D</Filter>
+    </ClInclude>
+    <ClInclude Include="_Object\_GameObject\Plate.h">
+      <Filter>Object\GameObject</Filter>
+    </ClInclude>
+    <ClInclude Include="_Object\_GameObject\AnimationPlate.h">
+      <Filter>Object\GameObject</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

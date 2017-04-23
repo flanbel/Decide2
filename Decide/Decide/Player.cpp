@@ -2,7 +2,8 @@
 
 #include "PlayerParameter.h"
 #include "fbEngine\_Object\_GameObject\ParticleEmitter.h"
-#include "fbEngine\_Object\_GameObject\PlatePrimitive.h"
+#include "fbEngine\_Object\_GameObject\Plate.h"
+#include "fbEngine\_Object\_GameObject\AnimationPlate.h"
 #include "fbEngine\_Object\_GameObject\SoundSource.h"
 #include "fbEngine\_Object\_Component\_3D\Camera.h"
 
@@ -34,10 +35,10 @@ namespace
 		},
 		{
 			"Fire1.png",	//パス
-			Vector3(0,40,0),		//初速
+			Vector3(0,40,0),	//初速
 			Vector2(30,30),		//サイズ
 			1.0f,				//寿命
-			0.01f,				//発生時間
+			0.02f,				//発生時間
 			Vector3(30,0,30),	//ポジションランダム
 			Vector3(5,5,5),		//初速度ランダム
 			Vector3(0,0,0),		//速度ランダム
@@ -48,7 +49,7 @@ namespace
 			true,				//ビルボード
 			1.0f,				//ブライト
 			1,					//αブレンド
-			Color(2.5f,2.5f,1.0f,1.0f)	//乗算カラー
+			Color(1.5f,1.5f,1.0f,1.0f)	//乗算カラー
 		}
 	};
 
@@ -79,7 +80,7 @@ void Player::Awake()
 
 	_Height = 100;
 	coll->Create(Vector3(25, _Height, 25));
-	_Rigid->Create(1, coll, Collision_ID::PLAYER, Vector3::zero, Vector3(0, _Height / 2, 0));
+	_Rigid->Create(1, coll, Collision_Attribute::PLAYER, Vector3::zero, Vector3(0, _Height / 2, 0));
 	_RB = (btRigidBody*)_Rigid->GetCollisonObj();
 	//RigidBodyの上下の移動量を消す
 	_RB->setGravity(btVector3(0.0f, 0.0f, 0.0f));
@@ -96,16 +97,30 @@ void Player::Awake()
 	_Pparameter->SetDamage(_Damage);
 	_Pparameter->SetDiscard(false);
 	//プレート生成
-	_IdxPlate = INSTANCE(GameObjectManager)->AddNew<PlatePrimitive>("plate", 0);
+	_IdxPlate = INSTANCE(GameObjectManager)->AddNew<Plate>("plate", 4);
 	_IdxPlate->SetDiscard(false);
 	//王冠生成
-	_CrownPlate = INSTANCE(GameObjectManager)->AddNew<PlatePrimitive>("Crown", 0);
+	_CrownPlate = INSTANCE(GameObjectManager)->AddNew<Plate>("Crown", 4);
 	_CrownPlate->transform->SetParent(_IdxPlate->transform);
 	_CrownPlate->transform->SetLocalPosition(Vector3(0, 60, 0));
 	_CrownPlate->SetTexture(LOADTEXTURE("Crown.png"));
 	_CrownPlate->SetDiscard(false);
 
 	_PlayerColor = Color::white;
+
+	//エフェクト
+
+	_Aura = INSTANCE(GameObjectManager)->AddNew<AnimationPlate>("Aura", 4);
+	_Aura->SetSplit(5, 2, 5 * 2);
+	_Aura->SetTexture(LOADTEXTURE("Aura.jpg"));
+	_Aura->SetSize(Vector2(128, 128));
+	_Aura->SetBlendMode(fbEngine::BlendModeE::Add);
+	_Aura->Play(1.0f);
+	_Aura->SetBlendColor(Color::white * 1.3f);
+	_Aura->SetPivot(0.5, 0.7);
+
+	_Aura->SetDiscard(false);
+	_Aura->SetActive(false);
 
 	_Smoke = INSTANCE(GameObjectManager)->AddNew<ParticleEmitter>("SmokeEmit", 4);
 	_Smoke->SetDiscard(false);
@@ -122,10 +137,6 @@ void Player::Awake()
 
 void Player::Start()
 {
-	//パンチの効果音を鳴らすオブジェクト
-	_PunchSound = INSTANCE(GameObjectManager)->AddNew<SoundSource>("PunchSound", 0);
-	_PunchSound->Init("Asset/Sound/punch.wav");
-
 	float space = 300.0f;
 	//パラメータを配置
 	_Pparameter->transform->SetLocalPosition(Vector3(180.0f + (_Playeridx * space), 600.0f, 0.0f));
@@ -140,9 +151,10 @@ void Player::Start()
 	_IdxPlate->SetTexture(LOADTEXTURE(path));
 	_IdxPlate->SetBlendColor(_PlayerColor);
 	_IdxPlate->Start();
+
 	//
 	_CrownPlate->Start();
-	_CrownPlate->SetBlendColor((Color)Color::yellow * 4.0f);
+	_CrownPlate->SetBlendColor(Color::white * 3.0f);
 	_CrownPlate->SetActive(false);
 
 	_Pparameter->SetColor(_PlayerColor);
@@ -229,8 +241,9 @@ void Player::Update()
 		_Death();
 
 		//頭の上あたり
-		_IdxPlate->transform->SetLocalPosition(transform->LocalPos(Vector3(0, 150, 0)));
-		_IdxPlate->transform->LockAt(INSTANCE(GameObjectManager)->mainCamera->gameObject);
+		Vector3 pos = transform->GetPosition();
+		_Aura->transform->SetLocalPosition(pos + Vector3(0, 30, 0));
+		_IdxPlate->transform->SetLocalPosition(pos + Vector3(0, 150, 0));
 	}
 	else
 	{
@@ -269,6 +282,7 @@ void Player::ChangeState(PStateE next)
 	case PStateE::KICK_CHARGE:
 		_IsAction = false;
 		_Fire->SetEmitFlg(false);
+		_Aura->SetActive(false);
 		break;
 	case PStateE::KICK:
 		_IsAction = false;
@@ -324,6 +338,7 @@ void Player::ChangeState(PStateE next)
 void Player::Damage(const int& idx, const float& damage, const Vector3& blow, const float& rigor)
 {
 	//吹き飛ばしベクトルと逆の向きを向くようにする。
+	if(blow.Length() > 0.0f)
 	{
 		//吹き飛ぶ方向と反対のベクトル
 		Vector2 vec = Vector2(blow.x * -1, blow.z * -1);
@@ -335,6 +350,12 @@ void Player::Damage(const int& idx, const float& damage, const Vector3& blow, co
 		//回転
 		transform->SetLocalAngle(ang);
 	}
+
+	//ダメージSE
+	SoundSource* damageSE = INSTANCE(GameObjectManager)->AddNew<SoundSource>("DamageSE", 0);
+	damageSE->Init("Asset/Sound/damage.wav");
+	damageSE->SetDelete(true);
+	damageSE->Play(false);
 
 	//ダメージ加算(999が最大)
 	_Damage = min(999, _Damage + damage);
@@ -361,6 +382,44 @@ void Player::Damage(const int& idx, const float& damage, const Vector3& blow, co
 		XboxInput(_Playeridx)->Vibration(20000, 20000);
 		//吹き飛んだのでジャンプ回数を1に
 		_JumpCount = 1;
+	}
+}
+
+void Player::CheckInput()
+{
+	//Aボタン
+	if (XboxInput(_Playeridx)->IsPushButton(XINPUT_GAMEPAD_A) || KeyBoardInput->isPush(DIK_SPACE))
+	{
+	
+	}
+	//離された。
+	else
+	{
+	
+	}
+
+	//Bボタン
+	if (XboxInput(_Playeridx)->IsPushButton(XINPUT_GAMEPAD_B) || KeyBoardInput->isPush(DIK_Z))
+	{
+	
+	}
+
+	//Yボタン
+	if (XboxInput(_Playeridx)->IsPushButton(XINPUT_GAMEPAD_Y) || KeyBoardInput->isPush(DIK_J))
+	{
+	
+	}
+
+	//ライトショルダー
+	if (XboxInput(_Playeridx)->IsPushButton(XINPUT_GAMEPAD_RIGHT_SHOULDER) || KeyBoardInput->isPush(DIK_X))
+	{
+	
+	}
+
+	//レフトショルダー
+	if (XboxInput(_Playeridx)->IsPressButton(XINPUT_GAMEPAD_LEFT_SHOULDER) || KeyBoardInput->isPressed(DIK_LSHIFT))
+	{
+
 	}
 }
 
@@ -419,14 +478,10 @@ void Player::_Attack()
 		//Bボタン
 		if ((KeyBoardInput->isPush(DIK_Z) || XboxInput(_Playeridx)->IsPushButton(XINPUT_GAMEPAD_B)))
 		{
-			//アイテムを持っている
-			if (_HaveItem)
+			//アイテムを持っていない
+			if (!_HaveItem)
 			{
-				ChangeState(PStateE::SLASH);
-			}
-			//パンチ
-			else
-			{
+				//パンチ	
 				ChangeState(PStateE::PUNCH);
 			}
 		}
@@ -444,7 +499,8 @@ void Player::_Attack()
 		//フルチャージ
 		if (_Anim->GetPlaying() == false)
 		{
-			_Fire->SetEmitFlg(true);
+			//_Fire->SetEmitFlg(true);
+			_Aura->SetActive(true);
 		}
 		//ボタンが離された
 		if (!KeyBoardInput->isPressed(DIK_SPACE) && !XboxInput(_Playeridx)->IsPressButton(XINPUT_GAMEPAD_A))
@@ -475,7 +531,11 @@ void Player::_Attack()
 		if (_State == PStateE::PUNCH &&
 			nowFrame == 8)
 		{
-			_PunchSound->Play(false);
+			//素振りSE
+			SoundSource* swingSE = INSTANCE(GameObjectManager)->AddNew<SoundSource>("SwingSE", 0);
+			swingSE->Init("Asset/Sound/swing.wav");
+			swingSE->SetDelete(true);
+			swingSE->Play(false);
 
 			//あたり判定を出す
 			obj = INSTANCE(GameObjectManager)->AddNew<AttackCollision>("panch", 1);
@@ -495,14 +555,19 @@ void Player::_Attack()
 			Dinfo.Rigor = 0.2f;
 			Dinfo.StopTime = 5;
 			float life = 0.2f;
-			obj->Create(sphere, Collision_ID::DAMAGE + (_Playeridx + 1), life, Dinfo);
+			obj->Create(sphere, _Playeridx, Collision_Attribute::DAMAGE, life, Dinfo);
 		}
 
 		//キックの攻撃判定
 		if (_State == PStateE::KICK &&
 			nowFrame == 15)
 		{
-			_PunchSound->Play(false);
+			//素振りSE
+			SoundSource* swingSE = INSTANCE(GameObjectManager)->AddNew<SoundSource>("SwingSE", 0);
+			swingSE->Init("Asset/Sound/swing.wav");
+			swingSE->SetDelete(true);
+			swingSE->Play(false);
+
 			//あたり判定を出す
 			obj = INSTANCE(GameObjectManager)->AddNew<AttackCollision>("kick", 1);
 			//球状のあたり判定
@@ -521,13 +586,19 @@ void Player::_Attack()
 			Dinfo.Rigor = 0.6f;
 			Dinfo.StopTime = 10;
 			float life = 0.2f;
-			obj->Create(sphere, Collision_ID::DAMAGE + (_Playeridx + 1), life, Dinfo);
+			obj->Create(sphere, _Playeridx, Collision_Attribute::DAMAGE, life, Dinfo);
 		}
 
 		//剣の攻撃判定
 		if (_State == PStateE::SLASH &&
 			nowFrame <= 30 && (nowFrame % 5) == 0)
 		{
+			//素振りSE
+			SoundSource* swingSE = INSTANCE(GameObjectManager)->AddNew<SoundSource>("SwingSE", 0);
+			swingSE->Init("Asset/Sound/swing2.wav");
+			swingSE->SetDelete(true);
+			swingSE->Play(false);
+
 			//あたり判定を出す
 			obj = INSTANCE(GameObjectManager)->AddNew<AttackCollision>("sword", 1);
 			//球状のあたり判定
@@ -545,7 +616,7 @@ void Player::_Attack()
 			Dinfo.Rigor = 0.1f;
 			Dinfo.StopTime = 1;
 			float life = 0.05f;
-			obj->Create(sphere, Collision_ID::DAMAGE + (_Playeridx + 1), life, Dinfo);
+			obj->Create(sphere, _Playeridx, Collision_Attribute::DAMAGE, life, Dinfo);
 		}
 	}
 }
@@ -555,24 +626,42 @@ void Player::_ItemAction()
 	//アイテムを持っている
 	if (_HaveItem)
 	{
+		//Bボタン
+		if ((KeyBoardInput->isPush(DIK_Z) || XboxInput(_Playeridx)->IsPushButton(XINPUT_GAMEPAD_B)))
+		{
+			switch (_HaveItem->GetItemType())
+			{
+			case fbEngine::ItemTypeE::Throw:
+				//アイテムを離す
+				_HaveItem->ToSeparate(transform->GetForward() * 10.0f + _Movement * 2.0f, _Playeridx);
+				_HaveItem = nullptr;
+				break;
+			case fbEngine::ItemTypeE::Slash:
+				ChangeState(PStateE::SLASH);
+				break;
+			default:
+				break;
+			}
+		}
+
 		//捨てる
 		if (KeyBoardInput->isPush(DIK_X) || XboxInput(_Playeridx)->IsPushButton(XINPUT_GAMEPAD_RIGHT_SHOULDER))
 		{
 			//アイテムを離す
-			_HaveItem->ToSeparate(_Movement*3.0f, Collision_ID::DAMAGE + (_Playeridx + 1));
+			_HaveItem->ToSeparate(_Movement * 2.0f, _Playeridx);
 			_HaveItem = nullptr;
 		}
 	}
 	//アイテムを持ってない
 	else
 	{
-		//アイテムと当たっているか？
-		const Collision *coll = (const Collision*)INSTANCE(PhysicsWorld)->FindHitCollision(_Rigid, Collision_ID::ITEM);
-		//当たっている
-		if (coll)
+		//ボタンが押された
+		if (KeyBoardInput->isPush(DIK_Z) || XboxInput(_Playeridx)->IsPushButton(XINPUT_GAMEPAD_B))
 		{
-			//ボタンが押された
-			if (KeyBoardInput->isPush(DIK_Z) || XboxInput(_Playeridx)->IsPushButton(XINPUT_GAMEPAD_B))
+			//アイテムと当たっているか？
+			const Collision *coll = (const Collision*)INSTANCE(PhysicsWorld)->ClosestContactTest(_Rigid, Collision_Attribute::ITEM);
+			//当たっている
+			if (coll)
 			{
 				//アイテムオブジェクト取得
 				Item* item = (Item*)coll->gameObject;
@@ -814,7 +903,7 @@ void Player::_GravityCheck(const float & movey)
 		end = start + Vector3(0, MoveY, 0);
 
 		//ステージ(地面)とのあたり判定
-		const SweepResultGround hit = INSTANCE(PhysicsWorld)->FindOverlappedStage(_RB, start, end);
+		const fbPhysicsCallback::SweepResultGround hit = INSTANCE(PhysicsWorld)->FindOverlappedStage(_RB, start, end);
 		//地面と当たった
 		if (hit.isHit)
 		{

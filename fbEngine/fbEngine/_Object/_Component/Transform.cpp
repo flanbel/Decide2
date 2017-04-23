@@ -329,9 +329,19 @@ void Transform::SetPosition(const Vector3 & v)
 	//最終的なポジションからローカルを逆算
 	if (_Parent)
 	{
-		//未完成
-		Vector3 ppos = _Parent->GetPosition();
-		_LocalPosition = _Position - ppos;
+		D3DXMATRIX pworldInv = _Parent->GetWorldMatrix();
+		//逆行列に
+		D3DXMatrixInverse(&pworldInv, NULL, &pworldInv);
+		D3DXVECTOR4 lpos;
+		D3DXVECTOR3 pos;
+		//コピー
+		_Position.CopyFrom(pos);
+		//逆行列を乗算して、ローカルを求める。
+		D3DXVec3Transform(&lpos, &pos, &pworldInv);
+		
+		_LocalPosition.x = lpos.x;
+		_LocalPosition.y = lpos.y;
+		_LocalPosition.z = lpos.z;
 	}
 	else
 	{
@@ -473,8 +483,9 @@ void Transform::SetRotateMatrix(const D3DXMATRIX r)
 	//回転行列からクォータニオン生成
 	D3DXQUATERNION q;
 	D3DXQuaternionRotationMatrix(&q, &_RotateMatrix);
-	//メンバ変数のクォータニオンにコピー
+	//メンバ変数のクォータニオンに
 	_Rotation = q;
+	UpdateWolrdMatrix();
 }
 
 void Transform::SetWorldMatrix(D3DXMATRIX w)

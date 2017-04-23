@@ -18,26 +18,27 @@ public:
 	//ワールドからコリジョン削除
 	void RemoveCollision(Collision* coll);
 
-	//
-	void ConvexSweepTest(
-		const btConvexShape* castShape,
-		const btTransform& convexFromWorld,
-		const btTransform& convexToWorld,
-		btCollisionWorld::ConvexResultCallback& resultCallback,
-		btScalar allowedCcdPenetration = 0.0f
-		)
-	{
-		dynamicWorld->convexSweepTest(castShape, convexFromWorld, convexToWorld, resultCallback, allowedCcdPenetration);
-	}
-
-	//レイを飛ばして最も近かったものを
-	const Vector3 ClosestRayTest(const Vector3& from,const Vector3& to);
-	//当たっているコリジョン検索
-	const Collision* FindHitCollision(Collision * coll,const int& id) const;
-	//名前で検索する。
-	const Collision* SearchCollisionByName(Collision * coll, const char* name, const int& id) const;
+	//ヒットした中で最も近いコリジョンを取得
+	//Collison*　コリジョン
+	//int　指定したコリジョンの属性とのみ当たりをとる
+	const Collision* ClosestContactTest(Collision * coll,const int& attr = (const int)fbCollisionAttributeE::ALL) const;
+	//ヒットしたコリジョンを全て取得
+	//Collison*　コリジョン
+	//int　指定したコリジョンの属性とのみ当たりをとる
+	vector<Collision*> AllHitsContactTest(Collision * coll, const int& attr = (const int)fbCollisionAttributeE::ALL) const;
+	//レイを飛ばしてヒットした中で最も近かったものを取得
+	//Vector3　レイの始点
+	//Vector3　レイの終点
+	//int　指定したコリジョンの属性とのみ当たりをとる
+	const Vector3 ClosestRayTest(const Vector3& from, const Vector3& to, const int& attr = (const int)fbCollisionAttributeE::ALL);
+	//受け取ったコリジョンを始点から終点まで飛ばしてヒットした中で最も近かったものを取得
+	//Collison* 飛ばすコリジョン
+	//Vector3　始点
+	//Vector3　終点
+	//int　指定したコリジョンの属性とのみ当たりをとる
+	const Collision* ClosestConvexSweepTest(Collision * coll, const Vector3& start, const Vector3& end,const int& attr = (const int)fbCollisionAttributeE::ALL) const;
 	//地面用当たり判定
-	const SweepResultGround FindOverlappedStage(btCollisionObject * colliObject,const Vector3& start,const Vector3& end) const;
+	const fbPhysicsCallback::SweepResultGround FindOverlappedStage(btCollisionObject * colliObject,const Vector3& start,const Vector3& end) const;
 
 	//ダイナミックワールド取得
 	btDiscreteDynamicsWorld* GetDynamicWorld()

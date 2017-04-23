@@ -107,8 +107,9 @@ void SoundSource::Release()
 		m_sourceVoice->DestroyVoice();
 		m_sourceVoice = nullptr;
 	}
+
+	INSTANCE(GameObjectManager)->AddRemoveList(this);
 	Remove3DSound();
-	//DeleteGO(this);
 }
 void SoundSource::Play(char* buff, unsigned int bufferSize)
 {
@@ -194,8 +195,11 @@ void SoundSource::UpdateStreaming()
 					if (state.BuffersQueued == 0) {
 						//Ä¶I—¹B
 						m_isPlaying = false;
-						//DeleteGO(this);
-						Remove3DSound();
+						if (_AutoDelete)
+						{
+							INSTANCE(GameObjectManager)->AddRemoveList(this);
+							Remove3DSound();
+						}
 					}
 				}
 			}
@@ -227,8 +231,11 @@ void SoundSource::UpdateOnMemory()
 			Play(m_isLoop);
 		}
 		else {
-			//DeleteGO(this);
-			Remove3DSound();
+			if (_AutoDelete)
+			{
+				INSTANCE(GameObjectManager)->AddRemoveList(this);
+				Remove3DSound();
+			}
 		}
 	}
 }

@@ -18,79 +18,67 @@ void ComponentManager::Start() const
 
 void ComponentManager::Update() const
 {
-	vector<Component*>::const_iterator it = _Components.begin();
-	while (it != _Components.end())
+	for each (Component* c in _Components)
 	{
-		if ((*it)->enable)
+		if (c->enable)
 		{
-			(*it)->Update();
+			c->Update();
 		}
-		it++;
 	}
 }
 
 void ComponentManager::LateUpdate() const
 {
-	vector<Component*>::const_iterator it = _Components.begin();
-	while (it != _Components.end())
+	for each (Component* c in _Components)
 	{
-		if ((*it)->enable)
+		if (c->enable)
 		{
-			(*it)->LateUpdate();
+			c->LateUpdate();
 		}
-		it++;
 	}
 }
 
 void ComponentManager::PreRender() const
 {
-	vector<Component*>::const_iterator it = _Components.begin();
-	while (it != _Components.end())
+	for each (Component* c in _Components)
 	{
-		if ((*it)->enable)
+		if (c->enable)
 		{
-			(*it)->PreRender();
+			c->PreRender();
 		}
-		it++;
 	}
 }
 
 void ComponentManager::Render() const
 {
-	vector<Component*>::const_iterator it = _Components.begin();
-	while (it != _Components.end())
+	for each (Component* c in _Components)
 	{
-		if ((*it)->enable)
+		if (c->enable)
 		{
-			(*it)->Render();
+			c->Render();
 		}
-		it++;
 	}
 }
 
 void ComponentManager::PostRender() const
 {
-	vector<Component*>::const_iterator it = _Components.begin();
-	while (it != _Components.end())
+	for each (Component* c in _Components)
 	{
-		if ((*it)->enable)
+		if (c->enable)
 		{
-			(*it)->PostRender();
+			c->PostRender();
 		}
-		it++;
 	}
 }
 
 void ComponentManager::ImageRender() const
 {
-	vector<Component*>::const_iterator it = _Components.begin();
-	while (it != _Components.end())
+	for each (Component* c in _Components)
 	{
-		if ((*it)->enable)
+		if (c->enable)
 		{
-			(*it)->ImageRender();
+			c->ImageRender();
 		}
-		it++;
 	}
 }
 

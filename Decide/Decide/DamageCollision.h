@@ -22,7 +22,7 @@ public:
 	void Update()override;
 	void LateUpdate()override;
 
-	void Create(const float& life, const int& id, Collider* shape, DamageCollisonInfo& info);
+	void Create(const int& owner, const float& life, const int& id, Collider* shape, DamageCollisonInfo& info);
 	//げったー、セッター作るのめんどくさかった。
 	DamageCollisonInfo info;
 private:
@@ -31,6 +31,7 @@ private:
 	//当たったかどうか？
 	void _CheckHit();
 private:
+	int _OwnerIdx;	//攻撃したやつ
 	float _Life;	//寿命。0以下だと死なない
 	float _Timer;
 };

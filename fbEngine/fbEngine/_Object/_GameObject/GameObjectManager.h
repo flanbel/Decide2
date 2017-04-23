@@ -50,7 +50,11 @@ class GameObjectManager
 public:
 	GameObjectManager()
 	{
-		
+		//ベクターリサイズ
+		if (_GameObjects.size() <= 0)
+		{
+			_GameObjects.resize(System::MAX_PRIORITY + 1);
+		}
 	}
 
 	//マネージャーにオブジェクトを追加する
@@ -60,16 +64,12 @@ public:
 	GameObject* Add(GameObject* pAdd,int priority);
 
 	template<class T>
-	T* AddNew(char* name, int priority)
+	T* AddNew(char* name, UINT priority)
 	{
 		//優先度が超えてる
-		if(priority >= System::MAX_PRIORITY)
+		if(priority > System::MAX_PRIORITY)
 		{
 			priority = System::MAX_PRIORITY - 1;
-		}
-		if (_GameObjects.size() <= 0)
-		{
-			_GameObjects.resize(System::MAX_PRIORITY);
 		}
 		T* obj = new T(name);
 		_GameObjects.at(priority).push_back(obj);

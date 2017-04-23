@@ -15,10 +15,8 @@ void CharaSelect::Awake()
 	_Cursor = INSTANCE(GameObjectManager)->AddNew<ImageObject>("Cursor", 2);
 	_OK = INSTANCE(GameObjectManager)->AddNew<ImageObject>("OK", 2);
 	_ShowModel = INSTANCE(GameObjectManager)->AddNew<ShowModel>("ShowModel", 0);
-	_Sound = INSTANCE(GameObjectManager)->AddNew<SoundSource>("test", 1);
 
 	_ShowModel->transform->SetLocalAngle(Vector3(0, 180, 0));
-	_Sound->Init("Asset/Sound/Select.wav");
 	
 	_Name->transform->SetParent(transform);
 	_Name->transform->SetLocalPosition(Vector3(0, 190, 0));
@@ -110,7 +108,7 @@ void CharaSelect::Update()
 				_ShowSkinModel->SetModelData(_Info->Data);
 				_ShowModel->SetAnim(_Info->Anim);
 				_ShowAnim = _Info->Anim;
-				_ShowAnim->PlayAnimation(0,0.1f);
+				_ShowAnim->PlayAnimation(0, 0.1f, -1);
 				_Name->SetString(_Info->Name);
 			}
 			_ShowAnim->Update();
@@ -131,7 +129,10 @@ void CharaSelect::Update()
 					//ポーズアニメーション再生
 					_ShowAnim->PlayAnimation(0, 0.1f);
 					//音再生
-					_Sound->Play(false);
+					SoundSource* selectSE = INSTANCE(GameObjectManager)->AddNew<SoundSource>("SelectSE", 1);
+					selectSE->Init("Asset/Sound/Select.wav");
+					selectSE->SetDelete(true);
+					selectSE->Play(false);
 				}
 				else
 				{
@@ -156,8 +157,6 @@ void CharaSelect::Update()
 		_Decision = false;
 		_Old = false;
 	}
-
-	_Sound->Update();
 
 	//決定しているなら
 	if(_Decision)

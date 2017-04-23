@@ -16,5 +16,5 @@ void Stage::Awake()
 	//メッシュコライダー生成
 	mesh->Create(model);
 	rigid->SetFilter((short)Collision_Filter::STAGE,(short)fbCollisionFilterE::ALLFILTER - (short)Collision_Filter::DAMAGE);
-	rigid->Create(0, mesh,Collision_ID::STAGE);
+	rigid->Create(0, mesh,Collision_Attribute::STAGE);
 }

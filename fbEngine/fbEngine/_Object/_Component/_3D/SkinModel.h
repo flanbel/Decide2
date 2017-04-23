@@ -23,6 +23,7 @@ public:
 	~SkinModel();
 
 	void Awake()override;
+	void Start()override;
 	void LateUpdate()override;
 	void PreRender()override;
 	void Render()override;

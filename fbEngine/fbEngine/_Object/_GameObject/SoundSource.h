@@ -170,7 +170,10 @@ public:
 	{
 		return &m_dspSettings;
 	}
-
+	void SetDelete(const bool& f)
+	{
+		_AutoDelete = f;
+	}
 private:
 	void InitCommon();
 	//ストリーミング再生中の更新処理。
@@ -192,6 +195,7 @@ private:
 	IXAudio2SourceVoice*		m_sourceVoice = nullptr;	//!<ソースボイス。
 	bool						m_isLoop = false;			//!<ループフラグ。
 	bool						m_isPlaying = false;		//!<再生中フラグ。
+	bool                    _AutoDelete = false;//自動削除
 	bool					m_isStreaming = false;		//!<ストリーミング再生？
 	unsigned int			m_streamingBufferSize = 0;	//!<ストリーミング用のバッファリングサイズ。
 	unsigned int			m_currentBufferingSize = 0;	//!<現在のバッファリングのサイズ。

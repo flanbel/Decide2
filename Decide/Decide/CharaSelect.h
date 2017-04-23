@@ -58,5 +58,4 @@ private:
 	Animation* _ShowAnim;
 	SkinModel* _ShowSkinModel;
 	RenderTarget* _Render;
-	SoundSource *_Sound;
 };

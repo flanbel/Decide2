@@ -94,19 +94,24 @@ void BattleScene::Update()
 		_ShowDepth->SetActive(!_ShowDepth->GetActive());
 	}
 
-	//レイのテスト
+	//左クリック
 	if (MouseInput->GetValue(MouseInE::L_CLICK))
 	{
-		//アイテム生成
-		Item* item = INSTANCE(GameObjectManager)->AddNew<Item>("TestItem", 1);
-
+		//マウスカーソルのポジションをワールド座標に変換
 		Vector3 start = INSTANCE(GameObjectManager)->mainCamera->ScreenToWorld(MouseInput->GetCursorPosOnWindow(g_MainWindow));
+		//ベクトル計算
 		Vector3 dir = start - INSTANCE(GameObjectManager)->mainCamera->transform->GetPosition();
 		dir.Normalize();
-		Vector3 end = start + (dir * 1000.0f);
-		Vector3 pos = INSTANCE(PhysicsWorld)->ClosestRayTest(start, end);
+		//終点を設定。
+		Vector3 end = start + (dir * 2000.0f);
+		//レイを飛ばす
+		Vector3 pos = INSTANCE(PhysicsWorld)->ClosestRayTest(start, end,(const int)fbCollisionAttributeE::GROUND);
+		//どこかにヒットした。
 		if (pos.Length() > 0.0f)
 		{
+			//アイテム生成
+			Item* item = INSTANCE(GameObjectManager)->AddNew<Item>("Item", 1);
+			//少し上に出す
 			pos.y += 10;
 			item->transform->SetLocalPosition(pos);
 		}

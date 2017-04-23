@@ -7,8 +7,15 @@
 
 Vertex* PlatePrimitive::_Vertex = nullptr;
 
-PlatePrimitive::PlatePrimitive(char * name) :
-	GameObject(name),
+PlatePrimitive::PlatePrimitive(GameObject* g, Transform* t) :
+	Component(g, t, typeid(this).name()),
+	_IsBillboard(true),
+	_BlendMode(fbEngine::BlendModeE::Trans),
+	_Effect(nullptr),
+	_Size(Vector2(1.0f,1.0f)),
+	_Pivot(Vector2(0.5f, 0.5f)),
+	_UV(0.0f, 1.0f, 0.0f, 1.0f),
+	_Texture(nullptr),
 	_BlendColor(Color::white)
 {
 	//頂点バッファ作成
@@ -57,9 +64,6 @@ void PlatePrimitive::Awake()
 {
 	//エフェクト読み込み
 	_Effect = EffectManager::LoadEffect("Primitive.fx");
-	_Size = Vector2(1.0f, 1.0f);
-	_Pivot = Vector2(0.5f, 0.5f);
-	_Texture = nullptr;
 }
 
 void PlatePrimitive::Start()
@@ -70,7 +74,17 @@ void PlatePrimitive::Start()
 
 void PlatePrimitive::Update()
 {
-
+	if (_IsBillboard)
+	{
+		//ビルボード処理を行う。
+		const D3DXMATRIX& mCameraRot = INSTANCE(GameObjectManager)->mainCamera->transform->GetRotateMatrix();
+		Quaternion qRot;
+		qRot.SetRotation(Vector3(mCameraRot.m[2][0], mCameraRot.m[2][1], mCameraRot.m[2][2]), 0.0f);
+		D3DXMATRIX rot;
+		D3DXMatrixRotationQuaternion(&rot, (D3DXQUATERNION*)&qRot);
+		rot = mCameraRot*rot;
+		transform->SetRotateMatrix(rot);
+	}
 }
 
 void PlatePrimitive::Render()
@@ -88,10 +102,27 @@ void PlatePrimitive::Render()
 	matWorld = matWorld * matSize * transform->GetWorldMatrix();
 
 	//Zバッファ
+	(*graphicsDevice()).SetRenderState(D3DRS_ZENABLE, TRUE);
 	(*graphicsDevice()).SetRenderState(D3DRS_ZWRITEENABLE, FALSE);
+	//αブレンド
 	(*graphicsDevice()).SetRenderState(D3DRS_ALPHABLENDENABLE, TRUE);
-	(*graphicsDevice()).SetRenderState(D3DRS_SRCBLEND, D3DBLEND_SRCALPHA);
-	(*graphicsDevice()).SetRenderState(D3DRS_DESTBLEND, D3DBLEND_INVSRCALPHA);
+
+	switch (_BlendMode)
+	{
+	case fbEngine::Trans:
+		//乗算合成
+		(*graphicsDevice()).SetRenderState(D3DRS_SRCBLEND, D3DBLEND_SRCALPHA);
+		//下地(既に書かれている)所とのブレンドモード
+		(*graphicsDevice()).SetRenderState(D3DRS_DESTBLEND, D3DBLEND_INVSRCALPHA);
+		break;
+	case fbEngine::Add:
+		//加算合成
+		(*graphicsDevice()).SetRenderState(D3DRS_SRCBLEND, D3DBLEND_ONE);
+		(*graphicsDevice()).SetRenderState(D3DRS_DESTBLEND, D3DBLEND_ONE);
+		break;
+	default:
+		break;
+	}
 
 	//テクニック設定
 	_Effect->SetTechnique("NormalRender");
@@ -99,17 +130,23 @@ void PlatePrimitive::Render()
 	_Effect->Begin(NULL, 0);
 	_Effect->BeginPass(0);
 
+	//始点と長さ
+	Vector2 uvstart(_UV.x, _UV.z), uvlen(_UV.y - _UV.x, _UV.w - _UV.z);
+	//UV設定
+	_Effect->SetValue("g_UVStart", &uvstart, sizeof(Vector2));
+	_Effect->SetValue("g_UVLength", &uvlen, sizeof(Vector2));
+
 	_Effect->SetMatrix("g_worldMatrix", &matWorld);
 	_Effect->SetMatrix("g_rotationMatrix", transform->GetRotateMatrixAddress());
-	_Effect->SetMatrix("g_viewMatrix", &(D3DXMATRIX)_Camera->GetViewMat());
-	_Effect->SetMatrix("g_projectionMatrix", &(D3DXMATRIX)_Camera->GetProjectionMat());
+	_Effect->SetMatrix("g_viewMatrix", &(D3DXMATRIX)INSTANCE(GameObjectManager)->mainCamera->GetViewMat());
+	_Effect->SetMatrix("g_projectionMatrix", &(D3DXMATRIX)INSTANCE(GameObjectManager)->mainCamera->GetProjectionMat());
 
 	_Effect->SetValue("g_blendColor", _BlendColor, sizeof(Color));
 
-	const int num = _Light->GetNum();
+	const int num = INSTANCE(GameObjectManager)->mainLight->GetNum();
 	Vector4 dir[System::MAX_LIGHTNUM];
 	Color color[System::MAX_LIGHTNUM];
-	const vector<DirectionalLight*>& vec = _Light->GetLight();
+	const vector<DirectionalLight*>& vec = INSTANCE(GameObjectManager)->mainLight->GetLight();
 	FOR(idx,num)
 	{
 		dir[idx] = vec[idx]->Direction();
@@ -124,7 +161,7 @@ void PlatePrimitive::Render()
 	//環境光
 	_Effect->SetVector("g_ambientLight", &D3DXVECTOR4(0.5, 0.5, 0.5, 1));
 	//カメラのポジションセット
-	Vector3 campos = _Camera->transform->GetPosition();
+	Vector3 campos = INSTANCE(GameObjectManager)->mainCamera->transform->GetPosition();
 	_Effect->SetValue("g_cameraPos", &D3DXVECTOR4(campos.x, campos.y, campos.z, 1.0f), sizeof(D3DXVECTOR4));
 
 	//テクスチャが格納されていればセット
@@ -145,7 +182,7 @@ void PlatePrimitive::Render()
 
 	//この関数を呼び出すことで、データの転送が確定する。描画を行う前に一回だけ呼び出す。
 	_Effect->CommitChanges();
-
+	//板ポリゴン描画
 	_Vertex->DrawPrimitive();
 
 	_Effect->EndPass();
@@ -156,6 +193,17 @@ void PlatePrimitive::Render()
 	(*graphicsDevice()).SetRenderState(D3DRS_SRCBLEND, D3DBLEND_ONE);
 	(*graphicsDevice()).SetRenderState(D3DRS_DESTBLEND, D3DBLEND_ZERO);
 	(*graphicsDevice()).SetRenderState(D3DRS_ZWRITEENABLE, TRUE);
+	(*graphicsDevice()).SetRenderState(D3DRS_ZENABLE, TRUE);
+}
+
+void PlatePrimitive::SetBillboard(const bool & f)
+{
+	_IsBillboard = f;
+}
+
+void PlatePrimitive::SetBlendMode(fbEngine::BlendModeE mode)
+{
+	_BlendMode = mode;
 }
 
 void PlatePrimitive::SetTexture(TEXTURE* t)
@@ -164,7 +212,12 @@ void PlatePrimitive::SetTexture(TEXTURE* t)
 	_Texture = t->pTexture;
 }
 
-void PlatePrimitive::SetPivot(Vector2 v2)
+void PlatePrimitive::SetSize(const Vector2 & size)
+{
+	_Size = size;
+}
+
+void PlatePrimitive::SetPivot(const Vector2& v2)
 {
 	_Pivot = v2;
 }
@@ -174,7 +227,12 @@ void PlatePrimitive::SetPivot(float x, float y)
 	_Pivot = Vector2(x, y);
 }
 
-void PlatePrimitive::SetBlendColor(Color c)
+void PlatePrimitive::SetUV(const Vector4 & uv)
+{
+	_UV = uv;
+}
+
+void PlatePrimitive::SetBlendColor(const Color& c)
 {
 	_BlendColor = c;
 }

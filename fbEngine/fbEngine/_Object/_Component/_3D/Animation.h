@@ -12,10 +12,7 @@ public:
 	/*!
 	 * @brief	コンストラクタ
 	 */
-	Animation(GameObject* g, Transform* t) :Component(g,t,typeid(this).name())
-	{
-		
-	}
+	Animation(GameObject* g, Transform* t);
 	/*!
 	 * @brief	デストラクタ。
 	 */

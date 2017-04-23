@@ -5,7 +5,8 @@
 class SoundSource;
 
 class PlayerParameter;
-class PlatePrimitive;
+class Plate;
+class AnimationPlate;
 class ParticleEmitter;
 class Item;
 class GameRule;
@@ -67,6 +68,8 @@ public:
 
 	const Vector3 GetDir();
 private:
+	//入力値チェック
+	void CheckInput();
 	//ステートによって再生するアニメーションを指定
 	void _AnimationControl();
 	//攻撃
@@ -133,7 +136,9 @@ private:
 	//ステート
 	PStateE _State;
 	//表示用プレート
-	PlatePrimitive *_IdxPlate, *_CrownPlate;
+	Plate *_IdxPlate, *_CrownPlate;
+	//エフェクト
+	AnimationPlate *_Aura;
 	//プレイヤーの色
 	Color _PlayerColor;
 	//パーティクル
@@ -157,5 +162,5 @@ private:
 	float _RespawnTimer;
 
 	//各効果音　
-	SoundSource *_PunchSound;
+	SoundSource *_DamageSE;
 };

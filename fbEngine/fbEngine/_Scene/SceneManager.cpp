@@ -18,9 +18,9 @@ SceneManager::SceneManager()
 	_RT = new RenderTarget();
 	//大きさ二倍で作って高画質に
 	//浮動小数点バッファで作成
-	_RT->Create(g_WindowSize * 2, D3DFMT_A16B16G16R16F);
+	_RT->Create(g_WindowSize, D3DFMT_A16B16G16R16F);
 	//掛ける倍率は0.5ｆ
-	_RT->texture->Size = _RT->texture->Size / 2;
+	_RT->texture->Size = _RT->texture->Size;
 
 	//レンダーターゲットのテクスチャを取得
 	_Sprite->SetTexture(_RT->texture);

@@ -17,6 +17,11 @@ float4	g_ambientLight;								//環境光。
 
 float4 g_cameraPos;						//カメラの位置
 
+//UVの始点
+float2 g_UVStart;
+//UVの長さ
+float2 g_UVLength;
+
 float4  g_Color;		//カラー
 float4  g_blendColor;
 
@@ -28,8 +33,8 @@ sampler_state
     MipFilter = NONE;
     MinFilter = NONE;
     MagFilter = NONE;
-	AddressU = CLAMP;
-	AddressV = CLAMP;
+	AddressU = Wrap;
+	AddressV = Wrap;
 };
 
 //頂点情報構造体
@@ -66,7 +71,8 @@ VS_OUTPUT VSMain(VS_INPUT In)
 
 	Out.pos = pos;
 	Out.wvp = Out.pos;
-	Out.uv = In.uv;
+	//UV調整
+	Out.uv = g_UVStart + (In.uv * g_UVLength);
 	Out.normal = mul(normalize(In.normal), g_rotationMatrix);	//法線を回す。
 	
 	return Out;

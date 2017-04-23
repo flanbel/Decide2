@@ -33,6 +33,6 @@ namespace
 		CHARACTER = 1,
 		GROUND = BIT(1),
 		WALL = BIT(2),
-		ALL = BIT(30),	//
+		ALL = BIT(30) - 1,	//
 	};
 }
