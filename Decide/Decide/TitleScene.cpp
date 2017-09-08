@@ -16,9 +16,14 @@ void TitleScene::Start()
 	titleback->SetPivot(0.0f, 0.0f);
 	//プリーズエンターテキスト
 	TextObject* text = INSTANCE(GameObjectManager)->AddNew<TextObject>("PleaseEnter", 1);
-	char* a = STRING(text);
-	text->Initialize(L"<PleaseEnter>", 80.0f, Color::white, fbSprite::SpriteEffectE::SHADOW, "HGS明朝E");
+	text->Initialize(L"<PleaseEnter>", 80.0f, Color::white, fbSprite::SpriteEffectE::SHADOW,"HGS明朝E");
 	text->transform->SetLocalPosition(Vector3(WindowW/2, WindowH/2, 0));
+
+	//プリーズエンターテキスト
+	//TextObject* doka = INSTANCE(GameObjectManager)->AddNew<TextObject>("PleaseEnter", 1);
+	//doka->Initialize(L"ライフル", 80.0f, Color::dokaben, fbSprite::SpriteEffectE::SHADOW, STRING(fbText::TextStyleE::NewDokabenFont));
+	//doka->transform->SetLocalPosition(Vector3(WindowW / 2, WindowH / 2+100, 0));
+
 	//BGM
 	SoundSource *bgm = INSTANCE(GameObjectManager)->AddNew<SoundSource>("BGM", 1);
 	bgm->Init("Asset/Sound/bgm_Title.wav");
